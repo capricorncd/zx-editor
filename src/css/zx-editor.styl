@@ -1,0 +1,350 @@
+$zIndex = 9999;
+// 底部toolbar高度
+$toolbarHeight = 48;
+$textstyleHeight = 260;
+$listHeight = 50;
+
+// Color
+$black = #555;
+$gray = #d0d0d0;
+$red = #ff583d;
+$yellow = #fdaa25;
+$green = #44c67b;
+$blue = #14b2e0;
+$purple = #b065e2;
+
+$borderColor = #eee;
+
+.border-bottom
+  &:after
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    content: '';
+    border-top: 1px solid $borderColor;
+    transform: scaleY(.5);
+
+.zxeditor-container
+  display: block;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 200px;
+  *
+    margin: 0;
+    padding: 0;
+    color: $black;
+    box-sizing: border-box;
+  .zxeditor-content-wrapper
+    width: 100%;
+    min-height: 200px;
+    overflow: hidden;
+    outline: none;
+    p, h1, h2, h3, h4, li
+      line-height: 1.5em;
+      padding: 10px 0;
+    h2
+      font-size: 1.2em;
+      font-weight: 800 !important;
+    h4
+      font-weight: 800 !important;
+    blockquote
+      display: inline-block;
+      padding-left: 1em;
+      border-left: 3px solid $gray;
+    ul
+      padding-left: 20px;
+      list-style: disc;
+    li, p
+      color: inherit;
+    hr
+      margin: 0 20%;
+      border: 0;
+      border-top: 1px dashed $gray;
+  .zxeditor-toolbar-wrapper
+    display: flex;
+    position: fixed;
+    z-index: $zIndex;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: $toolbarHeight px;
+    background-color: #fff;
+    &:after
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      content: '';
+      border-top: 1px solid $gray;
+      transform: scaleY(.5);
+    .toolbar-item
+      flex: 1;
+      height: $toolbarHeight px;
+      line-height: $toolbarHeight px;
+      text-align: center;
+  .zxeditor-textstyle-wrapper
+    position: fixed;
+    z-index: $zIndex + 1;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: $textstyleHeight px;
+    background-color: #fff;
+    overflow-y: auto;
+    //&.slide-in
+    //  animation: slide-in .3s forwards;
+    //&.slide-out
+    //  animation: slide-out .3s forwards;
+    .abs-bar-wrapper
+      position: fixed;
+      z-index: 1;
+      bottom: $textstyleHeight - $toolbarHeight px;
+      left: 0;
+      width: 100%;
+      height: $toolbarHeight px;
+      background-color: $borderColor;
+      border-top: 1px solid $gray;
+      border-bottom: 1px solid $gray;
+      box-sizing: border-box;
+      .abs-bar-title
+        position: relative;
+        line-height: $toolbarHeight px;
+        text-align: center;
+        font-size: 1.2em;
+      .abs-bar-btn
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 64px;
+        height: $toolbarHeight px;
+        line-height: $toolbarHeight px;
+        text-align: center;
+        color: $blue;
+        font-size: 1em;
+    .text-style-wrapper
+      position: relative;
+      display: flex;
+      margin-top: $toolbarHeight px;
+      height: $listHeight px;
+      .style-item
+        position: relative;
+        flex: 1;
+        line-height: $listHeight px;
+        text-align: center;
+        font-size: 1.5em;
+        &:nth-child(2)
+          &:before
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: $listHeight px;
+            content: '';
+            border-left: 1px solid $borderColor;
+            transform: scaleX(.5);
+          &:after
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: $listHeight px;
+            content: '';
+            border-right: 1px solid $borderColor;
+            transform: scaleX(.5);
+        &.text-bold
+          font-weight: 800;
+        &.text-italic
+          font-style: italic !important;
+        &.through-line
+          text-decoration: line-through !important;
+    .text-color-wrapper
+      display: flex;
+      position: relative;
+      height: $listHeight px;
+      .color-item
+        flex: 1;
+        position: relative;
+        height: $listHeight px;
+        &:before
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          margin: -14px 0 0 -14px;
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          content: '';
+        &:after
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          margin: -17px 0 0 -17px;
+          width: 34px;
+          height: 34px;
+          border-radius: 50%;
+          box-sizing: border-box;
+          content: '';
+      .color-black:before
+        background-color: $black;
+      .color-gray:before
+        background-color: $gray;
+      .color-red:before
+        background-color: $red;
+      .color-yellow:before
+        background-color: $yellow;
+      .color-green:before
+        background-color: $green;
+      .color-blue:before
+        background-color: $blue;
+      .color-purple:before
+        background-color: $purple;
+      .active
+        &.color-black:after
+          border: 1px solid $black;
+        &.color-gray:after
+          border: 1px solid $gray;
+        &.color-red:after
+          border: 1px solid $red;
+        &.color-yellow:after
+          border: 1px solid $yellow;
+        &.color-green:after
+          border: 1px solid $green;
+        &.color-blue:after
+          border: 1px solid $blue;
+        &.color-purple:after
+          border: 1px solid $purple;
+    .text-tag-wrapper
+      border-top: 5px solid $borderColor;
+      .tag-item
+        position: relative;
+        margin: 0 20px;
+        height: $toolbarHeight px;
+        line-height: $toolbarHeight px;
+        text-align: center;
+        &:after
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          content: '';
+          border-top: 1px solid $borderColor;
+          transform: scaleY(.5);
+        &:last-child:after
+          border-top: 0;
+        > b
+          position: relative;
+          display: inline-block;
+          vertical-align: top;
+          margin-right: 8px;
+          width: 20px;
+          height: $toolbarHeight px;
+          text-align: right;
+          &:after
+            display: inline-block;
+        &.big-hook
+          font-size: 1.2em;
+          font-weight: 800 !important;
+        &.small-hook
+          font-weight: 800 !important;
+        &.quote-hook
+          b:after
+            font-size: 2em;
+            content: '"';
+            margin-top: 8px;
+        &.unordered-hook
+          b:after
+            font-size: 1.5em;
+            content: '·';
+        i.checked
+          display: inline-block;
+          position: absolute;
+          z-index: 1;
+          top: 18px;
+          right: 30px;
+          width: 16px;
+          height: 8px;
+          transform: rotate(-45deg);
+          &:before, &:after
+            display: inline-block;
+            position: absolute;
+            background-color: $blue;
+            content: '';
+          &:before
+            top: 0;
+            left: 0;
+            width: 2px;
+            height: 8px;
+          &:after
+            bottom: 0;
+            left: 0;
+            width: 14px;
+            height: 2px;
+  .zxeditor-linkinput-wrapper
+    display: flex;
+    position: fixed;
+    z-index: $zIndex + 2;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, .4);
+    justify-content: center;
+    align-items: center;
+    .linkinput-wrapper
+      width: 80%;
+      background-color: #fefefe;
+      border-radius: 4px;
+      overflow: hidden;
+      .linkinput-title
+        height: 3.5em;
+        line-height: 3.5em;
+        text-align: center;
+      .linkinput-group
+        display: flex;
+        flex-direction: column;
+        margin: 0 10px;
+        border: 1px solid $borderColor;
+        border-radius: 3px;
+        background-color: #fff;
+        box-sizing: border-box;
+        .link-input
+          position: relative;
+          display: block;
+          margin: 0 5px;
+          height: 40px;
+          line-height: 40px;
+          border: 0;
+          outline: none;
+          &:first-child
+            border-bottom: 1px solid $borderColor;
+          &::placeholder
+            color: $gray;
+      .linkinput-footer
+        display: flex;
+        justify-content: space-between;
+        margin: 1em 10px;
+        button
+          display: inline-block;
+          height: 40px;
+          line-height: 40px;
+          width: 47%;
+          text-align: center;
+          background-color: #fff;
+          border: 1px solid $borderColor;
+          border-radius: 3px;
+          letter-spacing: 2px;
+          box-sizing: border-box;
+          &.disabled
+            color: $borderColor;
+
+//@keyframes slide-in
+//  from
+//    bottom: -310px;
+//  to
+//    bottom: 0;
+//
+//@keyframes slide-out
+//  from
+//    bottom: 0;
+//  to
+//    bottom: -310px;

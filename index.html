@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+  <title>Zx-Editor</title>
+  <meta name="keyword" content="">
+  <meta name="description" content="">
+  <!--<link href="./css/zx-editor.css" rel="stylesheet">-->
+  <style>
+    #editorContainer {
+      min-height: 300px;
+      /*background-color: #f1f1f1;*/
+    }
+  </style>
+</head>
+<body>
+
+<div id="editorContainer">
+</div>
+
+<div style="position: fixed; z-index: 20000; top: 20px;right: 20px; padding: 0 4px; background-color: rgba(255,255,255,.8); font-size: .6em" id="Positin">提交</div>
+
+<script src="libs/image-process-tools.min.js"></script>
+<!--<script src="libs/bscroll.min.js"></script>-->
+<script src="<%= htmlWebpackPlugin.files.chunks['zx-editor'].entry %>"></script>
+<script>
+  var zxEditor = new ZxEditor('#editorContainer');
+  // 处理从相册选中或拍摄的图片
+  new IPTS({
+    elm: '#editorContainer .pic-hook',
+    // 缩放宽高
+    width: 600,
+    success: function (data) {
+      log(data)
+      // 将处理后的图片base64数据，或上传成功的文件url添加至正文
+      zxEditor.addImage(data.base64)
+    }
+  })
+
+  document.querySelector('#Positin').addEventListener('click', function () {
+    submitData(function () {
+      // 提交数据
+      alert('模拟提交数据成功！')
+    })
+  }, false)
+
+  // 提交数据
+  function submitData (callback) {
+    // 获取正文中的base64图片数据
+    var uploadImages = zxEditor.getBase64Images()
+    // 上传图片（异步）
+    var count = 0
+    var len = uploadImages.length
+    for (var i = 0; i < len; i++) {
+      var img = uploadImages[i]
+      uploadHandler(img)
+    }
+
+    function uploadHandler (img) {
+      var data = zxEditor.toBlobData(img.data)
+      upload(data, img.id, function (res) {
+        zxEditor.setImageSrc(res.id, res.src)
+        count++
+        if (count === len) {
+          // 图片上传，并成功替换正文中base64图片
+          // 获取正文html
+          var content = zxEditor.getContent()
+          log('需要提交的正文内容为：', content)
+          callback && callback()
+        }
+      })
+    }
+  }
+
+  // 模拟异步上传文件
+  function upload(data, id, callback) {
+    // data 上传的文件数据
+    var timer = setTimeout(function () {
+      callback({
+        id: id,
+        src: randPic()
+      })
+      if (timer) clearTimeout(timer)
+    }, 500)
+  }
+
+  // 随机取一张假数据图片
+  function randPic () {
+    // 假 http图片数据
+    var SERVER_IMGS = [
+      '//photo.tuchong.com/1000000/f/9230679.jpg',
+      '//photo.tuchong.com/1000000/f/9234150.jpg',
+      '//photo.tuchong.com/1000000/f/9234159.jpg',
+      '//photo.tuchong.com/1000000/f/9230684.jpg',
+      '//photo.tuchong.com/1000000/f/9234166.jpg',
+      '//photo.tuchong.com/1000000/f/9234161.jpg',
+      '//photo.tuchong.com/1000000/f/9233197.jpg',
+      '//photo.tuchong.com/1000000/f/9230683.jpg',
+      '//photo.tuchong.com/1000000/f/9230685.jpg',
+      '//photo.tuchong.com/1000000/f/9230692.jpg',
+      '//photo.tuchong.com/1000000/f/9230688.jpg'
+    ]
+    var len = SERVER_IMGS.length
+    var randIndex = Math.floor(Math.random() * len)
+    return SERVER_IMGS[randIndex]
+  }
+
+  function log() {
+    for (var i = 0; i < arguments.length; i++) {
+      console.log(arguments[i])
+    }
+  }
+</script>
+</body>
+</html>
