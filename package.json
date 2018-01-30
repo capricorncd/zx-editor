@@ -4,7 +4,6 @@
   "description": "This is html document editor",
   "author": "zx1984",
   "github": "https://github.com/zx1984",
-  "private": true,
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack-dev-server --inline --progress --config webpack.config.js",
     "build": "cross-env NODE_ENV=production webpack --config webpack.config.js && webpack --config webpack.prod.js"

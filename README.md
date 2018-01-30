@@ -29,6 +29,12 @@ npm run build
 
 ## USE
 
+* npm
+
+```bash
+  npm install zx-editor --save-dev
+```
+
 * html
 
 ```html
@@ -91,7 +97,7 @@ import ZxEditor from './dist/zx-editor'
 
 ## Copyright and license
 
-Code and documentation copyright 2018 zx1984. Code released under the MIT License.
+Code and documentation copyright 2018. zx1984. Code released under the MIT License.
 
 
 
