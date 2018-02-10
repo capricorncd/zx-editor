@@ -4,6 +4,10 @@
 
 ![ZxEditor](preview.jpg)
 
+## Processes
+
+![ZxEditor](processes.png)
+
 ## Build Setup
 
 * 安装项目依赖

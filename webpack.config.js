@@ -8,7 +8,6 @@ const webpack = require('webpack')
 const htmlWebpackPlugin = require('html-webpack-plugin')
 const webpackBase = require('./webpack.base')
 
-const version = require('./package.json').version
 const isDev = process.env.NODE_ENV === 'development'
 
 let config = {
@@ -23,8 +22,7 @@ let config = {
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: isDev ? '"development"' : '"production"'
-      },
-      __VERSION__: JSON.stringify(version)
+      }
     }),
     new htmlWebpackPlugin({
       template: 'index.html',
