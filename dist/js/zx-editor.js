@@ -85,7 +85,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ZxEditor = undefined;
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * Create by zx1984
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * 2018/1/23 0023.
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * https://github.com/zx1984
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
+
 
 __webpack_require__(1);
 
@@ -97,18 +102,15 @@ var _domCore = __webpack_require__(7);
 
 var _domCore2 = _interopRequireDefault(_domCore);
 
+var _scroll = __webpack_require__(8);
+
+var _scroll2 = _interopRequireDefault(_scroll);
+
+var _debug = __webpack_require__(9);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * Create by zx1984
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * 2018/1/23 0023.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                * https://github.com/zx1984
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                */
-
 
 // COLOR
 var COLORS = {
@@ -127,34 +129,29 @@ var TEXT_STYLE_HEIGHT = 310 + 10;
 
 // ZxEditor
 
-var ZxEditor = function (_DomCore) {
-  _inherits(ZxEditor, _DomCore);
-
+var ZxEditor = function () {
   // constructor
   function ZxEditor() {
     var selecotor = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'body';
 
     _classCallCheck(this, ZxEditor);
 
-    var _this = _possibleConstructorReturn(this, (ZxEditor.__proto__ || Object.getPrototypeOf(ZxEditor)).call(this));
-
-    _this.editor = null;
-    _this.toolbar = null;
-    _this.editbox = null;
-    _this.textstyle = null;
-    _this.textstyleIsShow = false;
-    _this.linkinput = null;
+    this.editor = null;
+    this.toolbar = null;
+    this.editbox = null;
+    this.textstyle = null;
+    this.textstyleIsShow = false;
+    this.linkinput = null;
     // 编辑的内容
-    _this.content = null;
+    this.content = null;
     // 光标对象
-    _this.selection = null;
-    _this.range = null;
-    _this.rangeOffset = 0;
-    _this.rangeTimer = null;
+    this.selection = null;
+    this.range = null;
+    this.rangeOffset = 0;
+    this.rangeTimer = null;
     // 当前光标所在的元素节点NodeType === 1
-    _this.rangeElm = null;
-    _this._initDoms(selecotor);
-    return _this;
+    this.rangeElm = null;
+    this._initDoms(selecotor);
   }
 
   /**
@@ -168,14 +165,14 @@ var ZxEditor = function (_DomCore) {
     key: '_initDoms',
     value: function _initDoms(selecotor) {
       // 外部容器
-      var outerWrapper = this.query(selecotor);
+      var outerWrapper = _domCore2.default.query(selecotor);
 
-      this.editor = this.create('div', { class: 'zxeditor-container' });
-      this.editbox = this.create('div', { class: 'zxeditor-content-wrapper', contenteditable: true, style: 'margin-bottom: ' + TOOL_BAR_HEIGHT + 'px' });
-      this.toolbar = this.create('div', { class: 'zxeditor-toolbar-wrapper' });
-      this.textstyle = this.create('div', { class: 'zxeditor-textstyle-wrapper', style: 'display: none' });
+      this.editor = _domCore2.default.create('div', { class: 'zxeditor-container' });
+      this.editbox = _domCore2.default.create('div', { class: 'zxeditor-content-wrapper', contenteditable: true, style: 'margin-bottom: ' + TOOL_BAR_HEIGHT + 'px' });
+      this.toolbar = _domCore2.default.create('div', { class: 'zxeditor-toolbar-wrapper' });
+      this.textstyle = _domCore2.default.create('div', { class: 'zxeditor-textstyle-wrapper', style: 'display: none' });
 
-      this.linkinput = this.create('div', { class: 'zxeditor-linkinput-wrapper', style: 'display: none' });
+      this.linkinput = _domCore2.default.create('div', { class: 'zxeditor-linkinput-wrapper', style: 'display: none' });
 
       this.toolbar.innerHTML = '\n      <div class="toolbar-item pic-hook">\u56FE\u7247</div>\n      <div class="toolbar-item text-hook">\u6587\u5B57</div>\n      <div class="toolbar-item link-hook">\u94FE\u63A5</div>\n      <div class="toolbar-item split-hook">\u5206\u5272</div>\n      <!--<div class="toolbar-item reward-hook">\u6253\u8D4F</div>-->\n    ';
 
@@ -201,7 +198,7 @@ var ZxEditor = function (_DomCore) {
     key: '_initContentRang',
     value: function _initContentRang() {
       if (!this.editbox.innerHTML) {
-        var p = this.create('p');
+        var p = _domCore2.default.create('p');
         p.innerHTML = '<br>';
         this.rangeElm = p;
         this.editbox.appendChild(p);
@@ -217,7 +214,6 @@ var ZxEditor = function (_DomCore) {
   }, {
     key: '_textstyleShow',
     value: function _textstyleShow() {
-      // util.changeClass('slide-out', 'slide-in', this.textstyle)
       this.textstyle.style.display = 'block';
       this.editbox.style.marginBottom = TEXT_STYLE_HEIGHT + 'px';
       this.textstyleIsShow = true;
@@ -233,7 +229,6 @@ var ZxEditor = function (_DomCore) {
   }, {
     key: '_textstyleHide',
     value: function _textstyleHide() {
-      // util.changeClass('slide-in', 'slide-out', this.textstyle)
       this.textstyle.style.display = 'none';
       this.editbox.style.marginBottom = TOOL_BAR_HEIGHT + 'px';
       this.textstyleIsShow = false;
@@ -248,32 +243,32 @@ var ZxEditor = function (_DomCore) {
   }, {
     key: '_eventHandle',
     value: function _eventHandle() {
-      var _this2 = this;
+      var _this = this;
 
       // 激活文本编辑框
       this.editbox.addEventListener('click', function (e) {
-        _this2._initContentRang();
-        _this2._getRange(function () {
+        _this._initContentRang();
+        _this._getRange(function () {
           // this._initTextStyleCheck()
         });
         // 隐藏显示的文字样式设置容器
-        if (_this2.textstyleIsShow) {
-          _this2._textstyleHide();
+        if (_this.textstyleIsShow) {
+          _this._textstyleHide();
         }
       }, false);
 
       // 离开编辑输入框时，内容是否为空
       // 为空则添加<br>
       this.editbox.addEventListener('blur', function (e) {
-        if (_this2.rangeElm && !_this2.rangeElm.innerHTML) {
-          _this2.rangeElm.innerHTML = '<br>';
+        if (_this.rangeElm && !_this.rangeElm.innerHTML) {
+          _this.rangeElm.innerHTML = '<br>';
         }
       }, false);
 
       // 文本编辑框内容输入
       this.editbox.addEventListener('keyup', function () {
-        _this2._getRange();
-        _this2.scrollToRange();
+        _this._getRange();
+        _this.scrollToRange();
       }, false);
 
       // 操作工具栏，上传图片、文字样式设置等
@@ -281,29 +276,29 @@ var ZxEditor = function (_DomCore) {
         var el = e.target;
         // 判断内容是否为空，
         // 即用户是否有激活过文本输入框
-        _this2._initContentRang();
+        _this._initContentRang();
 
         // 文字
-        if (_util2.default.hasClass('text-hook', el)) {
-          _this2._textstyleShow();
+        if (el.hasClass('text-hook')) {
+          _this._textstyleShow();
         }
 
         // 链接
-        if (_util2.default.hasClass('link-hook', el)) {
-          if (_this2.rangeElm.nodeName === 'P') {
-            _this2.linkinput.style.display = 'flex';
+        if (el.hasClass('link-hook')) {
+          if (_this.rangeElm.nodeName === 'P') {
+            _this.linkinput.style.display = 'flex';
           } else {
             alert('只支持在正文中插入链接！');
           }
         }
 
         // 分割线
-        if (_util2.default.hasClass('split-hook', el)) {
-          _this2.insertHr(_this2.rangeElm);
+        if (el.hasClass('split-hook')) {
+          _domCore2.default.insertHr(_this.rangeElm);
         }
 
         // 打赏
-        if (_util2.default.hasClass('reward-hook', el)) {
+        if (el.hasClass('reward-hook')) {
           alert('开发中');
         }
       }, false);
@@ -312,29 +307,29 @@ var ZxEditor = function (_DomCore) {
       this.textstyle.addEventListener('click', function (e) {
         var el = e.target;
         // 字体标签
-        if (_util2.default.hasClass('tag-item', el)) {
-          _this2._tagnameHandle(el);
+        if (el.hasClass('tag-item')) {
+          _this._tagnameHandle(el);
         }
         // 字体样式
-        if (_util2.default.hasClass('style-item', el)) {
-          _this2._textStyleHandle(el);
+        if (el.hasClass('style-item')) {
+          _this._textStyleHandle(el);
         }
         // 字体颜色
-        if (_util2.default.hasClass('color-item', el)) {
-          _this2._textColorHandle(el);
+        if (el.hasClass('color-item')) {
+          _this._textColorHandle(el);
         }
         // 关闭字体样式设置层
-        if (_util2.default.hasClass('abs-bar-btn', el)) {
-          _this2._textstyleHide(el);
+        if (el.hasClass('abs-bar-btn')) {
+          _this._textstyleHide(el);
         }
       });
 
       // 滑动文字样式设置层时，禁用document滑动
       this.textstyle.addEventListener('touchmove', function (e) {
-        _this2.queryAll('body')[0].style.overflow = 'hidden';
+        _domCore2.default.queryAll('body')[0].style.overflow = 'hidden';
       });
       this.textstyle.addEventListener('touchend', function (e) {
-        _this2.queryAll('body')[0].style.overflow = '';
+        _domCore2.default.queryAll('body')[0].style.overflow = '';
       });
 
       // 链接：输入容器按钮
@@ -345,27 +340,27 @@ var ZxEditor = function (_DomCore) {
       submitBtn.addEventListener('click', function (e) {
         var el = e.target;
         var className = el.className;
-        if (_util2.default.hasClass('disabled', el)) return;
+        if (el.hasClass('disabled')) return;
         // 创建url，并添加至焦点出
-        var linkStr = _this2.createLinkStr(linkInputs[0].value, linkInputs[1].value);
+        var linkStr = _domCore2.default.createLinkStr(linkInputs[0].value, linkInputs[1].value);
         // 获取焦点在段落中的位置
-        var position = _this2.range ? _this2.range.startOffset : 0;
-        if (_this2.rangeElm.nodeName === 'P') {
-          _this2.rangeElm.innerHTML = _this2.insertStr(_this2.rangeElm.innerText, linkStr, position);
-          _this2.linkinput.style.display = 'none';
+        var position = _this.range ? _this.range.startOffset : 0;
+        if (_this.rangeElm.nodeName === 'P') {
+          _this.rangeElm.innerHTML = _domCore2.default.insertStr(_this.rangeElm.innerText, linkStr, position);
+          _this.linkinput.style.display = 'none';
         }
       }, false);
       // 取消
       cancelBtn.addEventListener('click', function () {
-        _this2.linkinput.style.display = 'none';
+        _this.linkinput.style.display = 'none';
       }, false);
 
       // 链接输入框
       linkInputs[0].addEventListener('keyup', function (e) {
         var val = e.target.value;
         if (_util2.default.isHttpUrl(val)) {
-          if (_util2.default.hasClass('disabled', submitBtn)) {
-            _util2.default.removeClass('disabled', submitBtn);
+          if (submitBtn.hasClass('disabled')) {
+            submitBtn.removeClass('disabled');
           }
         }
       }, false);
@@ -402,13 +397,11 @@ var ZxEditor = function (_DomCore) {
     value: function _textColorHandle(el) {
       var value = el.getAttribute('data-color');
       this.rangeElm.style.color = value;
-      _util2.default.addClass('active', el);
-      var siblings = this.siblings(el, 'active');
-      if (siblings) {
-        for (var i = 0; i < siblings.length; i++) {
-          _util2.default.removeClass('active', siblings[i]);
-        }
-      }
+      el.addClass('active');
+      var siblings = _domCore2.default.siblings(el, 'active') || [];
+      siblings.forEach(function (item) {
+        item.removeClass('active');
+      });
       this._setRangePosition();
     }
 
@@ -421,6 +414,8 @@ var ZxEditor = function (_DomCore) {
   }, {
     key: '_tagnameHandle',
     value: function _tagnameHandle(el) {
+      var _this2 = this;
+
       var TAG_ITEMS = {
         'big': 'h2',
         'small': 'h4',
@@ -434,12 +429,10 @@ var ZxEditor = function (_DomCore) {
       if (el.querySelector('.checked') === null) {
         this._appendCheckedIcon(el);
         // 去掉兄弟节点上的选中符号
-        var siblings = this.siblings(el);
-        if (siblings) {
-          for (var i = 0; i < siblings.length; i++) {
-            this._removeCheckedIcon(siblings[i]);
-          }
-        }
+        var siblings = _domCore2.default.siblings(el) || [];
+        siblings.forEach(function (item) {
+          _this2._removeCheckedIcon(item);
+        });
         // 给当前焦点元素节点，添加样式
         var tag = 'p';
         var tagMatch = className.match(/\b(\w+?)-hook\b/);
@@ -449,8 +442,8 @@ var ZxEditor = function (_DomCore) {
           } catch (e) {}
         }
         // this.log(this.range)
-        var newElm = this.setTagName(this.rangeElm, tag);
-        this.insertAfter(this.rangeElm, newElm);
+        var newElm = _domCore2.default.changeTagName(this.rangeElm, tag);
+        _domCore2.default.insertAfter(this.rangeElm, newElm);
         this.editbox.removeChild(this.rangeElm);
         this.rangeElm = newElm;
         this._setRangePosition(this.rangeElm);
@@ -465,39 +458,39 @@ var ZxEditor = function (_DomCore) {
   }, {
     key: '_initTextStyleCheck',
     value: function _initTextStyleCheck() {
+      var _this3 = this;
+
       if (!this.textstyleIsShow) return;
       // 初始化节点类型 ****************************************
       // 检查当前焦点DOM节点类型
       var tagName = this.rangeElm.tagName.toLowerCase();
       // this.log('this.rangeElm.tagName: ' + tagName)
-      var tagList = this.textstyle.querySelectorAll('.tag-item');
-      for (var i = 0; i < tagList.length; i++) {
-        var tag = tagList[i].getAttribute('data-tag');
+      var tagList = this.textstyle.querySelectorAll('.tag-item') || [];
+      tagList.forEach(function (item) {
+        var tag = item.getAttribute('data-tag');
         if (tag === tagName) {
-          this._appendCheckedIcon(tagList[i]);
+          _this3._appendCheckedIcon(item);
         } else {
-          this._removeCheckedIcon(tagList[i]);
+          _this3._removeCheckedIcon(item);
         }
-      }
+      });
 
       // 初始化文字颜色选 ****************************************
       var color = this.rangeElm.style.color;
-      // this.log('this.rangeElm.style.color: ' + color)
       if (/rgb\(/.test(color)) {
         // 十进制转十六进制
         color = _util2.default.rgbToHex(color);
-        // this.log('util.rgbToHex(color)' + color)
       }
       // 获取颜色选项节点列表
-      var colorList = this.textstyle.querySelectorAll('.color-item');
-      for (var _i = 0; _i < colorList.length; _i++) {
-        var _tag = colorList[_i].getAttribute('data-color');
-        if (_tag === color) {
-          _util2.default.addClass('active', colorList[_i]);
+      var colorList = this.textstyle.querySelectorAll('.color-item') || [];
+      colorList.forEach(function (item) {
+        var tag = item.getAttribute('data-color');
+        if (tag === color) {
+          item.addClass('active');
         } else {
-          _util2.default.removeClass('active', colorList[_i]);
+          item.removeClass('active');
         }
-      }
+      });
       // 标记焦点位置
       this._setRangePosition();
     }
@@ -513,7 +506,7 @@ var ZxEditor = function (_DomCore) {
     value: function _appendCheckedIcon(el) {
       if (el.querySelector('.checked')) return;
       // 字体样式选中符号
-      var ICON_CHECKED = this.create('i', { class: 'checked' });
+      var ICON_CHECKED = _domCore2.default.create('i', { class: 'checked' });
       el.appendChild(ICON_CHECKED);
     }
 
@@ -553,17 +546,17 @@ var ZxEditor = function (_DomCore) {
   }, {
     key: 'addImage',
     value: function addImage(src) {
-      var _this3 = this;
+      var _this4 = this;
 
       var id = this._randId('img_');
-      var img = this.create('img', { src: src, width: '100%', height: 'auto', id: id });
+      var img = _domCore2.default.create('img', { src: src, width: '100%', height: 'auto', id: id });
       var p = null;
-      if (this.isInnerEmpty(this.rangeElm)) {
+      if (_domCore2.default.isInnerEmpty(this.rangeElm)) {
         p = this.rangeElm;
         p.innerHTML = '';
       } else {
-        p = this.create('p');
-        this.insertAfter(this.rangeElm, p);
+        p = _domCore2.default.create('p');
+        _domCore2.default.insertAfter(this.rangeElm, p);
         this.rangeElm = p;
       }
       p.appendChild(img);
@@ -578,7 +571,7 @@ var ZxEditor = function (_DomCore) {
       }
       // 300毫秒后，文档高度跳转至焦点位置
       var timer = setTimeout(function () {
-        _this3.scrollToRange();
+        _this4.scrollToRange();
         if (timer) clearTimeout(timer);
       }, 300);
     }
@@ -598,7 +591,7 @@ var ZxEditor = function (_DomCore) {
       this.rangeOffset = this.range.startOffset;
       // 当前Node
       var currentNode = this.range.endContainer;
-      this.rangeElm = this.closest(currentNode, this.editbox);
+      this.rangeElm = _domCore2.default.closest(currentNode, this.editbox);
     }
 
     /**
@@ -610,7 +603,7 @@ var ZxEditor = function (_DomCore) {
   }, {
     key: '_setRangePosition',
     value: function _setRangePosition(el) {
-      var _this4 = this;
+      var _this5 = this;
 
       if (this.selection === null) {
         this.selection = getSelection();
@@ -622,7 +615,7 @@ var ZxEditor = function (_DomCore) {
       }
       // 光标移动到到原来的位置加上新内容的长度
       if (el) {
-        this.range.setStart(this.getTextNode(el), this.rangeOffset);
+        this.range.setStart(_domCore2.default.getTextNode(el), this.rangeOffset);
       }
       // 光标开始和光标结束重叠
       this.range.collapse(true);
@@ -631,9 +624,9 @@ var ZxEditor = function (_DomCore) {
       // 延时执行，键盘自动收起后再触发focus
       this.rangeTimer = setTimeout(function () {
         // 插入新的光标对象
-        _this4.selection.addRange(_this4.range);
-        if (_this4.rangeTimer) clearTimeout(_this4.rangeTimer);
-        _this4.rangeTimer = null;
+        _this5.selection.addRange(_this5.range);
+        if (_this5.rangeTimer) clearTimeout(_this5.rangeTimer);
+        _this5.rangeTimer = null;
       }, 100);
     }
 
@@ -645,7 +638,7 @@ var ZxEditor = function (_DomCore) {
   }, {
     key: '_insertEmptyParagraph',
     value: function _insertEmptyParagraph() {
-      var p = this.create('p');
+      var p = _domCore2.default.create('p');
       p.innerHTML = '<br>';
       this.editbox.appendChild(p);
       this.rangeElm = p;
@@ -661,8 +654,7 @@ var ZxEditor = function (_DomCore) {
     key: 'scrollToTop',
     value: function scrollToTop() {
       var winHeight = window.innerHeight;
-      // this.log('scrollHeight: ' + h)
-      this.scrollTo(0, this.scrollHeight() - winHeight);
+      _scroll2.default.to(0, _scroll2.default.height() - winHeight);
     }
 
     /**
@@ -673,17 +665,16 @@ var ZxEditor = function (_DomCore) {
     key: 'scrollToRange',
     value: function scrollToRange() {
       var winHeight = window.innerHeight;
-      var scrollTop = this.scrollTop();
+      var scrollTop = _scroll2.default.top();
       var rect = this.rangeElm.getBoundingClientRect();
       // fixed(ToolBar 或者 TEXT样式设置)层的高度
       var fixedHeight = this.textstyleIsShow ? TEXT_STYLE_HEIGHT : TOOL_BAR_HEIGHT;
       var scrollPostion = rect.bottom - (winHeight - fixedHeight);
-      // this.query('#Positin').innerHTML = winHeight + '-' + rect.bottom + '-' + scrollTop + '-' + fixedHeight + '-' + scrollPostion
 
       if (scrollPostion > 0) {
-        this.scrollTo(0, scrollTop + scrollPostion);
+        _scroll2.default.to(0, scrollTop + scrollPostion);
       } else if (rect.top < 0) {
-        this.scrollTo(0, scrollTop + rect.top);
+        _scroll2.default.to(0, scrollTop + rect.top);
       }
     }
 
@@ -704,7 +695,7 @@ var ZxEditor = function (_DomCore) {
         type = RegExp.$1;
         onlyData = RegExp.$2;
       } else {
-        this.error('toBlobData(data), params\'data is not base64 data!');
+        (0, _debug.error)('toBlobData(data), params\'data is not base64 data!');
         return null;
       }
 
@@ -768,7 +759,7 @@ var ZxEditor = function (_DomCore) {
   }]);
 
   return ZxEditor;
-}(_domCore2.default);
+}();
 
 exports.ZxEditor = ZxEditor;
 
@@ -1371,18 +1362,17 @@ module.exports = function (css) {
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/**
- * Create by zx1984
- * 2018/1/24 0024.
- * https://github.com/zx1984
- */
-
 
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var util = {
+/**
+ * Create by zx1984
+ * 2018/1/24 0024.
+ * https://github.com/zx1984
+ */
+exports.default = {
   // 转换为整数
   int: function int(n) {
     var num = parseInt(n);
@@ -1390,42 +1380,6 @@ var util = {
   },
   trim: function trim(str) {
     return str ? str.toString().replace(/^\s+|\s+$/g, '') : '';
-  },
-
-  // 添加样式
-  addClass: function addClass(clsName, el) {
-    var className = this.trim(el.className).replace(/\s{2,}/g, ' ');
-    var reg = new RegExp('\\b' + clsName + '\\b');
-    if (!reg.test(className)) {
-      el.className = className + ' ' + clsName;
-    }
-  },
-
-  // 删除样式
-  removeClass: function removeClass(clsName, el) {
-    var className = this.trim(el.className).replace(/\s{2,}/g, ' ');
-    var reg = new RegExp('\\b(' + clsName + ')\\b');
-    if (reg.test(className)) {
-      el.className = className.replace(RegExp.$1, '');
-    }
-  },
-
-  // 替换className
-  changeClass: function changeClass(source) {
-    var target = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-    var el = arguments[2];
-
-    var className = this.trim(el.className).replace(/\s{2,}/g, ' ');
-    var reg = new RegExp('\\b(' + source + ')\\b');
-    if (source && reg.test(className)) {
-      el.className = className.replace(RegExp.$1, target);
-    } else if (target) {
-      this.addClass(target, el);
-    }
-  },
-  hasClass: function hasClass(clsname, el) {
-    var reg = new RegExp('\\b(' + clsname + ')\\b');
-    return clsname && reg.test(el.className);
   },
 
   // 十进制转十六进制
@@ -1462,8 +1416,6 @@ var util = {
   }
 };
 
-exports.default = util;
-
 /***/ }),
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -1474,308 +1426,308 @@ exports.default = util;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 /**
  * Create by zx1984
  * 2018/1/23 0023.
  * https://github.com/zx1984
  */
+// 添加样式
+HTMLElement.prototype.addClass = function (className) {
+  this.classList.add(className);
+};
+// 删除样式
+HTMLElement.prototype.removeClass = function (className) {
+  this.classList.remove(className);
+};
 
-var DomCore = function () {
-  // constructor
-  function DomCore() {
-    _classCallCheck(this, DomCore);
-  }
+// 包含某个样式
+HTMLElement.prototype.hasClass = function (className) {
+  var reg = new RegExp('\\b(' + className + ')\\b');
+  return className && reg.test(this.className);
+};
 
+exports.default = {
   /**
    * 创建DOM元素
    * @param tag 标签名称
    * @param opts 标签属性
    * @returns {Element}
    */
+  create: function create() {
+    var tag = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'div';
+    var opts = arguments[1];
 
-
-  _createClass(DomCore, [{
-    key: 'create',
-    value: function create() {
-      var tag = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'div';
-      var opts = arguments[1];
-
-      var elm = document.createElement(tag);
-      if (opts && opts instanceof Object) {
-        for (var key in opts) {
+    var elm = document.createElement(tag);
+    if (opts && opts instanceof Object) {
+      for (var key in opts) {
+        if (opts.hasOwnProperty(key)) {
           elm.setAttribute(key, opts[key]);
         }
       }
-      return elm;
+    }
+    return elm;
+  },
+
+
+  /**
+   * 设置已有DOM节点的标签（实际是改变DOM节点标签）
+   * @param oldElm DOM节点对象
+   * @param newTagName 新标签名称
+   * @returns {Element}
+   */
+  changeTagName: function changeTagName(oldElm, newTagName) {
+    if (!newTagName || oldElm.nodeName === newTagName.toUpperCase()) {
+      return oldElm;
+    }
+    // 新的dom对象
+    var el = this.create(newTagName);
+    // 获取元素class/id/style属性，并赋予新DOM对象
+    var className = oldElm.className;
+    var id = oldElm.id;
+    // 是否有自定义style样式
+    var style = oldElm.getAttribute('style');
+
+    // innerHTML
+    // let innerHTML = oldElm.innerHTML
+    // innerText
+    var innerText = oldElm.innerText;
+    // blockquote
+    if (newTagName === 'blockquote') {
+      innerText = '<p style="color: inherit">' + innerText + '</p>';
+    } else if (newTagName === 'ul') {
+      innerText = '<li style="color: inherit">' + innerText + '</li>';
     }
 
-    /**
-     * 设置已有DOM节点的标签（实际是改变DOM节点标签）
-     * @param oldElm DOM节点对象
-     * @param newTagName 新标签名称
-     * @returns {Element}
-     */
+    if (className) el.className = className;
+    if (id) el.id = id;
+    if (style) el.setAttribute('style', style);
 
-  }, {
-    key: 'setTagName',
-    value: function setTagName(oldElm, newTagName) {
-      if (!newTagName || oldElm.nodeName === newTagName.toUpperCase()) {
-        return oldElm;
-      }
-      // 新的dom对象
-      var el = this.create(newTagName);
-      // 获取元素class/id/style属性，并赋予新DOM对象
-      var className = oldElm.className;
-      var id = oldElm.id;
-      // 是否有自定义style样式
-      var style = oldElm.getAttribute('style');
+    el.innerHTML = innerText;
+    return el;
+  },
 
-      // innerHTML
-      // let innerHTML = oldElm.innerHTML
-      // innerText
-      var innerText = oldElm.innerText;
-      // blockquote
-      if (newTagName === 'blockquote') {
-        innerText = '<p style="color: inherit">' + innerText + '</p>';
-      } else if (newTagName === 'ul') {
-        innerText = '<li style="color: inherit">' + innerText + '</li>';
-      }
 
-      if (className) el.className = className;
-      if (id) el.id = id;
-      if (style) el.setAttribute('style', style);
-
-      el.innerHTML = innerText;
-      return el;
-    }
-
-    /**
-     * 查找当前元素节点(textNode、ElemNode等)，在context内的父根节点
-     * @param currentNode 当前DOM节点
-     * @param targetParent
-     * @returns {*}
-     */
-
-  }, {
-    key: 'closest',
-    value: function closest(currentNode, context) {
-      var parentNode = void 0;
-      do {
-        parentNode = currentNode.parentNode;
-        if (parentNode === context) {
-          parentNode = null;
-          break;
-        } else {
-          currentNode = parentNode;
-        }
-      } while (parentNode);
-      return currentNode;
-    }
-
-    /**
-     * 判断元素innerText是否为空
-     * 如果元素内存在hr分割线，则不为空
-     * @param el
-     * @returns {boolean}
-     */
-
-  }, {
-    key: 'isInnerEmpty',
-    value: function isInnerEmpty(el) {
-      return !el.innerHTML || el.innerHTML === '<br>';
-      // return !el.innerText.replace(/&nbsp;|\s/ig, '') && !el.querySelectorAll('hr')[0] && !el.querySelectorAll('img')[0]
-    }
-
-    /**
-     * 对象是否为HTML元素节点对象
-     * @param obj
-     * @returns {Function}
-     */
-    // isHTMLElement (obj) {
-    //   return (typeof HTMLElement === 'object') ?
-    //     function (obj) {
-    //       return obj instanceof HTMLElement
-    //     } :
-    //     function (obj) {
-    //       return obj && typeof obj === 'object' && obj.nodeType === 1 && typeof obj.nodeName === 'string'
-    //     }
-    // }
-
-    /**
-     * dom节点选择器
-     * @param selector 元素id、class、属性等
-     * @param context 作用域，默认为documet
-     * @returns {*}
-     */
-
-  }, {
-    key: 'query',
-    value: function query(selector) {
-      var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
-
-      return context.querySelector(selector);
-    }
-  }, {
-    key: 'queryAll',
-    value: function queryAll(selector) {
-      var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
-
-      return context.querySelectorAll(selector);
-    }
-
-    /**
-     * 在当前元素节点el后插入新节点newNode
-     * @param el 当前元素节点
-     * @param newNode 要插入的新元素节点
-     */
-
-  }, {
-    key: 'insertAfter',
-    value: function insertAfter(el, newNode) {
-      var nextNode = el.nextElementSibling;
-      var parentNode = el.parentNode;
-      if (nextNode === null) {
-        parentNode.appendChild(newNode);
+  /**
+   * 查找当前元素节点(textNode、ElemNode等)，在context内的父根节点
+   * @param currentNode 当前DOM节点
+   * @param targetParent
+   * @returns {*}
+   */
+  closest: function closest(currentNode, context) {
+    var parentNode = void 0;
+    do {
+      parentNode = currentNode.parentNode;
+      if (parentNode === context) {
+        parentNode = null;
+        break;
       } else {
-        parentNode.insertBefore(newNode, nextNode);
+        currentNode = parentNode;
       }
+    } while (parentNode);
+    return currentNode;
+  },
+
+
+  /**
+   * 判断元素innerText是否为空
+   * 如果元素内存在hr分割线，则不为空
+   * @param el
+   * @returns {boolean}
+   */
+  isInnerEmpty: function isInnerEmpty(el) {
+    return !el.innerHTML || el.innerHTML === '<br>';
+    // return !el.innerText.replace(/&nbsp;|\s/ig, '') && !el.querySelectorAll('hr')[0] && !el.querySelectorAll('img')[0]
+  },
+
+
+  /**
+   * 对象是否为HTML元素节点对象
+   * @param obj
+   * @returns {Function}
+   */
+  // isHTMLElement (obj) {
+  //   return (typeof HTMLElement === 'object') ?
+  //     function (obj) {
+  //       return obj instanceof HTMLElement
+  //     } :
+  //     function (obj) {
+  //       return obj && typeof obj === 'object' && obj.nodeType === 1 && typeof obj.nodeName === 'string'
+  //     }
+  // },
+
+  /**
+   * dom节点选择器
+   * @param selector 元素id、class、属性等
+   * @param context 作用域，默认为documet
+   * @returns {*}
+   */
+  query: function query(selector) {
+    var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
+
+    return context.querySelector(selector);
+  },
+  queryAll: function queryAll(selector) {
+    var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
+
+    return context.querySelectorAll(selector);
+  },
+
+
+  /**
+   * 在当前元素节点el后插入新节点newNode
+   * @param el 当前元素节点
+   * @param newNode 要插入的新元素节点
+   */
+  insertAfter: function insertAfter(el, newNode) {
+    var nextNode = el.nextElementSibling;
+    var parentNode = el.parentNode;
+    if (nextNode === null) {
+      parentNode.appendChild(newNode);
+    } else {
+      parentNode.insertBefore(newNode, nextNode);
     }
+  },
 
-    /**
-     * 查找元素节点el的兄弟节点
-     * @param el
-     * @param 可选参数，className兄弟节点包含的样式名
-     * @returns {*}
-     */
 
-  }, {
-    key: 'siblings',
-    value: function siblings(el, className) {
-      var arr = [];
-      var elmNodes = [];
-      var siblings = el.parentNode.childNodes;
-      // 只取元素节点
-      for (var i = 0; i < siblings.length; i++) {
-        if (siblings[i].nodeType === 1 && siblings[i] !== el) {
-          elmNodes.push(siblings[i]);
-        }
+  /**
+   * 查找元素节点el的兄弟节点
+   * @param el
+   * @param 可选参数，className兄弟节点包含的样式名
+   * @returns {*}
+   */
+  siblings: function siblings(el, className) {
+    var arr = [];
+    var elmNodes = [];
+    var siblings = el.parentNode.childNodes;
+    // 只取元素节点
+    siblings.forEach(function (item) {
+      if (item.nodeType === 1 && item !== el) {
+        elmNodes.push(item);
       }
+    });
 
-      if (className) {
-        var reg = new RegExp('\\b(' + className + ')\\b');
-        for (var _i = 0; _i < elmNodes.length; _i++) {
-          if (reg.test(elmNodes[_i].className)) {
-            arr.push(elmNodes[_i]);
-          }
+    if (className) {
+      var reg = new RegExp('\\b(' + className + ')\\b');
+      elmNodes.forEach(function (item) {
+        if (reg.test(item.className)) {
+          arr.push(item);
         }
+      });
+    } else {
+      arr = elmNodes;
+    }
+    return arr.length ? arr : null;
+  },
+
+
+  /**
+   * 创建a标签链接字符串
+   * @param url 链接地址
+   * @param name 链接名称
+   * @returns {string}
+   */
+  createLinkStr: function createLinkStr(url, name) {
+    if (!url) return '';
+    url = url + '';
+    name = name || (url.length > 20 ? url.substr(0, 20) + '...' : url);
+    return '<a href="' + url + '" target="_blank" alt="' + name + '">' + name + '</a>';
+  },
+
+
+  /**
+   * 往字符串中插入字符串
+   * @param str 原字符串
+   * @param insertString 需要插入的字符串
+   * @param position 插入位置
+   * @returns {string}
+   */
+  insertStr: function insertStr(str, insertString, position) {
+    return str.substring(0, position) + insertString + str.substring(position);
+  },
+
+
+  /**
+   * 元素后面插入分割线
+   * @param el
+   */
+  insertHr: function insertHr(el) {
+    var p = this.isInnerEmpty(el) ? el : this.create('p');
+    p.innerHTML = '<hr>';
+    this.insertAfter(el, p);
+  },
+
+
+  // 获取当前元素节点最近的文本节点
+  getTextNode: function getTextNode(el) {
+    while (el && el.nodeType === 1) {
+      // 当el.childNodes[0] == <br>时，不能继续获取childNode
+      if (el.childNodes[0]) {
+        el = el.childNodes[0];
       } else {
-        arr = elmNodes;
-      }
-      return arr.length ? arr : null;
-    }
-
-    /**
-     * 创建a标签链接字符串
-     * @param url 链接地址
-     * @param name 链接名称
-     * @returns {string}
-     */
-
-  }, {
-    key: 'createLinkStr',
-    value: function createLinkStr(url, name) {
-      if (!url) return '';
-      name = name || (url.toString().length > 20 ? url.toString().substr(0, 20) + '...' : url.toString());
-      return '<a href="' + url + '" target="_blank" alt="' + name + '">' + name + '</a>';
-    }
-
-    /**
-     * 往字符串中插入字符串
-     * @param str 原字符串
-     * @param insertString 需要插入的字符串
-     * @param position 插入位置
-     * @returns {string}
-     */
-
-  }, {
-    key: 'insertStr',
-    value: function insertStr(str, insertString, position) {
-      return str.substring(0, position) + insertString + str.substring(position);
-    }
-
-    /**
-     * 元素后面插入分割线
-     * @param el
-     */
-
-  }, {
-    key: 'insertHr',
-    value: function insertHr(el) {
-      var p = this.isInnerEmpty(el) ? el : this.create('p');
-      p.innerHTML = '<hr>';
-      this.insertAfter(el, p);
-    }
-  }, {
-    key: 'scrollTop',
-    value: function scrollTop() {
-      return window.pageYOffset !== undefined ? window.pageYOffset : document.documentElement.scrollTop || document.body.scrollTop;
-    }
-  }, {
-    key: 'scrollHeight',
-    value: function scrollHeight() {
-      return (document.documentElement || document.body).scrollHeight;
-    }
-  }, {
-    key: 'scrollTo',
-    value: function scrollTo(x, y) {
-      (document.documentElement || document.body.parentNode || document.body).scrollTo(x, y);
-    }
-  }, {
-    key: 'scrollLeft',
-    value: function scrollLeft() {
-      return window.pageXOffset !== undefined ? window.pageXOffset : (document.documentElement || document.body.parentNode || document.body).scrollLeft;
-    }
-
-    // 获取当前元素节点最近的文本节点
-
-  }, {
-    key: 'getTextNode',
-    value: function getTextNode(el) {
-      while (el && el.nodeType === 1) {
-        // 当el.childNodes[0] == <br>时，不能继续获取childNode
-        if (el.childNodes[0]) {
-          el = el.childNodes[0];
-        } else {
-          break;
-        }
-      }
-      return el;
-    }
-  }, {
-    key: 'log',
-    value: function log() {
-      for (var i = 0; i < arguments.length; i++) {
-        console.log(arguments[i]);
+        break;
       }
     }
-  }, {
-    key: 'error',
-    value: function error() {
-      for (var i = 0; i < arguments.length; i++) {
-        console.error(arguments[i]);
-      }
-    }
-  }]);
+    return el;
+  }
+};
 
-  return DomCore;
-}();
+/***/ }),
+/* 8 */
+/***/ (function(module, exports, __webpack_require__) {
 
-exports.default = DomCore;
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/**
+ * Created by zx1984 2018/3/21
+ * https://github.com/zx1984
+ */
+exports.default = {
+  top: function top() {
+    return window.pageYOffset !== undefined ? window.pageYOffset : document.documentElement.scrollTop || document.body.scrollTop;
+  },
+  height: function height() {
+    return (document.documentElement || document.body).scrollHeight;
+  },
+  to: function to(x, y) {
+    (document.documentElement || document.body.parentNode || document.body).scrollTo(x, y);
+  },
+  left: function left() {
+    return window.pageXOffset !== undefined ? window.pageXOffset : (document.documentElement || document.body.parentNode || document.body).scrollLeft;
+  }
+};
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.log = log;
+exports.error = error;
+/**
+ * Created by zx1984 2018/3/21
+ * https://github.com/zx1984
+ */
+
+function log() {
+  for (var i = 0; i < arguments.length; i++) {
+    console.log(arguments[i]);
+  }
+}
+
+function error() {
+  for (var i = 0; i < arguments.length; i++) {
+    console.error(arguments[i]);
+  }
+}
 
 /***/ })
 /******/ ]);

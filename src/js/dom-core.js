@@ -3,11 +3,22 @@
  * 2018/1/23 0023.
  * https://github.com/zx1984
  */
+// 添加样式
+HTMLElement.prototype.addClass = function (className) {
+  this.classList.add(className)
+}
+// 删除样式
+HTMLElement.prototype.removeClass = function (className) {
+  this.classList.remove(className)
+}
 
-class DomCore {
-  // constructor
-  constructor () {}
+// 包含某个样式
+HTMLElement.prototype.hasClass = function (className) {
+  let reg = new RegExp(`\\b(${className})\\b`)
+  return className && reg.test(this.className)
+}
 
+export default  {
   /**
    * 创建DOM元素
    * @param tag 标签名称
@@ -18,11 +29,13 @@ class DomCore {
     let elm = document.createElement(tag)
     if (opts && opts instanceof Object) {
       for (let key in opts) {
-        elm.setAttribute(key, opts[key])
+        if (opts.hasOwnProperty(key)) {
+          elm.setAttribute(key, opts[key])
+        }
       }
     }
     return elm
-  }
+  },
 
   /**
    * 设置已有DOM节点的标签（实际是改变DOM节点标签）
@@ -30,7 +43,7 @@ class DomCore {
    * @param newTagName 新标签名称
    * @returns {Element}
    */
-  setTagName (oldElm, newTagName) {
+  changeTagName (oldElm, newTagName) {
     if (!newTagName || oldElm.nodeName === newTagName.toUpperCase()) {
       return oldElm
     }
@@ -59,7 +72,7 @@ class DomCore {
 
     el.innerHTML = innerText
     return el
-  }
+  },
 
   /**
    * 查找当前元素节点(textNode、ElemNode等)，在context内的父根节点
@@ -79,7 +92,7 @@ class DomCore {
       }
     } while (parentNode)
     return currentNode
-  }
+  },
 
   /**
    * 判断元素innerText是否为空
@@ -90,7 +103,7 @@ class DomCore {
   isInnerEmpty (el) {
     return !el.innerHTML || el.innerHTML === '<br>'
     // return !el.innerText.replace(/&nbsp;|\s/ig, '') && !el.querySelectorAll('hr')[0] && !el.querySelectorAll('img')[0]
-  }
+  },
 
   /**
    * 对象是否为HTML元素节点对象
@@ -105,7 +118,7 @@ class DomCore {
   //     function (obj) {
   //       return obj && typeof obj === 'object' && obj.nodeType === 1 && typeof obj.nodeName === 'string'
   //     }
-  // }
+  // },
 
   /**
    * dom节点选择器
@@ -115,11 +128,11 @@ class DomCore {
    */
   query (selector, context = document) {
     return context.querySelector(selector)
-  }
+  },
 
   queryAll (selector, context = document) {
     return context.querySelectorAll(selector)
-  }
+  },
 
   /**
    * 在当前元素节点el后插入新节点newNode
@@ -134,7 +147,7 @@ class DomCore {
     } else {
       parentNode.insertBefore(newNode, nextNode)
     }
-  }
+  },
 
   /**
    * 查找元素节点el的兄弟节点
@@ -147,24 +160,24 @@ class DomCore {
     let elmNodes = []
     const siblings = el.parentNode.childNodes
     // 只取元素节点
-    for (let i = 0; i < siblings.length; i++) {
-      if (siblings[i].nodeType === 1 && siblings[i] !== el) {
-        elmNodes.push(siblings[i])
+    siblings.forEach((item) => {
+      if (item.nodeType === 1 && item !== el) {
+        elmNodes.push(item)
       }
-    }
+    })
 
     if (className) {
       let reg = new RegExp(`\\b(${className})\\b`)
-      for (let i = 0; i < elmNodes.length; i++) {
-        if (reg.test(elmNodes[i].className)) {
-          arr.push(elmNodes[i])
+      elmNodes.forEach((item) => {
+        if (reg.test(item.className)) {
+          arr.push(item)
         }
-      }
+      })
     } else {
       arr = elmNodes
     }
     return arr.length ? arr : null
-  }
+  },
 
   /**
    * 创建a标签链接字符串
@@ -174,9 +187,10 @@ class DomCore {
    */
   createLinkStr (url, name) {
     if (!url) return ''
-    name = name || (url.toString().length > 20 ? url.toString().substr(0, 20) + '...' : url.toString())
+    url = url + ''
+    name = name || (url.length > 20 ? url.substr(0, 20) + '...' : url)
     return `<a href="${url}" target="_blank" alt="${name}">${name}</a>`
-  }
+  },
 
   /**
    * 往字符串中插入字符串
@@ -187,7 +201,7 @@ class DomCore {
    */
   insertStr (str, insertString, position) {
     return str.substring(0, position) + insertString + str.substring(position)
-  }
+  },
 
   /**
    * 元素后面插入分割线
@@ -197,27 +211,7 @@ class DomCore {
     let p = this.isInnerEmpty(el) ? el : this.create('p')
     p.innerHTML = '<hr>'
     this.insertAfter(el, p)
-  }
-
-  scrollTop () {
-    return (window.pageYOffset !== undefined)
-      ? window.pageYOffset
-      : (document.documentElement.scrollTop || document.body.scrollTop)
-  }
-
-  scrollHeight () {
-    return (document.documentElement || document.body).scrollHeight
-  }
-
-  scrollTo (x, y) {
-    (document.documentElement || document.body.parentNode || document.body).scrollTo(x, y)
-  }
-
-  scrollLeft () {
-    return (window.pageXOffset !== undefined)
-      ? window.pageXOffset
-      : (document.documentElement || document.body.parentNode || document.body).scrollLeft
-  }
+  },
 
   // 获取当前元素节点最近的文本节点
   getTextNode (el) {
@@ -231,18 +225,4 @@ class DomCore {
     }
     return el
   }
-
-  log () {
-    for (let i = 0; i < arguments.length; i++) {
-      console.log(arguments[i])
-    }
-  }
-
-  error () {
-    for (let i = 0; i < arguments.length; i++) {
-      console.error(arguments[i])
-    }
-  }
 }
-
-export default DomCore

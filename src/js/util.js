@@ -3,10 +3,7 @@
  * 2018/1/24 0024.
  * https://github.com/zx1984
  */
-
-'use strict'
-
-const util = {
+export default {
   // 转换为整数
   int (n) {
     let num = parseInt(n)
@@ -14,36 +11,6 @@ const util = {
   },
   trim (str) {
     return str ? str.toString().replace(/^\s+|\s+$/g, '') : ''
-  },
-  // 添加样式
-  addClass (clsName, el) {
-    let className = this.trim(el.className).replace(/\s{2,}/g, ' ')
-    let reg = new RegExp(`\\b${clsName}\\b`)
-    if (!reg.test(className)) {
-      el.className = className + ' ' + clsName
-    }
-  },
-  // 删除样式
-  removeClass (clsName, el) {
-    let className = this.trim(el.className).replace(/\s{2,}/g, ' ')
-    let reg = new RegExp(`\\b(${clsName})\\b`)
-    if (reg.test(className)) {
-      el.className = className.replace(RegExp.$1, '')
-    }
-  },
-  // 替换className
-  changeClass (source, target = '', el) {
-    let className = this.trim(el.className).replace(/\s{2,}/g, ' ')
-    let reg = new RegExp(`\\b(${source})\\b`)
-    if (source && reg.test(className)) {
-      el.className = className.replace(RegExp.$1, target)
-    } else if (target) {
-      this.addClass(target, el)
-    }
-  },
-  hasClass (clsname, el) {
-    let reg = new RegExp(`\\b(${clsname})\\b`)
-    return clsname && reg.test(el.className)
   },
   // 十进制转十六进制
   toHex (num) {
@@ -76,5 +43,3 @@ const util = {
     return url && /^(http|https):\/\//i.test(url.toString())
   }
 }
-
-export default util

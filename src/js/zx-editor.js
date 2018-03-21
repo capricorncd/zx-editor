@@ -5,7 +5,9 @@
  */
 import '../css/zx-editor.styl'
 import util from './util'
-import DomCore from './dom-core'
+import dom from './dom-core'
+import scroll from './scroll'
+import { log, error } from './debug'
 
 // COLOR
 const COLORS = {
@@ -24,10 +26,9 @@ const TOOL_BAR_HEIGHT = 48 + 10
 const TEXT_STYLE_HEIGHT = 310 + 10
 
 // ZxEditor
-class ZxEditor extends DomCore {
+class ZxEditor {
   // constructor
   constructor (selecotor = 'body') {
-    super()
     this.editor = null
     this.toolbar = null
     this.editbox = null
@@ -53,14 +54,14 @@ class ZxEditor extends DomCore {
    */
   _initDoms (selecotor) {
     // 外部容器
-    const outerWrapper = this.query(selecotor)
+    const outerWrapper = dom.query(selecotor)
 
-    this.editor = this.create('div', {class: 'zxeditor-container'})
-    this.editbox = this.create('div', {class: 'zxeditor-content-wrapper', contenteditable: true, style: `margin-bottom: ${TOOL_BAR_HEIGHT}px`})
-    this.toolbar = this.create('div', {class: 'zxeditor-toolbar-wrapper'})
-    this.textstyle = this.create('div', {class: 'zxeditor-textstyle-wrapper', style: 'display: none'})
+    this.editor = dom.create('div', {class: 'zxeditor-container'})
+    this.editbox = dom.create('div', {class: 'zxeditor-content-wrapper', contenteditable: true, style: `margin-bottom: ${TOOL_BAR_HEIGHT}px`})
+    this.toolbar = dom.create('div', {class: 'zxeditor-toolbar-wrapper'})
+    this.textstyle = dom.create('div', {class: 'zxeditor-textstyle-wrapper', style: 'display: none'})
 
-    this.linkinput = this.create('div', {class: 'zxeditor-linkinput-wrapper', style: 'display: none'})
+    this.linkinput = dom.create('div', {class: 'zxeditor-linkinput-wrapper', style: 'display: none'})
 
     this.toolbar.innerHTML = `
       <div class="toolbar-item pic-hook">图片</div>
@@ -127,7 +128,7 @@ class ZxEditor extends DomCore {
    */
   _initContentRang () {
     if (!this.editbox.innerHTML) {
-      const p = this.create('p')
+      const p = dom.create('p')
       p.innerHTML = '<br>'
       this.rangeElm = p
       this.editbox.appendChild(p)
@@ -140,7 +141,6 @@ class ZxEditor extends DomCore {
    * @private
    */
   _textstyleShow () {
-    // util.changeClass('slide-out', 'slide-in', this.textstyle)
     this.textstyle.style.display = 'block'
     this.editbox.style.marginBottom = TEXT_STYLE_HEIGHT + 'px'
     this.textstyleIsShow = true
@@ -153,7 +153,6 @@ class ZxEditor extends DomCore {
    * @private
    */
   _textstyleHide () {
-    // util.changeClass('slide-in', 'slide-out', this.textstyle)
     this.textstyle.style.display = 'none'
     this.editbox.style.marginBottom = TOOL_BAR_HEIGHT + 'px'
     this.textstyleIsShow = false
@@ -199,12 +198,12 @@ class ZxEditor extends DomCore {
       this._initContentRang()
 
       // 文字
-      if (util.hasClass('text-hook', el)) {
+      if (el.hasClass('text-hook')) {
         this._textstyleShow()
       }
 
       // 链接
-      if (util.hasClass('link-hook', el)) {
+      if (el.hasClass('link-hook')) {
         if (this.rangeElm.nodeName === 'P') {
           this.linkinput.style.display = 'flex'
         } else {
@@ -213,12 +212,12 @@ class ZxEditor extends DomCore {
       }
 
       // 分割线
-      if (util.hasClass('split-hook', el)) {
-        this.insertHr(this.rangeElm)
+      if (el.hasClass('split-hook')) {
+        dom.insertHr(this.rangeElm)
       }
 
       // 打赏
-      if (util.hasClass('reward-hook', el)) {
+      if (el.hasClass('reward-hook')) {
         alert('开发中')
       }
     }, false)
@@ -227,29 +226,29 @@ class ZxEditor extends DomCore {
     this.textstyle.addEventListener('click', (e) => {
       const el = e.target
       // 字体标签
-      if (util.hasClass('tag-item', el)) {
+      if (el.hasClass('tag-item')) {
         this._tagnameHandle(el)
       }
       // 字体样式
-      if (util.hasClass('style-item', el)) {
+      if (el.hasClass('style-item')) {
         this._textStyleHandle(el)
       }
       // 字体颜色
-      if (util.hasClass('color-item', el)) {
+      if (el.hasClass('color-item')) {
         this._textColorHandle(el)
       }
       // 关闭字体样式设置层
-      if (util.hasClass('abs-bar-btn', el)) {
+      if (el.hasClass('abs-bar-btn')) {
         this._textstyleHide(el)
       }
     })
 
     // 滑动文字样式设置层时，禁用document滑动
     this.textstyle.addEventListener('touchmove', (e) => {
-      this.queryAll('body')[0].style.overflow = 'hidden'
+      dom.queryAll('body')[0].style.overflow = 'hidden'
     })
     this.textstyle.addEventListener('touchend', (e) => {
-      this.queryAll('body')[0].style.overflow = ''
+      dom.queryAll('body')[0].style.overflow = ''
     })
 
     // 链接：输入容器按钮
@@ -260,13 +259,13 @@ class ZxEditor extends DomCore {
     submitBtn.addEventListener('click', (e) => {
       const el = e.target
       const className = el.className
-      if (util.hasClass('disabled', el)) return
+      if (el.hasClass('disabled')) return
       // 创建url，并添加至焦点出
-      let linkStr = this.createLinkStr(linkInputs[0].value, linkInputs[1].value)
+      let linkStr = dom.createLinkStr(linkInputs[0].value, linkInputs[1].value)
       // 获取焦点在段落中的位置
       const position = this.range ? this.range.startOffset : 0
       if (this.rangeElm.nodeName === 'P') {
-        this.rangeElm.innerHTML = this.insertStr(this.rangeElm.innerText, linkStr, position)
+        this.rangeElm.innerHTML = dom.insertStr(this.rangeElm.innerText, linkStr, position)
         this.linkinput.style.display = 'none'
       }
     }, false)
@@ -279,8 +278,8 @@ class ZxEditor extends DomCore {
     linkInputs[0].addEventListener('keyup', (e) => {
       let val = e.target.value
       if (util.isHttpUrl(val)) {
-        if (util.hasClass('disabled', submitBtn)) {
-          util.removeClass('disabled', submitBtn)
+        if (submitBtn.hasClass('disabled')) {
+          submitBtn.removeClass('disabled')
         }
       }
     }, false)
@@ -311,13 +310,11 @@ class ZxEditor extends DomCore {
   _textColorHandle (el) {
     const value = el.getAttribute('data-color')
     this.rangeElm.style.color = value
-    util.addClass('active', el)
-    let siblings = this.siblings(el, 'active')
-    if (siblings) {
-      for (let i = 0; i < siblings.length; i++) {
-        util.removeClass('active', siblings[i])
-      }
-    }
+    el.addClass('active')
+    let siblings = dom.siblings(el, 'active') || []
+    siblings.forEach((item) => {
+      item.removeClass('active')
+    })
     this._setRangePosition()
   }
 
@@ -340,12 +337,10 @@ class ZxEditor extends DomCore {
     if (el.querySelector('.checked') === null) {
       this._appendCheckedIcon(el)
       // 去掉兄弟节点上的选中符号
-      let siblings = this.siblings(el)
-      if (siblings) {
-        for (let i = 0; i < siblings.length; i++) {
-          this._removeCheckedIcon(siblings[i])
-        }
-      }
+      let siblings = dom.siblings(el) || []
+      siblings.forEach((item) => {
+        this._removeCheckedIcon(item)
+      })
       // 给当前焦点元素节点，添加样式
       let tag = 'p'
       let tagMatch = className.match(/\b(\w+?)-hook\b/)
@@ -355,8 +350,8 @@ class ZxEditor extends DomCore {
         } catch (e) {}
       }
       // this.log(this.range)
-      let newElm = this.setTagName(this.rangeElm, tag)
-      this.insertAfter(this.rangeElm, newElm)
+      let newElm = dom.changeTagName(this.rangeElm, tag)
+      dom.insertAfter(this.rangeElm, newElm)
       this.editbox.removeChild(this.rangeElm)
       this.rangeElm = newElm
       this._setRangePosition(this.rangeElm)
@@ -373,34 +368,32 @@ class ZxEditor extends DomCore {
     // 检查当前焦点DOM节点类型
     let tagName = this.rangeElm.tagName.toLowerCase()
     // this.log('this.rangeElm.tagName: ' + tagName)
-    let tagList = this.textstyle.querySelectorAll('.tag-item')
-    for (let i = 0; i < tagList.length; i++) {
-      let tag = tagList[i].getAttribute('data-tag')
+    let tagList = this.textstyle.querySelectorAll('.tag-item') || []
+    tagList.forEach((item) => {
+      let tag = item.getAttribute('data-tag')
       if (tag === tagName) {
-        this._appendCheckedIcon(tagList[i])
+        this._appendCheckedIcon(item)
       } else {
-        this._removeCheckedIcon(tagList[i])
+        this._removeCheckedIcon(item)
       }
-    }
+    })
 
     // 初始化文字颜色选 ****************************************
     let color = this.rangeElm.style.color
-    // this.log('this.rangeElm.style.color: ' + color)
     if (/rgb\(/.test(color)) {
       // 十进制转十六进制
       color = util.rgbToHex(color)
-      // this.log('util.rgbToHex(color)' + color)
     }
     // 获取颜色选项节点列表
-    let colorList = this.textstyle.querySelectorAll('.color-item')
-    for (let i = 0; i < colorList.length; i++) {
-      let tag = colorList[i].getAttribute('data-color')
+    let colorList = this.textstyle.querySelectorAll('.color-item') || []
+    colorList.forEach(item => {
+      let tag = item.getAttribute('data-color')
       if (tag === color) {
-        util.addClass('active', colorList[i])
+        item.addClass('active')
       } else {
-        util.removeClass('active', colorList[i])
+        item.removeClass('active')
       }
-    }
+    })
     // 标记焦点位置
     this._setRangePosition()
   }
@@ -413,7 +406,7 @@ class ZxEditor extends DomCore {
   _appendCheckedIcon (el) {
     if (el.querySelector('.checked')) return
     // 字体样式选中符号
-    const ICON_CHECKED = this.create('i', {class: 'checked'})
+    const ICON_CHECKED = dom.create('i', {class: 'checked'})
     el.appendChild(ICON_CHECKED)
   }
 
@@ -444,14 +437,14 @@ class ZxEditor extends DomCore {
    */
   addImage (src) {
     const id = this._randId('img_')
-    const img = this.create('img', { src: src, width: '100%', height: 'auto', id: id })
+    const img = dom.create('img', { src: src, width: '100%', height: 'auto', id: id })
     let p = null
-    if (this.isInnerEmpty(this.rangeElm)) {
+    if (dom.isInnerEmpty(this.rangeElm)) {
       p = this.rangeElm
       p.innerHTML = ''
     } else {
-      p = this.create('p')
-      this.insertAfter(this.rangeElm, p)
+      p = dom.create('p')
+      dom.insertAfter(this.rangeElm, p)
       this.rangeElm = p
     }
     p.appendChild(img)
@@ -483,7 +476,7 @@ class ZxEditor extends DomCore {
     this.rangeOffset = this.range.startOffset
     // 当前Node
     let currentNode = this.range.endContainer
-    this.rangeElm = this.closest(currentNode, this.editbox)
+    this.rangeElm = dom.closest(currentNode, this.editbox)
   }
 
   /**
@@ -502,7 +495,7 @@ class ZxEditor extends DomCore {
     }
     // 光标移动到到原来的位置加上新内容的长度
     if (el) {
-      this.range.setStart(this.getTextNode(el), this.rangeOffset)
+      this.range.setStart(dom.getTextNode(el), this.rangeOffset)
     }
     // 光标开始和光标结束重叠
     this.range.collapse(true)
@@ -522,7 +515,7 @@ class ZxEditor extends DomCore {
    * @private
    */
   _insertEmptyParagraph () {
-    const p = this.create('p')
+    const p = dom.create('p')
     p.innerHTML = '<br>'
     this.editbox.appendChild(p)
     this.rangeElm = p
@@ -535,8 +528,7 @@ class ZxEditor extends DomCore {
    */
   scrollToTop () {
     let winHeight = window.innerHeight
-    // this.log('scrollHeight: ' + h)
-    this.scrollTo(0, this.scrollHeight() - winHeight)
+    scroll.to(0, scroll.height() - winHeight)
   }
 
   /**
@@ -544,17 +536,16 @@ class ZxEditor extends DomCore {
    */
   scrollToRange () {
     let winHeight = window.innerHeight
-    let scrollTop = this.scrollTop()
+    let scrollTop = scroll.top()
     let rect = this.rangeElm.getBoundingClientRect()
     // fixed(ToolBar 或者 TEXT样式设置)层的高度
     let fixedHeight = this.textstyleIsShow ? TEXT_STYLE_HEIGHT : TOOL_BAR_HEIGHT
     let scrollPostion = rect.bottom - (winHeight - fixedHeight)
-    // this.query('#Positin').innerHTML = winHeight + '-' + rect.bottom + '-' + scrollTop + '-' + fixedHeight + '-' + scrollPostion
 
     if (scrollPostion > 0) {
-      this.scrollTo(0, scrollTop + scrollPostion)
+      scroll.to(0, scrollTop + scrollPostion)
     } else if (rect.top < 0) {
-      this.scrollTo(0, scrollTop + rect.top)
+      scroll.to(0, scrollTop + rect.top)
     }
   }
 
@@ -572,7 +563,7 @@ class ZxEditor extends DomCore {
       type = RegExp.$1
       onlyData = RegExp.$2
     } else {
-      this.error('toBlobData(data), params\'data is not base64 data!')
+      error('toBlobData(data), params\'data is not base64 data!')
       return null
     }
 
