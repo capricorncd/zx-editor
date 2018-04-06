@@ -7,8 +7,695 @@
 		var a = factory();
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(typeof self !== 'undefined' ? self : this, function() {
+})(window, function() {
 return /******/ (function(modules) { // webpackBootstrap
+/******/ 	function hotDisposeChunk(chunkId) {
+/******/ 		delete installedChunks[chunkId];
+/******/ 	}
+/******/ 	var parentHotUpdateCallback = window["webpackHotUpdate"];
+/******/ 	window["webpackHotUpdate"] = // eslint-disable-next-line no-unused-vars
+/******/ 	function webpackHotUpdateCallback(chunkId, moreModules) {
+/******/ 		hotAddUpdateChunk(chunkId, moreModules);
+/******/ 		if (parentHotUpdateCallback) parentHotUpdateCallback(chunkId, moreModules);
+/******/ 	} ;
+/******/
+/******/ 	// eslint-disable-next-line no-unused-vars
+/******/ 	function hotDownloadUpdateChunk(chunkId) {
+/******/ 		var head = document.getElementsByTagName("head")[0];
+/******/ 		var script = document.createElement("script");
+/******/ 		script.charset = "utf-8";
+/******/ 		script.src = __webpack_require__.p + "" + chunkId + "." + hotCurrentHash + ".hot-update.js";
+/******/ 		;
+/******/ 		head.appendChild(script);
+/******/ 	}
+/******/
+/******/ 	// eslint-disable-next-line no-unused-vars
+/******/ 	function hotDownloadManifest(requestTimeout) {
+/******/ 		requestTimeout = requestTimeout || 10000;
+/******/ 		return new Promise(function(resolve, reject) {
+/******/ 			if (typeof XMLHttpRequest === "undefined")
+/******/ 				return reject(new Error("No browser support"));
+/******/ 			try {
+/******/ 				var request = new XMLHttpRequest();
+/******/ 				var requestPath = __webpack_require__.p + "" + hotCurrentHash + ".hot-update.json";
+/******/ 				request.open("GET", requestPath, true);
+/******/ 				request.timeout = requestTimeout;
+/******/ 				request.send(null);
+/******/ 			} catch (err) {
+/******/ 				return reject(err);
+/******/ 			}
+/******/ 			request.onreadystatechange = function() {
+/******/ 				if (request.readyState !== 4) return;
+/******/ 				if (request.status === 0) {
+/******/ 					// timeout
+/******/ 					reject(
+/******/ 						new Error("Manifest request to " + requestPath + " timed out.")
+/******/ 					);
+/******/ 				} else if (request.status === 404) {
+/******/ 					// no update available
+/******/ 					resolve();
+/******/ 				} else if (request.status !== 200 && request.status !== 304) {
+/******/ 					// other failure
+/******/ 					reject(new Error("Manifest request to " + requestPath + " failed."));
+/******/ 				} else {
+/******/ 					// success
+/******/ 					try {
+/******/ 						var update = JSON.parse(request.responseText);
+/******/ 					} catch (e) {
+/******/ 						reject(e);
+/******/ 						return;
+/******/ 					}
+/******/ 					resolve(update);
+/******/ 				}
+/******/ 			};
+/******/ 		});
+/******/ 	}
+/******/
+/******/ 	var hotApplyOnUpdate = true;
+/******/ 	var hotCurrentHash = "ae5dfafedab47ee44de5"; // eslint-disable-line no-unused-vars
+/******/ 	var hotRequestTimeout = 10000;
+/******/ 	var hotCurrentModuleData = {};
+/******/ 	var hotCurrentChildModule; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentParents = []; // eslint-disable-line no-unused-vars
+/******/ 	var hotCurrentParentsTemp = []; // eslint-disable-line no-unused-vars
+/******/
+/******/ 	// eslint-disable-next-line no-unused-vars
+/******/ 	function hotCreateRequire(moduleId) {
+/******/ 		var me = installedModules[moduleId];
+/******/ 		if (!me) return __webpack_require__;
+/******/ 		var fn = function(request) {
+/******/ 			if (me.hot.active) {
+/******/ 				if (installedModules[request]) {
+/******/ 					if (installedModules[request].parents.indexOf(moduleId) === -1)
+/******/ 						installedModules[request].parents.push(moduleId);
+/******/ 				} else {
+/******/ 					hotCurrentParents = [moduleId];
+/******/ 					hotCurrentChildModule = request;
+/******/ 				}
+/******/ 				if (me.children.indexOf(request) === -1) me.children.push(request);
+/******/ 			} else {
+/******/ 				console.warn(
+/******/ 					"[HMR] unexpected require(" +
+/******/ 						request +
+/******/ 						") from disposed module " +
+/******/ 						moduleId
+/******/ 				);
+/******/ 				hotCurrentParents = [];
+/******/ 			}
+/******/ 			return __webpack_require__(request);
+/******/ 		};
+/******/ 		var ObjectFactory = function ObjectFactory(name) {
+/******/ 			return {
+/******/ 				configurable: true,
+/******/ 				enumerable: true,
+/******/ 				get: function() {
+/******/ 					return __webpack_require__[name];
+/******/ 				},
+/******/ 				set: function(value) {
+/******/ 					__webpack_require__[name] = value;
+/******/ 				}
+/******/ 			};
+/******/ 		};
+/******/ 		for (var name in __webpack_require__) {
+/******/ 			if (
+/******/ 				Object.prototype.hasOwnProperty.call(__webpack_require__, name) &&
+/******/ 				name !== "e"
+/******/ 			) {
+/******/ 				Object.defineProperty(fn, name, ObjectFactory(name));
+/******/ 			}
+/******/ 		}
+/******/ 		fn.e = function(chunkId) {
+/******/ 			if (hotStatus === "ready") hotSetStatus("prepare");
+/******/ 			hotChunksLoading++;
+/******/ 			return __webpack_require__.e(chunkId).then(finishChunkLoading, function(err) {
+/******/ 				finishChunkLoading();
+/******/ 				throw err;
+/******/ 			});
+/******/
+/******/ 			function finishChunkLoading() {
+/******/ 				hotChunksLoading--;
+/******/ 				if (hotStatus === "prepare") {
+/******/ 					if (!hotWaitingFilesMap[chunkId]) {
+/******/ 						hotEnsureUpdateChunk(chunkId);
+/******/ 					}
+/******/ 					if (hotChunksLoading === 0 && hotWaitingFiles === 0) {
+/******/ 						hotUpdateDownloaded();
+/******/ 					}
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 		return fn;
+/******/ 	}
+/******/
+/******/ 	// eslint-disable-next-line no-unused-vars
+/******/ 	function hotCreateModule(moduleId) {
+/******/ 		var hot = {
+/******/ 			// private stuff
+/******/ 			_acceptedDependencies: {},
+/******/ 			_declinedDependencies: {},
+/******/ 			_selfAccepted: false,
+/******/ 			_selfDeclined: false,
+/******/ 			_disposeHandlers: [],
+/******/ 			_main: hotCurrentChildModule !== moduleId,
+/******/
+/******/ 			// Module API
+/******/ 			active: true,
+/******/ 			accept: function(dep, callback) {
+/******/ 				if (typeof dep === "undefined") hot._selfAccepted = true;
+/******/ 				else if (typeof dep === "function") hot._selfAccepted = dep;
+/******/ 				else if (typeof dep === "object")
+/******/ 					for (var i = 0; i < dep.length; i++)
+/******/ 						hot._acceptedDependencies[dep[i]] = callback || function() {};
+/******/ 				else hot._acceptedDependencies[dep] = callback || function() {};
+/******/ 			},
+/******/ 			decline: function(dep) {
+/******/ 				if (typeof dep === "undefined") hot._selfDeclined = true;
+/******/ 				else if (typeof dep === "object")
+/******/ 					for (var i = 0; i < dep.length; i++)
+/******/ 						hot._declinedDependencies[dep[i]] = true;
+/******/ 				else hot._declinedDependencies[dep] = true;
+/******/ 			},
+/******/ 			dispose: function(callback) {
+/******/ 				hot._disposeHandlers.push(callback);
+/******/ 			},
+/******/ 			addDisposeHandler: function(callback) {
+/******/ 				hot._disposeHandlers.push(callback);
+/******/ 			},
+/******/ 			removeDisposeHandler: function(callback) {
+/******/ 				var idx = hot._disposeHandlers.indexOf(callback);
+/******/ 				if (idx >= 0) hot._disposeHandlers.splice(idx, 1);
+/******/ 			},
+/******/
+/******/ 			// Management API
+/******/ 			check: hotCheck,
+/******/ 			apply: hotApply,
+/******/ 			status: function(l) {
+/******/ 				if (!l) return hotStatus;
+/******/ 				hotStatusHandlers.push(l);
+/******/ 			},
+/******/ 			addStatusHandler: function(l) {
+/******/ 				hotStatusHandlers.push(l);
+/******/ 			},
+/******/ 			removeStatusHandler: function(l) {
+/******/ 				var idx = hotStatusHandlers.indexOf(l);
+/******/ 				if (idx >= 0) hotStatusHandlers.splice(idx, 1);
+/******/ 			},
+/******/
+/******/ 			//inherit from previous dispose call
+/******/ 			data: hotCurrentModuleData[moduleId]
+/******/ 		};
+/******/ 		hotCurrentChildModule = undefined;
+/******/ 		return hot;
+/******/ 	}
+/******/
+/******/ 	var hotStatusHandlers = [];
+/******/ 	var hotStatus = "idle";
+/******/
+/******/ 	function hotSetStatus(newStatus) {
+/******/ 		hotStatus = newStatus;
+/******/ 		for (var i = 0; i < hotStatusHandlers.length; i++)
+/******/ 			hotStatusHandlers[i].call(null, newStatus);
+/******/ 	}
+/******/
+/******/ 	// while downloading
+/******/ 	var hotWaitingFiles = 0;
+/******/ 	var hotChunksLoading = 0;
+/******/ 	var hotWaitingFilesMap = {};
+/******/ 	var hotRequestedFilesMap = {};
+/******/ 	var hotAvailableFilesMap = {};
+/******/ 	var hotDeferred;
+/******/
+/******/ 	// The update info
+/******/ 	var hotUpdate, hotUpdateNewHash;
+/******/
+/******/ 	function toModuleId(id) {
+/******/ 		var isNumber = +id + "" === id;
+/******/ 		return isNumber ? +id : id;
+/******/ 	}
+/******/
+/******/ 	function hotCheck(apply) {
+/******/ 		if (hotStatus !== "idle")
+/******/ 			throw new Error("check() is only allowed in idle status");
+/******/ 		hotApplyOnUpdate = apply;
+/******/ 		hotSetStatus("check");
+/******/ 		return hotDownloadManifest(hotRequestTimeout).then(function(update) {
+/******/ 			if (!update) {
+/******/ 				hotSetStatus("idle");
+/******/ 				return null;
+/******/ 			}
+/******/ 			hotRequestedFilesMap = {};
+/******/ 			hotWaitingFilesMap = {};
+/******/ 			hotAvailableFilesMap = update.c;
+/******/ 			hotUpdateNewHash = update.h;
+/******/
+/******/ 			hotSetStatus("prepare");
+/******/ 			var promise = new Promise(function(resolve, reject) {
+/******/ 				hotDeferred = {
+/******/ 					resolve: resolve,
+/******/ 					reject: reject
+/******/ 				};
+/******/ 			});
+/******/ 			hotUpdate = {};
+/******/ 			var chunkId = "zx-editor";
+/******/ 			{
+/******/ 				// eslint-disable-line no-lone-blocks
+/******/ 				/*globals chunkId */
+/******/ 				hotEnsureUpdateChunk(chunkId);
+/******/ 			}
+/******/ 			if (
+/******/ 				hotStatus === "prepare" &&
+/******/ 				hotChunksLoading === 0 &&
+/******/ 				hotWaitingFiles === 0
+/******/ 			) {
+/******/ 				hotUpdateDownloaded();
+/******/ 			}
+/******/ 			return promise;
+/******/ 		});
+/******/ 	}
+/******/
+/******/ 	// eslint-disable-next-line no-unused-vars
+/******/ 	function hotAddUpdateChunk(chunkId, moreModules) {
+/******/ 		if (!hotAvailableFilesMap[chunkId] || !hotRequestedFilesMap[chunkId])
+/******/ 			return;
+/******/ 		hotRequestedFilesMap[chunkId] = false;
+/******/ 		for (var moduleId in moreModules) {
+/******/ 			if (Object.prototype.hasOwnProperty.call(moreModules, moduleId)) {
+/******/ 				hotUpdate[moduleId] = moreModules[moduleId];
+/******/ 			}
+/******/ 		}
+/******/ 		if (--hotWaitingFiles === 0 && hotChunksLoading === 0) {
+/******/ 			hotUpdateDownloaded();
+/******/ 		}
+/******/ 	}
+/******/
+/******/ 	function hotEnsureUpdateChunk(chunkId) {
+/******/ 		if (!hotAvailableFilesMap[chunkId]) {
+/******/ 			hotWaitingFilesMap[chunkId] = true;
+/******/ 		} else {
+/******/ 			hotRequestedFilesMap[chunkId] = true;
+/******/ 			hotWaitingFiles++;
+/******/ 			hotDownloadUpdateChunk(chunkId);
+/******/ 		}
+/******/ 	}
+/******/
+/******/ 	function hotUpdateDownloaded() {
+/******/ 		hotSetStatus("ready");
+/******/ 		var deferred = hotDeferred;
+/******/ 		hotDeferred = null;
+/******/ 		if (!deferred) return;
+/******/ 		if (hotApplyOnUpdate) {
+/******/ 			// Wrap deferred object in Promise to mark it as a well-handled Promise to
+/******/ 			// avoid triggering uncaught exception warning in Chrome.
+/******/ 			// See https://bugs.chromium.org/p/chromium/issues/detail?id=465666
+/******/ 			Promise.resolve()
+/******/ 				.then(function() {
+/******/ 					return hotApply(hotApplyOnUpdate);
+/******/ 				})
+/******/ 				.then(
+/******/ 					function(result) {
+/******/ 						deferred.resolve(result);
+/******/ 					},
+/******/ 					function(err) {
+/******/ 						deferred.reject(err);
+/******/ 					}
+/******/ 				);
+/******/ 		} else {
+/******/ 			var outdatedModules = [];
+/******/ 			for (var id in hotUpdate) {
+/******/ 				if (Object.prototype.hasOwnProperty.call(hotUpdate, id)) {
+/******/ 					outdatedModules.push(toModuleId(id));
+/******/ 				}
+/******/ 			}
+/******/ 			deferred.resolve(outdatedModules);
+/******/ 		}
+/******/ 	}
+/******/
+/******/ 	function hotApply(options) {
+/******/ 		if (hotStatus !== "ready")
+/******/ 			throw new Error("apply() is only allowed in ready status");
+/******/ 		options = options || {};
+/******/
+/******/ 		var cb;
+/******/ 		var i;
+/******/ 		var j;
+/******/ 		var module;
+/******/ 		var moduleId;
+/******/
+/******/ 		function getAffectedStuff(updateModuleId) {
+/******/ 			var outdatedModules = [updateModuleId];
+/******/ 			var outdatedDependencies = {};
+/******/
+/******/ 			var queue = outdatedModules.slice().map(function(id) {
+/******/ 				return {
+/******/ 					chain: [id],
+/******/ 					id: id
+/******/ 				};
+/******/ 			});
+/******/ 			while (queue.length > 0) {
+/******/ 				var queueItem = queue.pop();
+/******/ 				var moduleId = queueItem.id;
+/******/ 				var chain = queueItem.chain;
+/******/ 				module = installedModules[moduleId];
+/******/ 				if (!module || module.hot._selfAccepted) continue;
+/******/ 				if (module.hot._selfDeclined) {
+/******/ 					return {
+/******/ 						type: "self-declined",
+/******/ 						chain: chain,
+/******/ 						moduleId: moduleId
+/******/ 					};
+/******/ 				}
+/******/ 				if (module.hot._main) {
+/******/ 					return {
+/******/ 						type: "unaccepted",
+/******/ 						chain: chain,
+/******/ 						moduleId: moduleId
+/******/ 					};
+/******/ 				}
+/******/ 				for (var i = 0; i < module.parents.length; i++) {
+/******/ 					var parentId = module.parents[i];
+/******/ 					var parent = installedModules[parentId];
+/******/ 					if (!parent) continue;
+/******/ 					if (parent.hot._declinedDependencies[moduleId]) {
+/******/ 						return {
+/******/ 							type: "declined",
+/******/ 							chain: chain.concat([parentId]),
+/******/ 							moduleId: moduleId,
+/******/ 							parentId: parentId
+/******/ 						};
+/******/ 					}
+/******/ 					if (outdatedModules.indexOf(parentId) !== -1) continue;
+/******/ 					if (parent.hot._acceptedDependencies[moduleId]) {
+/******/ 						if (!outdatedDependencies[parentId])
+/******/ 							outdatedDependencies[parentId] = [];
+/******/ 						addAllToSet(outdatedDependencies[parentId], [moduleId]);
+/******/ 						continue;
+/******/ 					}
+/******/ 					delete outdatedDependencies[parentId];
+/******/ 					outdatedModules.push(parentId);
+/******/ 					queue.push({
+/******/ 						chain: chain.concat([parentId]),
+/******/ 						id: parentId
+/******/ 					});
+/******/ 				}
+/******/ 			}
+/******/
+/******/ 			return {
+/******/ 				type: "accepted",
+/******/ 				moduleId: updateModuleId,
+/******/ 				outdatedModules: outdatedModules,
+/******/ 				outdatedDependencies: outdatedDependencies
+/******/ 			};
+/******/ 		}
+/******/
+/******/ 		function addAllToSet(a, b) {
+/******/ 			for (var i = 0; i < b.length; i++) {
+/******/ 				var item = b[i];
+/******/ 				if (a.indexOf(item) === -1) a.push(item);
+/******/ 			}
+/******/ 		}
+/******/
+/******/ 		// at begin all updates modules are outdated
+/******/ 		// the "outdated" status can propagate to parents if they don't accept the children
+/******/ 		var outdatedDependencies = {};
+/******/ 		var outdatedModules = [];
+/******/ 		var appliedUpdate = {};
+/******/
+/******/ 		var warnUnexpectedRequire = function warnUnexpectedRequire() {
+/******/ 			console.warn(
+/******/ 				"[HMR] unexpected require(" + result.moduleId + ") to disposed module"
+/******/ 			);
+/******/ 		};
+/******/
+/******/ 		for (var id in hotUpdate) {
+/******/ 			if (Object.prototype.hasOwnProperty.call(hotUpdate, id)) {
+/******/ 				moduleId = toModuleId(id);
+/******/ 				var result;
+/******/ 				if (hotUpdate[id]) {
+/******/ 					result = getAffectedStuff(moduleId);
+/******/ 				} else {
+/******/ 					result = {
+/******/ 						type: "disposed",
+/******/ 						moduleId: id
+/******/ 					};
+/******/ 				}
+/******/ 				var abortError = false;
+/******/ 				var doApply = false;
+/******/ 				var doDispose = false;
+/******/ 				var chainInfo = "";
+/******/ 				if (result.chain) {
+/******/ 					chainInfo = "\nUpdate propagation: " + result.chain.join(" -> ");
+/******/ 				}
+/******/ 				switch (result.type) {
+/******/ 					case "self-declined":
+/******/ 						if (options.onDeclined) options.onDeclined(result);
+/******/ 						if (!options.ignoreDeclined)
+/******/ 							abortError = new Error(
+/******/ 								"Aborted because of self decline: " +
+/******/ 									result.moduleId +
+/******/ 									chainInfo
+/******/ 							);
+/******/ 						break;
+/******/ 					case "declined":
+/******/ 						if (options.onDeclined) options.onDeclined(result);
+/******/ 						if (!options.ignoreDeclined)
+/******/ 							abortError = new Error(
+/******/ 								"Aborted because of declined dependency: " +
+/******/ 									result.moduleId +
+/******/ 									" in " +
+/******/ 									result.parentId +
+/******/ 									chainInfo
+/******/ 							);
+/******/ 						break;
+/******/ 					case "unaccepted":
+/******/ 						if (options.onUnaccepted) options.onUnaccepted(result);
+/******/ 						if (!options.ignoreUnaccepted)
+/******/ 							abortError = new Error(
+/******/ 								"Aborted because " + moduleId + " is not accepted" + chainInfo
+/******/ 							);
+/******/ 						break;
+/******/ 					case "accepted":
+/******/ 						if (options.onAccepted) options.onAccepted(result);
+/******/ 						doApply = true;
+/******/ 						break;
+/******/ 					case "disposed":
+/******/ 						if (options.onDisposed) options.onDisposed(result);
+/******/ 						doDispose = true;
+/******/ 						break;
+/******/ 					default:
+/******/ 						throw new Error("Unexception type " + result.type);
+/******/ 				}
+/******/ 				if (abortError) {
+/******/ 					hotSetStatus("abort");
+/******/ 					return Promise.reject(abortError);
+/******/ 				}
+/******/ 				if (doApply) {
+/******/ 					appliedUpdate[moduleId] = hotUpdate[moduleId];
+/******/ 					addAllToSet(outdatedModules, result.outdatedModules);
+/******/ 					for (moduleId in result.outdatedDependencies) {
+/******/ 						if (
+/******/ 							Object.prototype.hasOwnProperty.call(
+/******/ 								result.outdatedDependencies,
+/******/ 								moduleId
+/******/ 							)
+/******/ 						) {
+/******/ 							if (!outdatedDependencies[moduleId])
+/******/ 								outdatedDependencies[moduleId] = [];
+/******/ 							addAllToSet(
+/******/ 								outdatedDependencies[moduleId],
+/******/ 								result.outdatedDependencies[moduleId]
+/******/ 							);
+/******/ 						}
+/******/ 					}
+/******/ 				}
+/******/ 				if (doDispose) {
+/******/ 					addAllToSet(outdatedModules, [result.moduleId]);
+/******/ 					appliedUpdate[moduleId] = warnUnexpectedRequire;
+/******/ 				}
+/******/ 			}
+/******/ 		}
+/******/
+/******/ 		// Store self accepted outdated modules to require them later by the module system
+/******/ 		var outdatedSelfAcceptedModules = [];
+/******/ 		for (i = 0; i < outdatedModules.length; i++) {
+/******/ 			moduleId = outdatedModules[i];
+/******/ 			if (
+/******/ 				installedModules[moduleId] &&
+/******/ 				installedModules[moduleId].hot._selfAccepted
+/******/ 			)
+/******/ 				outdatedSelfAcceptedModules.push({
+/******/ 					module: moduleId,
+/******/ 					errorHandler: installedModules[moduleId].hot._selfAccepted
+/******/ 				});
+/******/ 		}
+/******/
+/******/ 		// Now in "dispose" phase
+/******/ 		hotSetStatus("dispose");
+/******/ 		Object.keys(hotAvailableFilesMap).forEach(function(chunkId) {
+/******/ 			if (hotAvailableFilesMap[chunkId] === false) {
+/******/ 				hotDisposeChunk(chunkId);
+/******/ 			}
+/******/ 		});
+/******/
+/******/ 		var idx;
+/******/ 		var queue = outdatedModules.slice();
+/******/ 		while (queue.length > 0) {
+/******/ 			moduleId = queue.pop();
+/******/ 			module = installedModules[moduleId];
+/******/ 			if (!module) continue;
+/******/
+/******/ 			var data = {};
+/******/
+/******/ 			// Call dispose handlers
+/******/ 			var disposeHandlers = module.hot._disposeHandlers;
+/******/ 			for (j = 0; j < disposeHandlers.length; j++) {
+/******/ 				cb = disposeHandlers[j];
+/******/ 				cb(data);
+/******/ 			}
+/******/ 			hotCurrentModuleData[moduleId] = data;
+/******/
+/******/ 			// disable module (this disables requires from this module)
+/******/ 			module.hot.active = false;
+/******/
+/******/ 			// remove module from cache
+/******/ 			delete installedModules[moduleId];
+/******/
+/******/ 			// when disposing there is no need to call dispose handler
+/******/ 			delete outdatedDependencies[moduleId];
+/******/
+/******/ 			// remove "parents" references from all children
+/******/ 			for (j = 0; j < module.children.length; j++) {
+/******/ 				var child = installedModules[module.children[j]];
+/******/ 				if (!child) continue;
+/******/ 				idx = child.parents.indexOf(moduleId);
+/******/ 				if (idx >= 0) {
+/******/ 					child.parents.splice(idx, 1);
+/******/ 				}
+/******/ 			}
+/******/ 		}
+/******/
+/******/ 		// remove outdated dependency from module children
+/******/ 		var dependency;
+/******/ 		var moduleOutdatedDependencies;
+/******/ 		for (moduleId in outdatedDependencies) {
+/******/ 			if (
+/******/ 				Object.prototype.hasOwnProperty.call(outdatedDependencies, moduleId)
+/******/ 			) {
+/******/ 				module = installedModules[moduleId];
+/******/ 				if (module) {
+/******/ 					moduleOutdatedDependencies = outdatedDependencies[moduleId];
+/******/ 					for (j = 0; j < moduleOutdatedDependencies.length; j++) {
+/******/ 						dependency = moduleOutdatedDependencies[j];
+/******/ 						idx = module.children.indexOf(dependency);
+/******/ 						if (idx >= 0) module.children.splice(idx, 1);
+/******/ 					}
+/******/ 				}
+/******/ 			}
+/******/ 		}
+/******/
+/******/ 		// Not in "apply" phase
+/******/ 		hotSetStatus("apply");
+/******/
+/******/ 		hotCurrentHash = hotUpdateNewHash;
+/******/
+/******/ 		// insert new code
+/******/ 		for (moduleId in appliedUpdate) {
+/******/ 			if (Object.prototype.hasOwnProperty.call(appliedUpdate, moduleId)) {
+/******/ 				modules[moduleId] = appliedUpdate[moduleId];
+/******/ 			}
+/******/ 		}
+/******/
+/******/ 		// call accept handlers
+/******/ 		var error = null;
+/******/ 		for (moduleId in outdatedDependencies) {
+/******/ 			if (
+/******/ 				Object.prototype.hasOwnProperty.call(outdatedDependencies, moduleId)
+/******/ 			) {
+/******/ 				module = installedModules[moduleId];
+/******/ 				if (module) {
+/******/ 					moduleOutdatedDependencies = outdatedDependencies[moduleId];
+/******/ 					var callbacks = [];
+/******/ 					for (i = 0; i < moduleOutdatedDependencies.length; i++) {
+/******/ 						dependency = moduleOutdatedDependencies[i];
+/******/ 						cb = module.hot._acceptedDependencies[dependency];
+/******/ 						if (cb) {
+/******/ 							if (callbacks.indexOf(cb) !== -1) continue;
+/******/ 							callbacks.push(cb);
+/******/ 						}
+/******/ 					}
+/******/ 					for (i = 0; i < callbacks.length; i++) {
+/******/ 						cb = callbacks[i];
+/******/ 						try {
+/******/ 							cb(moduleOutdatedDependencies);
+/******/ 						} catch (err) {
+/******/ 							if (options.onErrored) {
+/******/ 								options.onErrored({
+/******/ 									type: "accept-errored",
+/******/ 									moduleId: moduleId,
+/******/ 									dependencyId: moduleOutdatedDependencies[i],
+/******/ 									error: err
+/******/ 								});
+/******/ 							}
+/******/ 							if (!options.ignoreErrored) {
+/******/ 								if (!error) error = err;
+/******/ 							}
+/******/ 						}
+/******/ 					}
+/******/ 				}
+/******/ 			}
+/******/ 		}
+/******/
+/******/ 		// Load self accepted modules
+/******/ 		for (i = 0; i < outdatedSelfAcceptedModules.length; i++) {
+/******/ 			var item = outdatedSelfAcceptedModules[i];
+/******/ 			moduleId = item.module;
+/******/ 			hotCurrentParents = [moduleId];
+/******/ 			try {
+/******/ 				__webpack_require__(moduleId);
+/******/ 			} catch (err) {
+/******/ 				if (typeof item.errorHandler === "function") {
+/******/ 					try {
+/******/ 						item.errorHandler(err);
+/******/ 					} catch (err2) {
+/******/ 						if (options.onErrored) {
+/******/ 							options.onErrored({
+/******/ 								type: "self-accept-error-handler-errored",
+/******/ 								moduleId: moduleId,
+/******/ 								error: err2,
+/******/ 								originalError: err
+/******/ 							});
+/******/ 						}
+/******/ 						if (!options.ignoreErrored) {
+/******/ 							if (!error) error = err2;
+/******/ 						}
+/******/ 						if (!error) error = err;
+/******/ 					}
+/******/ 				} else {
+/******/ 					if (options.onErrored) {
+/******/ 						options.onErrored({
+/******/ 							type: "self-accept-errored",
+/******/ 							moduleId: moduleId,
+/******/ 							error: err
+/******/ 						});
+/******/ 					}
+/******/ 					if (!options.ignoreErrored) {
+/******/ 						if (!error) error = err;
+/******/ 					}
+/******/ 				}
+/******/ 			}
+/******/ 		}
+/******/
+/******/ 		// handle errors in accept handlers and self accepted module load
+/******/ 		if (error) {
+/******/ 			hotSetStatus("fail");
+/******/ 			return Promise.reject(error);
+/******/ 		}
+/******/
+/******/ 		hotSetStatus("idle");
+/******/ 		return new Promise(function(resolve) {
+/******/ 			resolve(outdatedModules);
+/******/ 		});
+/******/ 	}
+/******/
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -23,11 +710,14 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			i: moduleId,
 /******/ 			l: false,
-/******/ 			exports: {}
+/******/ 			exports: {},
+/******/ 			hot: hotCreateModule(moduleId),
+/******/ 			parents: (hotCurrentParentsTemp = hotCurrentParents, hotCurrentParents = [], hotCurrentParentsTemp),
+/******/ 			children: []
 /******/ 		};
 /******/
 /******/ 		// Execute the module function
-/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, hotCreateRequire(moduleId));
 /******/
 /******/ 		// Flag the module as loaded
 /******/ 		module.l = true;
@@ -54,6 +744,11 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 		}
 /******/ 	};
 /******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
 /******/ 	// getDefaultExport function for compatibility with non-harmony modules
 /******/ 	__webpack_require__.n = function(module) {
 /******/ 		var getter = module && module.__esModule ?
@@ -69,1666 +764,142 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
 /******/
+/******/ 	// __webpack_hash__
+/******/ 	__webpack_require__.h = function() { return hotCurrentHash; };
+/******/
+/******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 0);
+/******/ 	return hotCreateRequire("./src/js/zx-editor.js")(__webpack_require__.s = "./src/js/zx-editor.js");
 /******/ })
 /************************************************************************/
-/******/ ([
-/* 0 */
+/******/ ({
+
+/***/ "./node_modules/_css-loader@0.28.11@css-loader/index.js??ref--5-1!./node_modules/_postcss-loader@2.1.3@postcss-loader/lib/index.js??postcss!./node_modules/_stylus-loader@3.0.2@stylus-loader/index.js??ref--5-3!./src/css/zx-editor.styl":
+/*!*********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/_css-loader@0.28.11@css-loader??ref--5-1!./node_modules/_postcss-loader@2.1.3@postcss-loader/lib??postcss!./node_modules/_stylus-loader@3.0.2@stylus-loader??ref--5-3!./src/css/zx-editor.styl ***!
+  \*********************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.ZxEditor = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * Create by zx1984
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * 2018/1/23 0023.
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * https://github.com/zx1984
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
-
-
-__webpack_require__(1);
-
-var _util = __webpack_require__(6);
-
-var _util2 = _interopRequireDefault(_util);
-
-var _domCore = __webpack_require__(7);
-
-var _domCore2 = _interopRequireDefault(_domCore);
-
-var _scroll = __webpack_require__(8);
-
-var _scroll2 = _interopRequireDefault(_scroll);
-
-var _debug = __webpack_require__(9);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-// COLOR
-var COLORS = {
-  black: '#333',
-  gray: '#d0d0d0',
-  red: '#ff583d',
-  yellow: '#fdaa25',
-  green: '#44c67b',
-  blue: '#14b2e0',
-  purple: '#b065e2'
-
-  // 工具栏高度
-};var TOOL_BAR_HEIGHT = 48 + 10;
-// 字体样式选择层高度
-var TEXT_STYLE_HEIGHT = 310 + 10;
-
-// ZxEditor
-
-var ZxEditor = function () {
-  // constructor
-  function ZxEditor() {
-    var selecotor = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'body';
-
-    _classCallCheck(this, ZxEditor);
-
-    this.editor = null;
-    this.toolbar = null;
-    this.editbox = null;
-    this.textstyle = null;
-    this.textstyleIsShow = false;
-    this.linkinput = null;
-    // 编辑的内容
-    this.content = null;
-    // 光标对象
-    this.selection = null;
-    this.range = null;
-    this.rangeOffset = 0;
-    this.rangeTimer = null;
-    // 当前光标所在的元素节点NodeType === 1
-    this.rangeElm = null;
-    this._initDoms(selecotor);
-  }
-
-  /**
-   * 初始化DOM节点
-   * @param selecotor Editor外层容器id或className
-   * @private
-   */
-
-
-  _createClass(ZxEditor, [{
-    key: '_initDoms',
-    value: function _initDoms(selecotor) {
-      // 外部容器
-      var outerWrapper = _domCore2.default.query(selecotor);
-
-      this.editor = _domCore2.default.create('div', { class: 'zxeditor-container' });
-      this.editbox = _domCore2.default.create('div', { class: 'zxeditor-content-wrapper', contenteditable: true, style: 'margin-bottom: ' + TOOL_BAR_HEIGHT + 'px' });
-      this.toolbar = _domCore2.default.create('div', { class: 'zxeditor-toolbar-wrapper' });
-      this.textstyle = _domCore2.default.create('div', { class: 'zxeditor-textstyle-wrapper', style: 'display: none' });
-
-      this.linkinput = _domCore2.default.create('div', { class: 'zxeditor-linkinput-wrapper', style: 'display: none' });
-
-      this.toolbar.innerHTML = '\n      <div class="toolbar-item pic-hook">\u56FE\u7247</div>\n      <div class="toolbar-item text-hook">\u6587\u5B57</div>\n      <div class="toolbar-item link-hook">\u94FE\u63A5</div>\n      <div class="toolbar-item split-hook">\u5206\u5272</div>\n      <!--<div class="toolbar-item reward-hook">\u6253\u8D4F</div>-->\n    ';
-
-      this.textstyle.innerHTML = '\n      <div class="abs-bar-wrapper border-bottom">\n        <div class="abs-bar-title">\u6837\u5F0F</div>\n        <div class="abs-bar-btn">\u5B8C\u6210</div>\n      </div>\n      <div class="text-style-wrapper border-bottom">\n        <div class="style-item text-bold" data-style="fontWeight:800">B</div>\n        <div class="style-item text-italic" data-style="fontStyle:italic">I</div>\n        <div class="style-item through-line" data-style="textDecoration:line-through">abc</div>\n      </div>\n      <div class="text-color-wrapper border-bottom">\n        <div class="color-item color-black" data-color=""></div>\n        <div class="color-item color-gray" data-color="' + COLORS.gray + '"></div>\n        <div class="color-item color-red" data-color="' + COLORS.red + '"></div>\n        <div class="color-item color-yellow" data-color="' + COLORS.yellow + '"></div>\n        <div class="color-item color-green" data-color="' + COLORS.green + '"></div>\n        <div class="color-item color-blue" data-color="' + COLORS.blue + '"></div>\n        <div class="color-item color-purple" data-color="' + COLORS.purple + '"></div>\n      </div>\n      <div class="text-tag-wrapper">\n        <div class="tag-item big-hook" data-tag="h2">\u5927\u6807\u9898</div>\n        <div class="tag-item small-hook" data-tag="h4">\u5C0F\u6807\u9898</div>\n        <div class="tag-item normal-hook" data-tag="p">\u6B63\u6587</div>\n        <div class="tag-item quote-hook" data-tag="blockquote"><b></b>\u5F15\u7528</div>\n        <div class="tag-item unordered-hook" data-tag="ul"><b></b>\u65E0\u5E8F\u5217\u8868</div>\n      </div>\n    ';
-
-      this.linkinput.innerHTML = '\n      <div class="linkinput-wrapper">\n        <div class="linkinput-title">\u6DFB\u52A0\u94FE\u63A5</div>\n        <div class="linkinput-group">\n          <input type="text" class="link-input" name="zxeditorLinkurl" placeholder="http(s)://">\n          <input type="text" class="link-input" name="zxeditorLinkname" placeholder="\u94FE\u63A5\u540D\u79F0(\u9009\u586B)">\n        </div>\n        <div class="linkinput-footer">\n          <button class="cancel-hook">\u53D6\u6D88</button>\n          <button class="submit-hook disabled">\u786E\u5B9A</button>\n        </div>\n      </div>\n    ';
-
-      this.editor.appendChild(this.editbox);
-      this.editor.appendChild(this.toolbar);
-      this.editor.appendChild(this.textstyle);
-      this.editor.appendChild(this.linkinput);
-      outerWrapper.appendChild(this.editor);
-
-      this._eventHandle();
-    }
-
-    /**
-     * 初始化文本框内容及当前光标元素
-     * @private
-     */
-
-  }, {
-    key: '_initContentRang',
-    value: function _initContentRang() {
-      if (!this.editbox.innerHTML) {
-        var p = _domCore2.default.create('p');
-        p.innerHTML = '<br>';
-        this.rangeElm = p;
-        this.editbox.appendChild(p);
-        this._setRangePosition();
-      }
-    }
-
-    /**
-     * 显示文字样式设置
-     * @private
-     */
-
-  }, {
-    key: '_textstyleShow',
-    value: function _textstyleShow() {
-      this.textstyle.style.display = 'block';
-      this.editbox.style.marginBottom = TEXT_STYLE_HEIGHT + 'px';
-      this.textstyleIsShow = true;
-      this._initTextStyleCheck();
-      this.scrollToRange();
-    }
-
-    /**
-     * 隐藏文字样式设置
-     * @private
-     */
-
-  }, {
-    key: '_textstyleHide',
-    value: function _textstyleHide() {
-      this.textstyle.style.display = 'none';
-      this.editbox.style.marginBottom = TOOL_BAR_HEIGHT + 'px';
-      this.textstyleIsShow = false;
-      this.scrollToRange();
-      this._setRangePosition();
-    }
-
-    /**
-     * 操作事件绑定
-     */
-
-  }, {
-    key: '_eventHandle',
-    value: function _eventHandle() {
-      var _this = this;
-
-      // 激活文本编辑框
-      this.editbox.addEventListener('click', function (e) {
-        _this._initContentRang();
-        _this._getRange(function () {
-          // this._initTextStyleCheck()
-        });
-        // 隐藏显示的文字样式设置容器
-        if (_this.textstyleIsShow) {
-          _this._textstyleHide();
-        }
-      }, false);
-
-      // 离开编辑输入框时，内容是否为空
-      // 为空则添加<br>
-      this.editbox.addEventListener('blur', function (e) {
-        if (_this.rangeElm && !_this.rangeElm.innerHTML) {
-          _this.rangeElm.innerHTML = '<br>';
-        }
-      }, false);
-
-      // 文本编辑框内容输入
-      this.editbox.addEventListener('keyup', function () {
-        _this._getRange();
-        _this.scrollToRange();
-      }, false);
-
-      // 操作工具栏，上传图片、文字样式设置等
-      this.toolbar.addEventListener('click', function (e) {
-        var el = e.target;
-        // 判断内容是否为空，
-        // 即用户是否有激活过文本输入框
-        _this._initContentRang();
-
-        // 文字
-        if (el.hasClass('text-hook')) {
-          _this._textstyleShow();
-        }
-
-        // 链接
-        if (el.hasClass('link-hook')) {
-          if (_this.rangeElm.nodeName === 'P') {
-            _this.linkinput.style.display = 'flex';
-          } else {
-            alert('只支持在正文中插入链接！');
-          }
-        }
-
-        // 分割线
-        if (el.hasClass('split-hook')) {
-          _domCore2.default.insertHr(_this.rangeElm);
-        }
-
-        // 打赏
-        if (el.hasClass('reward-hook')) {
-          alert('开发中');
-        }
-      }, false);
-
-      // 文字样式选项控制
-      this.textstyle.addEventListener('click', function (e) {
-        var el = e.target;
-        // 字体标签
-        if (el.hasClass('tag-item')) {
-          _this._tagnameHandle(el);
-        }
-        // 字体样式
-        if (el.hasClass('style-item')) {
-          _this._textStyleHandle(el);
-        }
-        // 字体颜色
-        if (el.hasClass('color-item')) {
-          _this._textColorHandle(el);
-        }
-        // 关闭字体样式设置层
-        if (el.hasClass('abs-bar-btn')) {
-          _this._textstyleHide(el);
-        }
-      });
-
-      // 滑动文字样式设置层时，禁用document滑动
-      this.textstyle.addEventListener('touchmove', function (e) {
-        _domCore2.default.queryAll('body')[0].style.overflow = 'hidden';
-      });
-      this.textstyle.addEventListener('touchend', function (e) {
-        _domCore2.default.queryAll('body')[0].style.overflow = '';
-      });
-
-      // 链接：输入容器按钮
-      var submitBtn = this.linkinput.querySelector('.submit-hook');
-      var cancelBtn = this.linkinput.querySelector('.cancel-hook');
-      var linkInputs = this.linkinput.querySelectorAll('input');
-      // 确定
-      submitBtn.addEventListener('click', function (e) {
-        var el = e.target;
-        var className = el.className;
-        if (el.hasClass('disabled')) return;
-        // 创建url，并添加至焦点出
-        var linkStr = _domCore2.default.createLinkStr(linkInputs[0].value, linkInputs[1].value);
-        // 获取焦点在段落中的位置
-        var position = _this.range ? _this.range.startOffset : 0;
-        if (_this.rangeElm.nodeName === 'P') {
-          _this.rangeElm.innerHTML = _domCore2.default.insertStr(_this.rangeElm.innerText, linkStr, position);
-          _this.linkinput.style.display = 'none';
-        }
-      }, false);
-      // 取消
-      cancelBtn.addEventListener('click', function () {
-        _this.linkinput.style.display = 'none';
-      }, false);
-
-      // 链接输入框
-      linkInputs[0].addEventListener('keyup', function (e) {
-        var val = e.target.value;
-        if (_util2.default.isHttpUrl(val)) {
-          if (submitBtn.hasClass('disabled')) {
-            submitBtn.removeClass('disabled');
-          }
-        }
-      }, false);
-    }
-
-    /**
-     * 元素文字style样式处理
-     * @param el 样式按钮对象
-     * @private
-     */
-
-  }, {
-    key: '_textStyleHandle',
-    value: function _textStyleHandle(el) {
-      var value = el.getAttribute('data-style');
-      var style = value.split(':');
-      var key = style[0];
-      if (this.rangeElm.style[key] === style[1]) {
-        this.rangeElm.style[key] = '';
-      } else {
-        this.rangeElm.style[key] = style[1];
-      }
-      this._setRangePosition();
-    }
-
-    /**
-     * 元素文字Color处理
-     * @param el 颜色按钮对象
-     * @private
-     */
-
-  }, {
-    key: '_textColorHandle',
-    value: function _textColorHandle(el) {
-      var value = el.getAttribute('data-color');
-      this.rangeElm.style.color = value;
-      el.addClass('active');
-      var siblings = _domCore2.default.siblings(el, 'active') || [];
-      siblings.forEach(function (item) {
-        item.removeClass('active');
-      });
-      this._setRangePosition();
-    }
-
-    /**
-     * 标签样式处理
-     * @param el 标签按钮对象
-     * @private
-     */
-
-  }, {
-    key: '_tagnameHandle',
-    value: function _tagnameHandle(el) {
-      var _this2 = this;
-
-      var TAG_ITEMS = {
-        'big': 'h2',
-        'small': 'h4',
-        'normal': 'p',
-        'quote': 'blockquote',
-        'unordered': 'ul'
-      };
-
-      var className = el.className;
-
-      if (el.querySelector('.checked') === null) {
-        this._appendCheckedIcon(el);
-        // 去掉兄弟节点上的选中符号
-        var siblings = _domCore2.default.siblings(el) || [];
-        siblings.forEach(function (item) {
-          _this2._removeCheckedIcon(item);
-        });
-        // 给当前焦点元素节点，添加样式
-        var tag = 'p';
-        var tagMatch = className.match(/\b(\w+?)-hook\b/);
-        if (tagMatch && tagMatch[1]) {
-          try {
-            tag = TAG_ITEMS[tagMatch[1]];
-          } catch (e) {}
-        }
-        // this.log(this.range)
-        var newElm = _domCore2.default.changeTagName(this.rangeElm, tag);
-        _domCore2.default.insertAfter(this.rangeElm, newElm);
-        this.editbox.removeChild(this.rangeElm);
-        this.rangeElm = newElm;
-        this._setRangePosition(this.rangeElm);
-      }
-    }
-
-    /**
-     * 初始化文字样式选项
-     * @private
-     */
-
-  }, {
-    key: '_initTextStyleCheck',
-    value: function _initTextStyleCheck() {
-      var _this3 = this;
-
-      if (!this.textstyleIsShow) return;
-      // 初始化节点类型 ****************************************
-      // 检查当前焦点DOM节点类型
-      var tagName = this.rangeElm.tagName.toLowerCase();
-      // this.log('this.rangeElm.tagName: ' + tagName)
-      var tagList = this.textstyle.querySelectorAll('.tag-item') || [];
-      tagList.forEach(function (item) {
-        var tag = item.getAttribute('data-tag');
-        if (tag === tagName) {
-          _this3._appendCheckedIcon(item);
-        } else {
-          _this3._removeCheckedIcon(item);
-        }
-      });
-
-      // 初始化文字颜色选 ****************************************
-      var color = this.rangeElm.style.color;
-      if (/rgb\(/.test(color)) {
-        // 十进制转十六进制
-        color = _util2.default.rgbToHex(color);
-      }
-      // 获取颜色选项节点列表
-      var colorList = this.textstyle.querySelectorAll('.color-item') || [];
-      colorList.forEach(function (item) {
-        var tag = item.getAttribute('data-color');
-        if (tag === color) {
-          item.addClass('active');
-        } else {
-          item.removeClass('active');
-        }
-      });
-      // 标记焦点位置
-      this._setRangePosition();
-    }
-
-    /**
-     * 添加一个checked图标
-     * @param el
-     * @private
-     */
-
-  }, {
-    key: '_appendCheckedIcon',
-    value: function _appendCheckedIcon(el) {
-      if (el.querySelector('.checked')) return;
-      // 字体样式选中符号
-      var ICON_CHECKED = _domCore2.default.create('i', { class: 'checked' });
-      el.appendChild(ICON_CHECKED);
-    }
-
-    /**
-     * 移除checked图标
-     * @param el
-     * @private
-     */
-
-  }, {
-    key: '_removeCheckedIcon',
-    value: function _removeCheckedIcon(el) {
-      var checkedNode = el.querySelector('.checked');
-      if (checkedNode) el.removeChild(checkedNode);
-    }
-
-    /**
-     * 创建图片随机id
-     * @param prefix id前缀
-     * @returns {string}
-     * @private
-     */
-
-  }, {
-    key: '_randId',
-    value: function _randId() {
-      var prefix = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-
-      return 'zxEditor_' + prefix + +new Date();
-    }
-
-    /**
-     * 添加图片到编辑器中
-     * @param src 图片URL地址或base64数据
-     */
-
-  }, {
-    key: 'addImage',
-    value: function addImage(src) {
-      var _this4 = this;
-
-      var id = this._randId('img_');
-      var img = _domCore2.default.create('img', { src: src, width: '100%', height: 'auto', id: id });
-      var p = null;
-      if (_domCore2.default.isInnerEmpty(this.rangeElm)) {
-        p = this.rangeElm;
-        p.innerHTML = '';
-      } else {
-        p = _domCore2.default.create('p');
-        _domCore2.default.insertAfter(this.rangeElm, p);
-        this.rangeElm = p;
-      }
-      p.appendChild(img);
-
-      // 结尾插入的话，新增一段
-      if (this.editbox.lastElementChild === p) {
-        this._insertEmptyParagraph();
-      } else {
-        this.rangeElm = p.nextElementSibling;
-        this.rangeOffset = 0;
-        this._setRangePosition(this.rangeElm);
-      }
-      // 300毫秒后，文档高度跳转至焦点位置
-      var timer = setTimeout(function () {
-        _this4.scrollToRange();
-        if (timer) clearTimeout(timer);
-      }, 300);
-    }
-
-    /**
-     * 获取光标及当前光标所在的DOM元素节点
-     * @private
-     */
-
-  }, {
-    key: '_getRange',
-    value: function _getRange() {
-      // 获取选定对象
-      this.selection = getSelection();
-      // 设置最后光标对象
-      this.range = this.selection.getRangeAt(0);
-      this.rangeOffset = this.range.startOffset;
-      // 当前Node
-      var currentNode = this.range.endContainer;
-      this.rangeElm = _domCore2.default.closest(currentNode, this.editbox);
-    }
-
-    /**
-     * 设置或创建光标位置
-     * @param el
-     * @private
-     */
-
-  }, {
-    key: '_setRangePosition',
-    value: function _setRangePosition(el) {
-      var _this5 = this;
-
-      if (this.selection === null) {
-        this.selection = getSelection();
-        this.range = new Range();
-        this.rangeOffset = 0;
-      } else {
-        // 清除选定对象的所有光标对象
-        this.selection.removeAllRanges();
-      }
-      // 光标移动到到原来的位置加上新内容的长度
-      if (el) {
-        this.range.setStart(_domCore2.default.getTextNode(el), this.rangeOffset);
-      }
-      // 光标开始和光标结束重叠
-      this.range.collapse(true);
-
-      if (this.rangeTimer) clearTimeout(this.rangeTimer);
-      // 延时执行，键盘自动收起后再触发focus
-      this.rangeTimer = setTimeout(function () {
-        // 插入新的光标对象
-        _this5.selection.addRange(_this5.range);
-        if (_this5.rangeTimer) clearTimeout(_this5.rangeTimer);
-        _this5.rangeTimer = null;
-      }, 100);
-    }
-
-    /**
-     * 插入空行
-     * @private
-     */
-
-  }, {
-    key: '_insertEmptyParagraph',
-    value: function _insertEmptyParagraph() {
-      var p = _domCore2.default.create('p');
-      p.innerHTML = '<br>';
-      this.editbox.appendChild(p);
-      this.rangeElm = p;
-      this.rangeOffset = 0;
-      this._setRangePosition(p);
-    }
-
-    /**
-     * 滚动至顶部
-     */
-
-  }, {
-    key: 'scrollToTop',
-    value: function scrollToTop() {
-      var winHeight = window.innerHeight;
-      _scroll2.default.to(0, _scroll2.default.height() - winHeight);
-    }
-
-    /**
-     * 滚动至焦点可视区域
-     */
-
-  }, {
-    key: 'scrollToRange',
-    value: function scrollToRange() {
-      var winHeight = window.innerHeight;
-      var scrollTop = _scroll2.default.top();
-      var rect = this.rangeElm.getBoundingClientRect();
-      // fixed(ToolBar 或者 TEXT样式设置)层的高度
-      var fixedHeight = this.textstyleIsShow ? TEXT_STYLE_HEIGHT : TOOL_BAR_HEIGHT;
-      var scrollPostion = rect.bottom - (winHeight - fixedHeight);
-
-      if (scrollPostion > 0) {
-        _scroll2.default.to(0, scrollTop + scrollPostion);
-      } else if (rect.top < 0) {
-        _scroll2.default.to(0, scrollTop + rect.top);
-      }
-    }
-
-    /**
-     * 将image base64数据，转化为Bolb原始文件数
-     * @param base64Data
-     * @returns {*}
-     */
-
-  }, {
-    key: 'toBlobData',
-    value: function toBlobData(base64Data) {
-      // base64数据格式:
-      // "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAkGB+wgHBgkIBwgKCgkLDRYPDQw//9k="
-      var type = void 0,
-          onlyData = void 0;
-      if (/^data:(\w+\/\w+);base64,(.+)/) {
-        type = RegExp.$1;
-        onlyData = RegExp.$2;
-      } else {
-        (0, _debug.error)('toBlobData(data), params\'data is not base64 data!');
-        return null;
-      }
-
-      var data = window.atob(onlyData);
-      var ia = new Uint8Array(data.length);
-      for (var i = 0; i < data.length; i++) {
-        ia[i] = data.charCodeAt(i);
-      }
-      return new Blob([ia], { type: type });
-    }
-
-    /**
-     * 获取正文中的base64图片
-     * @returns {Array}
-     */
-
-  }, {
-    key: 'getBase64Images',
-    value: function getBase64Images() {
-      var arr = [];
-      var imgs = this.editbox.querySelectorAll('img');
-      for (var i = 0; i < imgs.length; i++) {
-        var img = imgs[i];
-        if (/^data:.+?;base64,/.test(img.src)) {
-          arr.push({
-            id: img.id,
-            data: img.src
-          });
-        }
-      }
-      return arr;
-    }
-
-    /**
-     * 设置指定id图片src
-     * @param id
-     * @param src
-     * @returns {boolean}
-     */
-
-  }, {
-    key: 'setImageSrc',
-    value: function setImageSrc(id, src) {
-      var img = this.editbox.querySelector('#' + id);
-      if (img) {
-        img.src = src;
-        return true;
-      }
-      return false;
-    }
-
-    /**
-     * 获取正文内容(html代码)
-     */
-
-  }, {
-    key: 'getContent',
-    value: function getContent() {
-      return this.editbox.innerHTML;
-    }
-  }]);
-
-  return ZxEditor;
-}();
-
-exports.ZxEditor = ZxEditor;
+eval("exports = module.exports = __webpack_require__(/*! ../../node_modules/_css-loader@0.28.11@css-loader/lib/css-base.js */ \"./node_modules/_css-loader@0.28.11@css-loader/lib/css-base.js\")(false);\n// imports\n\n\n// module\nexports.push([module.i, \".border-bottom:after{position:absolute;bottom:0;left:0;width:100%;content:'';border-top:1px solid #eee;-webkit-transform:scaleY(.5);transform:scaleY(.5)}.zxeditor-container{display:block;margin:0;padding:0;width:100%;min-height:200px;}.zxeditor-container *{margin:0;padding:0;color:#555;-webkit-box-sizing:border-box;box-sizing:border-box}.zxeditor-container .zxeditor-content-wrapper{width:100%;min-height:200px;overflow:hidden;outline:none;}.zxeditor-container .zxeditor-content-wrapper p,.zxeditor-container .zxeditor-content-wrapper h1,.zxeditor-container .zxeditor-content-wrapper h2,.zxeditor-container .zxeditor-content-wrapper h3,.zxeditor-container .zxeditor-content-wrapper h4,.zxeditor-container .zxeditor-content-wrapper li{line-height:1.5em;padding:10px 0}.zxeditor-container .zxeditor-content-wrapper h2{font-size:1.2em;font-weight:800 !important}.zxeditor-container .zxeditor-content-wrapper h4{font-weight:800 !important}.zxeditor-container .zxeditor-content-wrapper blockquote{display:inline-block;padding-left:1em;border-left:3px solid #d0d0d0}.zxeditor-container .zxeditor-content-wrapper ul{padding-left:20px;list-style:disc}.zxeditor-container .zxeditor-content-wrapper li,.zxeditor-container .zxeditor-content-wrapper p{color:inherit}.zxeditor-container .zxeditor-content-wrapper hr{margin:0 20%;border:0;border-top:1px dashed #d0d0d0}.zxeditor-container .zxeditor-toolbar-wrapper{display:-webkit-box;display:-ms-flexbox;display:flex;position:fixed;z-index:9999;left:0;bottom:0;width:100%;height:48px;background-color:#fff;}.zxeditor-container .zxeditor-toolbar-wrapper:after{position:absolute;top:0;left:0;width:100%;content:'';border-top:1px solid #d0d0d0;-webkit-transform:scaleY(.5);transform:scaleY(.5)}.zxeditor-container .zxeditor-toolbar-wrapper .toolbar-item{-webkit-box-flex:1;-ms-flex:1;flex:1;height:48px;line-height:48px;text-align:center}.zxeditor-container .zxeditor-textstyle-wrapper{position:fixed;z-index:10000;left:0;bottom:0;width:100%;height:260px;background-color:#fff;overflow-y:auto;}.zxeditor-container .zxeditor-textstyle-wrapper .abs-bar-wrapper{position:fixed;z-index:1;bottom:212px;left:0;width:100%;height:48px;background-color:#eee;border-top:1px solid #d0d0d0;border-bottom:1px solid #d0d0d0;-webkit-box-sizing:border-box;box-sizing:border-box;}.zxeditor-container .zxeditor-textstyle-wrapper .abs-bar-wrapper .abs-bar-title{position:relative;line-height:48px;text-align:center;font-size:1.2em}.zxeditor-container .zxeditor-textstyle-wrapper .abs-bar-wrapper .abs-bar-btn{position:absolute;top:0;right:0;width:64px;height:48px;line-height:48px;text-align:center;color:#14b2e0;font-size:1em}.zxeditor-container .zxeditor-textstyle-wrapper .text-style-wrapper{position:relative;display:-webkit-box;display:-ms-flexbox;display:flex;margin-top:48px;height:50px;}.zxeditor-container .zxeditor-textstyle-wrapper .text-style-wrapper .style-item{position:relative;-webkit-box-flex:1;-ms-flex:1;flex:1;line-height:50px;text-align:center;font-size:1.5em;}.zxeditor-container .zxeditor-textstyle-wrapper .text-style-wrapper .style-item:nth-child(2):before{position:absolute;top:0;left:0;height:50px;content:'';border-left:1px solid #eee;-webkit-transform:scaleX(.5);transform:scaleX(.5)}.zxeditor-container .zxeditor-textstyle-wrapper .text-style-wrapper .style-item:nth-child(2):after{position:absolute;top:0;right:0;height:50px;content:'';border-right:1px solid #eee;-webkit-transform:scaleX(.5);transform:scaleX(.5)}.zxeditor-container .zxeditor-textstyle-wrapper .text-style-wrapper .style-item.text-bold{font-weight:800}.zxeditor-container .zxeditor-textstyle-wrapper .text-style-wrapper .style-item.text-italic{font-style:italic !important}.zxeditor-container .zxeditor-textstyle-wrapper .text-style-wrapper .style-item.through-line{text-decoration:line-through !important}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper{display:-webkit-box;display:-ms-flexbox;display:flex;position:relative;height:50px;}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-item{-webkit-box-flex:1;-ms-flex:1;flex:1;position:relative;height:50px;}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-item:before{position:absolute;top:50%;left:50%;margin:-14px 0 0 -14px;width:28px;height:28px;border-radius:50%;content:''}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-item:after{position:absolute;top:50%;left:50%;margin:-17px 0 0 -17px;width:34px;height:34px;border-radius:50%;-webkit-box-sizing:border-box;box-sizing:border-box;content:''}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-black:before{background-color:#555}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-gray:before{background-color:#d0d0d0}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-red:before{background-color:#ff583d}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-yellow:before{background-color:#fdaa25}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-green:before{background-color:#44c67b}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-blue:before{background-color:#14b2e0}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-purple:before{background-color:#b065e2}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .active.color-black:after{border:1px solid #555}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .active.color-gray:after{border:1px solid #d0d0d0}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .active.color-red:after{border:1px solid #ff583d}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .active.color-yellow:after{border:1px solid #fdaa25}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .active.color-green:after{border:1px solid #44c67b}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .active.color-blue:after{border:1px solid #14b2e0}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .active.color-purple:after{border:1px solid #b065e2}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper{border-top:5px solid #eee;}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item{position:relative;margin:0 20px;height:48px;line-height:48px;text-align:center;}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item:after{position:absolute;bottom:0;left:0;width:100%;content:'';border-top:1px solid #eee;-webkit-transform:scaleY(.5);transform:scaleY(.5)}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item:last-child:after{border-top:0}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item > b{position:relative;display:inline-block;vertical-align:top;margin-right:8px;width:20px;height:48px;text-align:right;}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item > b:after{display:inline-block}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item.big-hook{font-size:1.2em;font-weight:800 !important}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item.small-hook{font-weight:800 !important}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item.quote-hook b:after{font-size:2em;content:'\\\"';margin-top:8px}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item.unordered-hook b:after{font-size:1.5em;content:'\\\\B7'}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item i.checked{display:inline-block;position:absolute;z-index:1;top:18px;right:30px;width:16px;height:8px;-webkit-transform:rotate(-45deg);transform:rotate(-45deg);}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item i.checked:before,.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item i.checked:after{display:inline-block;position:absolute;background-color:#14b2e0;content:''}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item i.checked:before{top:0;left:0;width:2px;height:8px}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item i.checked:after{bottom:0;left:0;width:14px;height:2px}.zxeditor-container .zxeditor-linkinput-wrapper{display:-webkit-box;display:-ms-flexbox;display:flex;position:fixed;z-index:10001;top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,0.4);-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper{width:80%;background-color:#fefefe;border-radius:4px;overflow:hidden;}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-title{height:3.5em;line-height:3.5em;text-align:center}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-group{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;margin:0 10px;border:1px solid #eee;border-radius:3px;background-color:#fff;-webkit-box-sizing:border-box;box-sizing:border-box;}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-group .link-input{position:relative;display:block;margin:0 5px;height:40px;line-height:40px;border:0;outline:none;}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-group .link-input:first-child{border-bottom:1px solid #eee}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-group .link-input::-webkit-input-placeholder{color:#d0d0d0}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-group .link-input:-ms-input-placeholder{color:#d0d0d0}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-group .link-input::-ms-input-placeholder{color:#d0d0d0}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-group .link-input::placeholder{color:#d0d0d0}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-footer{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;margin:1em 10px;}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-footer button{display:inline-block;height:40px;line-height:40px;width:47%;text-align:center;background-color:#fff;border:1px solid #eee;border-radius:3px;letter-spacing:2px;-webkit-box-sizing:border-box;box-sizing:border-box;}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-footer button.disabled{color:#eee}\", \"\"]);\n\n// exports\n\n\n//# sourceURL=webpack:///./src/css/zx-editor.styl?./node_modules/_css-loader@0.28.11@css-loader??ref--5-1!./node_modules/_postcss-loader@2.1.3@postcss-loader/lib??postcss!./node_modules/_stylus-loader@3.0.2@stylus-loader??ref--5-3");
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
 
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(2);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
-var transform;
-
-var options = {"hmr":true}
-options.transform = transform
-// add the styles to the DOM
-var update = __webpack_require__(4)(content, options);
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../node_modules/_css-loader@0.28.9@css-loader/index.js??ref--1-1!../../node_modules/_postcss-loader@2.0.10@postcss-loader/lib/index.js??postcss!../../node_modules/_stylus-loader@3.0.1@stylus-loader/index.js??ref--1-3!./zx-editor.styl", function() {
-			var newContent = require("!!../../node_modules/_css-loader@0.28.9@css-loader/index.js??ref--1-1!../../node_modules/_postcss-loader@2.0.10@postcss-loader/lib/index.js??postcss!../../node_modules/_stylus-loader@3.0.1@stylus-loader/index.js??ref--1-3!./zx-editor.styl");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(3)(false);
-// imports
-
-
-// module
-exports.push([module.i, ".border-bottom:after{position:absolute;bottom:0;left:0;width:100%;content:'';border-top:1px solid #eee;-webkit-transform:scaleY(.5);transform:scaleY(.5)}.zxeditor-container{display:block;margin:0;padding:0;width:100%;min-height:200px;}.zxeditor-container *{margin:0;padding:0;color:#555;-webkit-box-sizing:border-box;box-sizing:border-box}.zxeditor-container .zxeditor-content-wrapper{width:100%;min-height:200px;overflow:hidden;outline:none;}.zxeditor-container .zxeditor-content-wrapper p,.zxeditor-container .zxeditor-content-wrapper h1,.zxeditor-container .zxeditor-content-wrapper h2,.zxeditor-container .zxeditor-content-wrapper h3,.zxeditor-container .zxeditor-content-wrapper h4,.zxeditor-container .zxeditor-content-wrapper li{line-height:1.5em;padding:10px 0}.zxeditor-container .zxeditor-content-wrapper h2{font-size:1.2em;font-weight:800 !important}.zxeditor-container .zxeditor-content-wrapper h4{font-weight:800 !important}.zxeditor-container .zxeditor-content-wrapper blockquote{display:inline-block;padding-left:1em;border-left:3px solid #d0d0d0}.zxeditor-container .zxeditor-content-wrapper ul{padding-left:20px;list-style:disc}.zxeditor-container .zxeditor-content-wrapper li,.zxeditor-container .zxeditor-content-wrapper p{color:inherit}.zxeditor-container .zxeditor-content-wrapper hr{margin:0 20%;border:0;border-top:1px dashed #d0d0d0}.zxeditor-container .zxeditor-toolbar-wrapper{display:-webkit-box;display:-ms-flexbox;display:flex;position:fixed;z-index:9999;left:0;bottom:0;width:100%;height:48px;background-color:#fff;}.zxeditor-container .zxeditor-toolbar-wrapper:after{position:absolute;top:0;left:0;width:100%;content:'';border-top:1px solid #d0d0d0;-webkit-transform:scaleY(.5);transform:scaleY(.5)}.zxeditor-container .zxeditor-toolbar-wrapper .toolbar-item{-webkit-box-flex:1;-ms-flex:1;flex:1;height:48px;line-height:48px;text-align:center}.zxeditor-container .zxeditor-textstyle-wrapper{position:fixed;z-index:10000;left:0;bottom:0;width:100%;height:260px;background-color:#fff;overflow-y:auto;}.zxeditor-container .zxeditor-textstyle-wrapper .abs-bar-wrapper{position:fixed;z-index:1;bottom:212px;left:0;width:100%;height:48px;background-color:#eee;border-top:1px solid #d0d0d0;border-bottom:1px solid #d0d0d0;-webkit-box-sizing:border-box;box-sizing:border-box;}.zxeditor-container .zxeditor-textstyle-wrapper .abs-bar-wrapper .abs-bar-title{position:relative;line-height:48px;text-align:center;font-size:1.2em}.zxeditor-container .zxeditor-textstyle-wrapper .abs-bar-wrapper .abs-bar-btn{position:absolute;top:0;right:0;width:64px;height:48px;line-height:48px;text-align:center;color:#14b2e0;font-size:1em}.zxeditor-container .zxeditor-textstyle-wrapper .text-style-wrapper{position:relative;display:-webkit-box;display:-ms-flexbox;display:flex;margin-top:48px;height:50px;}.zxeditor-container .zxeditor-textstyle-wrapper .text-style-wrapper .style-item{position:relative;-webkit-box-flex:1;-ms-flex:1;flex:1;line-height:50px;text-align:center;font-size:1.5em;}.zxeditor-container .zxeditor-textstyle-wrapper .text-style-wrapper .style-item:nth-child(2):before{position:absolute;top:0;left:0;height:50px;content:'';border-left:1px solid #eee;-webkit-transform:scaleX(.5);transform:scaleX(.5)}.zxeditor-container .zxeditor-textstyle-wrapper .text-style-wrapper .style-item:nth-child(2):after{position:absolute;top:0;right:0;height:50px;content:'';border-right:1px solid #eee;-webkit-transform:scaleX(.5);transform:scaleX(.5)}.zxeditor-container .zxeditor-textstyle-wrapper .text-style-wrapper .style-item.text-bold{font-weight:800}.zxeditor-container .zxeditor-textstyle-wrapper .text-style-wrapper .style-item.text-italic{font-style:italic !important}.zxeditor-container .zxeditor-textstyle-wrapper .text-style-wrapper .style-item.through-line{text-decoration:line-through !important}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper{display:-webkit-box;display:-ms-flexbox;display:flex;position:relative;height:50px;}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-item{-webkit-box-flex:1;-ms-flex:1;flex:1;position:relative;height:50px;}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-item:before{position:absolute;top:50%;left:50%;margin:-14px 0 0 -14px;width:28px;height:28px;border-radius:50%;content:''}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-item:after{position:absolute;top:50%;left:50%;margin:-17px 0 0 -17px;width:34px;height:34px;border-radius:50%;-webkit-box-sizing:border-box;box-sizing:border-box;content:''}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-black:before{background-color:#555}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-gray:before{background-color:#d0d0d0}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-red:before{background-color:#ff583d}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-yellow:before{background-color:#fdaa25}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-green:before{background-color:#44c67b}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-blue:before{background-color:#14b2e0}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .color-purple:before{background-color:#b065e2}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .active.color-black:after{border:1px solid #555}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .active.color-gray:after{border:1px solid #d0d0d0}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .active.color-red:after{border:1px solid #ff583d}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .active.color-yellow:after{border:1px solid #fdaa25}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .active.color-green:after{border:1px solid #44c67b}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .active.color-blue:after{border:1px solid #14b2e0}.zxeditor-container .zxeditor-textstyle-wrapper .text-color-wrapper .active.color-purple:after{border:1px solid #b065e2}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper{border-top:5px solid #eee;}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item{position:relative;margin:0 20px;height:48px;line-height:48px;text-align:center;}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item:after{position:absolute;bottom:0;left:0;width:100%;content:'';border-top:1px solid #eee;-webkit-transform:scaleY(.5);transform:scaleY(.5)}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item:last-child:after{border-top:0}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item > b{position:relative;display:inline-block;vertical-align:top;margin-right:8px;width:20px;height:48px;text-align:right;}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item > b:after{display:inline-block}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item.big-hook{font-size:1.2em;font-weight:800 !important}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item.small-hook{font-weight:800 !important}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item.quote-hook b:after{font-size:2em;content:'\"';margin-top:8px}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item.unordered-hook b:after{font-size:1.5em;content:'\\B7'}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item i.checked{display:inline-block;position:absolute;z-index:1;top:18px;right:30px;width:16px;height:8px;-webkit-transform:rotate(-45deg);transform:rotate(-45deg);}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item i.checked:before,.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item i.checked:after{display:inline-block;position:absolute;background-color:#14b2e0;content:''}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item i.checked:before{top:0;left:0;width:2px;height:8px}.zxeditor-container .zxeditor-textstyle-wrapper .text-tag-wrapper .tag-item i.checked:after{bottom:0;left:0;width:14px;height:2px}.zxeditor-container .zxeditor-linkinput-wrapper{display:-webkit-box;display:-ms-flexbox;display:flex;position:fixed;z-index:10001;top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,0.4);-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper{width:80%;background-color:#fefefe;border-radius:4px;overflow:hidden;}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-title{height:3.5em;line-height:3.5em;text-align:center}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-group{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;margin:0 10px;border:1px solid #eee;border-radius:3px;background-color:#fff;-webkit-box-sizing:border-box;box-sizing:border-box;}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-group .link-input{position:relative;display:block;margin:0 5px;height:40px;line-height:40px;border:0;outline:none;}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-group .link-input:first-child{border-bottom:1px solid #eee}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-group .link-input::-webkit-input-placeholder{color:#d0d0d0}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-group .link-input:-ms-input-placeholder{color:#d0d0d0}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-group .link-input::-ms-input-placeholder{color:#d0d0d0}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-group .link-input::placeholder{color:#d0d0d0}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-footer{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;margin:1em 10px;}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-footer button{display:inline-block;height:40px;line-height:40px;width:47%;text-align:center;background-color:#fff;border:1px solid #eee;border-radius:3px;letter-spacing:2px;-webkit-box-sizing:border-box;box-sizing:border-box;}.zxeditor-container .zxeditor-linkinput-wrapper .linkinput-wrapper .linkinput-footer button.disabled{color:#eee}", ""]);
-
-// exports
-
-
-/***/ }),
-/* 3 */
+/***/ "./node_modules/_css-loader@0.28.11@css-loader/lib/css-base.js":
+/*!*********************************************************************!*\
+  !*** ./node_modules/_css-loader@0.28.11@css-loader/lib/css-base.js ***!
+  \*********************************************************************/
+/*! no static exports found */
 /***/ (function(module, exports) {
 
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function(useSourceMap) {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if(item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
-
-	if (useSourceMap && typeof btoa === 'function') {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
-		});
-
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
-
-	return [content].join('\n');
-}
-
-// Adapted from convert-source-map (MIT)
-function toComment(sourceMap) {
-	// eslint-disable-next-line no-undef
-	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-	return '/*# ' + data + ' */';
-}
-
+eval("/*\n\tMIT License http://www.opensource.org/licenses/mit-license.php\n\tAuthor Tobias Koppers @sokra\n*/\n// css base code, injected by the css-loader\nmodule.exports = function(useSourceMap) {\n\tvar list = [];\n\n\t// return the list of modules as css string\n\tlist.toString = function toString() {\n\t\treturn this.map(function (item) {\n\t\t\tvar content = cssWithMappingToString(item, useSourceMap);\n\t\t\tif(item[2]) {\n\t\t\t\treturn \"@media \" + item[2] + \"{\" + content + \"}\";\n\t\t\t} else {\n\t\t\t\treturn content;\n\t\t\t}\n\t\t}).join(\"\");\n\t};\n\n\t// import a list of modules into the list\n\tlist.i = function(modules, mediaQuery) {\n\t\tif(typeof modules === \"string\")\n\t\t\tmodules = [[null, modules, \"\"]];\n\t\tvar alreadyImportedModules = {};\n\t\tfor(var i = 0; i < this.length; i++) {\n\t\t\tvar id = this[i][0];\n\t\t\tif(typeof id === \"number\")\n\t\t\t\talreadyImportedModules[id] = true;\n\t\t}\n\t\tfor(i = 0; i < modules.length; i++) {\n\t\t\tvar item = modules[i];\n\t\t\t// skip already imported module\n\t\t\t// this implementation is not 100% perfect for weird media query combinations\n\t\t\t//  when a module is imported multiple times with different media queries.\n\t\t\t//  I hope this will never occur (Hey this way we have smaller bundles)\n\t\t\tif(typeof item[0] !== \"number\" || !alreadyImportedModules[item[0]]) {\n\t\t\t\tif(mediaQuery && !item[2]) {\n\t\t\t\t\titem[2] = mediaQuery;\n\t\t\t\t} else if(mediaQuery) {\n\t\t\t\t\titem[2] = \"(\" + item[2] + \") and (\" + mediaQuery + \")\";\n\t\t\t\t}\n\t\t\t\tlist.push(item);\n\t\t\t}\n\t\t}\n\t};\n\treturn list;\n};\n\nfunction cssWithMappingToString(item, useSourceMap) {\n\tvar content = item[1] || '';\n\tvar cssMapping = item[3];\n\tif (!cssMapping) {\n\t\treturn content;\n\t}\n\n\tif (useSourceMap && typeof btoa === 'function') {\n\t\tvar sourceMapping = toComment(cssMapping);\n\t\tvar sourceURLs = cssMapping.sources.map(function (source) {\n\t\t\treturn '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'\n\t\t});\n\n\t\treturn [content].concat(sourceURLs).concat([sourceMapping]).join('\\n');\n\t}\n\n\treturn [content].join('\\n');\n}\n\n// Adapted from convert-source-map (MIT)\nfunction toComment(sourceMap) {\n\t// eslint-disable-next-line no-undef\n\tvar base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));\n\tvar data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;\n\n\treturn '/*# ' + data + ' */';\n}\n\n\n//# sourceURL=webpack:///./node_modules/_css-loader@0.28.11@css-loader/lib/css-base.js?");
 
 /***/ }),
-/* 4 */
+
+/***/ "./node_modules/_style-loader@0.19.1@style-loader/lib/addStyles.js":
+/*!*************************************************************************!*\
+  !*** ./node_modules/_style-loader@0.19.1@style-loader/lib/addStyles.js ***!
+  \*************************************************************************/
+/*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-
-var stylesInDom = {};
-
-var	memoize = function (fn) {
-	var memo;
-
-	return function () {
-		if (typeof memo === "undefined") memo = fn.apply(this, arguments);
-		return memo;
-	};
-};
-
-var isOldIE = memoize(function () {
-	// Test for IE <= 9 as proposed by Browserhacks
-	// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805
-	// Tests for existence of standard globals is to allow style-loader
-	// to operate correctly into non-standard environments
-	// @see https://github.com/webpack-contrib/style-loader/issues/177
-	return window && document && document.all && !window.atob;
-});
-
-var getElement = (function (fn) {
-	var memo = {};
-
-	return function(selector) {
-		if (typeof memo[selector] === "undefined") {
-			var styleTarget = fn.call(this, selector);
-			// Special case to return head of iframe instead of iframe itself
-			if (styleTarget instanceof window.HTMLIFrameElement) {
-				try {
-					// This will throw an exception if access to iframe is blocked
-					// due to cross-origin restrictions
-					styleTarget = styleTarget.contentDocument.head;
-				} catch(e) {
-					styleTarget = null;
-				}
-			}
-			memo[selector] = styleTarget;
-		}
-		return memo[selector]
-	};
-})(function (target) {
-	return document.querySelector(target)
-});
-
-var singleton = null;
-var	singletonCounter = 0;
-var	stylesInsertedAtTop = [];
-
-var	fixUrls = __webpack_require__(5);
-
-module.exports = function(list, options) {
-	if (typeof DEBUG !== "undefined" && DEBUG) {
-		if (typeof document !== "object") throw new Error("The style-loader cannot be used in a non-browser environment");
-	}
-
-	options = options || {};
-
-	options.attrs = typeof options.attrs === "object" ? options.attrs : {};
-
-	// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-	// tags it will allow on a page
-	if (!options.singleton && typeof options.singleton !== "boolean") options.singleton = isOldIE();
-
-	// By default, add <style> tags to the <head> element
-	if (!options.insertInto) options.insertInto = "head";
-
-	// By default, add <style> tags to the bottom of the target
-	if (!options.insertAt) options.insertAt = "bottom";
-
-	var styles = listToStyles(list, options);
-
-	addStylesToDom(styles, options);
-
-	return function update (newList) {
-		var mayRemove = [];
-
-		for (var i = 0; i < styles.length; i++) {
-			var item = styles[i];
-			var domStyle = stylesInDom[item.id];
-
-			domStyle.refs--;
-			mayRemove.push(domStyle);
-		}
-
-		if(newList) {
-			var newStyles = listToStyles(newList, options);
-			addStylesToDom(newStyles, options);
-		}
-
-		for (var i = 0; i < mayRemove.length; i++) {
-			var domStyle = mayRemove[i];
-
-			if(domStyle.refs === 0) {
-				for (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j]();
-
-				delete stylesInDom[domStyle.id];
-			}
-		}
-	};
-};
-
-function addStylesToDom (styles, options) {
-	for (var i = 0; i < styles.length; i++) {
-		var item = styles[i];
-		var domStyle = stylesInDom[item.id];
-
-		if(domStyle) {
-			domStyle.refs++;
-
-			for(var j = 0; j < domStyle.parts.length; j++) {
-				domStyle.parts[j](item.parts[j]);
-			}
-
-			for(; j < item.parts.length; j++) {
-				domStyle.parts.push(addStyle(item.parts[j], options));
-			}
-		} else {
-			var parts = [];
-
-			for(var j = 0; j < item.parts.length; j++) {
-				parts.push(addStyle(item.parts[j], options));
-			}
-
-			stylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};
-		}
-	}
-}
-
-function listToStyles (list, options) {
-	var styles = [];
-	var newStyles = {};
-
-	for (var i = 0; i < list.length; i++) {
-		var item = list[i];
-		var id = options.base ? item[0] + options.base : item[0];
-		var css = item[1];
-		var media = item[2];
-		var sourceMap = item[3];
-		var part = {css: css, media: media, sourceMap: sourceMap};
-
-		if(!newStyles[id]) styles.push(newStyles[id] = {id: id, parts: [part]});
-		else newStyles[id].parts.push(part);
-	}
-
-	return styles;
-}
-
-function insertStyleElement (options, style) {
-	var target = getElement(options.insertInto)
-
-	if (!target) {
-		throw new Error("Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.");
-	}
-
-	var lastStyleElementInsertedAtTop = stylesInsertedAtTop[stylesInsertedAtTop.length - 1];
-
-	if (options.insertAt === "top") {
-		if (!lastStyleElementInsertedAtTop) {
-			target.insertBefore(style, target.firstChild);
-		} else if (lastStyleElementInsertedAtTop.nextSibling) {
-			target.insertBefore(style, lastStyleElementInsertedAtTop.nextSibling);
-		} else {
-			target.appendChild(style);
-		}
-		stylesInsertedAtTop.push(style);
-	} else if (options.insertAt === "bottom") {
-		target.appendChild(style);
-	} else if (typeof options.insertAt === "object" && options.insertAt.before) {
-		var nextSibling = getElement(options.insertInto + " " + options.insertAt.before);
-		target.insertBefore(style, nextSibling);
-	} else {
-		throw new Error("[Style Loader]\n\n Invalid value for parameter 'insertAt' ('options.insertAt') found.\n Must be 'top', 'bottom', or Object.\n (https://github.com/webpack-contrib/style-loader#insertat)\n");
-	}
-}
-
-function removeStyleElement (style) {
-	if (style.parentNode === null) return false;
-	style.parentNode.removeChild(style);
-
-	var idx = stylesInsertedAtTop.indexOf(style);
-	if(idx >= 0) {
-		stylesInsertedAtTop.splice(idx, 1);
-	}
-}
-
-function createStyleElement (options) {
-	var style = document.createElement("style");
-
-	options.attrs.type = "text/css";
-
-	addAttrs(style, options.attrs);
-	insertStyleElement(options, style);
-
-	return style;
-}
-
-function createLinkElement (options) {
-	var link = document.createElement("link");
-
-	options.attrs.type = "text/css";
-	options.attrs.rel = "stylesheet";
-
-	addAttrs(link, options.attrs);
-	insertStyleElement(options, link);
-
-	return link;
-}
-
-function addAttrs (el, attrs) {
-	Object.keys(attrs).forEach(function (key) {
-		el.setAttribute(key, attrs[key]);
-	});
-}
-
-function addStyle (obj, options) {
-	var style, update, remove, result;
-
-	// If a transform function was defined, run it on the css
-	if (options.transform && obj.css) {
-	    result = options.transform(obj.css);
-
-	    if (result) {
-	    	// If transform returns a value, use that instead of the original css.
-	    	// This allows running runtime transformations on the css.
-	    	obj.css = result;
-	    } else {
-	    	// If the transform function returns a falsy value, don't add this css.
-	    	// This allows conditional loading of css
-	    	return function() {
-	    		// noop
-	    	};
-	    }
-	}
-
-	if (options.singleton) {
-		var styleIndex = singletonCounter++;
-
-		style = singleton || (singleton = createStyleElement(options));
-
-		update = applyToSingletonTag.bind(null, style, styleIndex, false);
-		remove = applyToSingletonTag.bind(null, style, styleIndex, true);
-
-	} else if (
-		obj.sourceMap &&
-		typeof URL === "function" &&
-		typeof URL.createObjectURL === "function" &&
-		typeof URL.revokeObjectURL === "function" &&
-		typeof Blob === "function" &&
-		typeof btoa === "function"
-	) {
-		style = createLinkElement(options);
-		update = updateLink.bind(null, style, options);
-		remove = function () {
-			removeStyleElement(style);
-
-			if(style.href) URL.revokeObjectURL(style.href);
-		};
-	} else {
-		style = createStyleElement(options);
-		update = applyToTag.bind(null, style);
-		remove = function () {
-			removeStyleElement(style);
-		};
-	}
-
-	update(obj);
-
-	return function updateStyle (newObj) {
-		if (newObj) {
-			if (
-				newObj.css === obj.css &&
-				newObj.media === obj.media &&
-				newObj.sourceMap === obj.sourceMap
-			) {
-				return;
-			}
-
-			update(obj = newObj);
-		} else {
-			remove();
-		}
-	};
-}
-
-var replaceText = (function () {
-	var textStore = [];
-
-	return function (index, replacement) {
-		textStore[index] = replacement;
-
-		return textStore.filter(Boolean).join('\n');
-	};
-})();
-
-function applyToSingletonTag (style, index, remove, obj) {
-	var css = remove ? "" : obj.css;
-
-	if (style.styleSheet) {
-		style.styleSheet.cssText = replaceText(index, css);
-	} else {
-		var cssNode = document.createTextNode(css);
-		var childNodes = style.childNodes;
-
-		if (childNodes[index]) style.removeChild(childNodes[index]);
-
-		if (childNodes.length) {
-			style.insertBefore(cssNode, childNodes[index]);
-		} else {
-			style.appendChild(cssNode);
-		}
-	}
-}
-
-function applyToTag (style, obj) {
-	var css = obj.css;
-	var media = obj.media;
-
-	if(media) {
-		style.setAttribute("media", media)
-	}
-
-	if(style.styleSheet) {
-		style.styleSheet.cssText = css;
-	} else {
-		while(style.firstChild) {
-			style.removeChild(style.firstChild);
-		}
-
-		style.appendChild(document.createTextNode(css));
-	}
-}
-
-function updateLink (link, options, obj) {
-	var css = obj.css;
-	var sourceMap = obj.sourceMap;
-
-	/*
-		If convertToAbsoluteUrls isn't defined, but sourcemaps are enabled
-		and there is no publicPath defined then lets turn convertToAbsoluteUrls
-		on by default.  Otherwise default to the convertToAbsoluteUrls option
-		directly
-	*/
-	var autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;
-
-	if (options.convertToAbsoluteUrls || autoFixUrls) {
-		css = fixUrls(css);
-	}
-
-	if (sourceMap) {
-		// http://stackoverflow.com/a/26603875
-		css += "\n/*# sourceMappingURL=data:application/json;base64," + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + " */";
-	}
-
-	var blob = new Blob([css], { type: "text/css" });
-
-	var oldSrc = link.href;
-
-	link.href = URL.createObjectURL(blob);
-
-	if(oldSrc) URL.revokeObjectURL(oldSrc);
-}
-
+eval("/*\n\tMIT License http://www.opensource.org/licenses/mit-license.php\n\tAuthor Tobias Koppers @sokra\n*/\n\nvar stylesInDom = {};\n\nvar\tmemoize = function (fn) {\n\tvar memo;\n\n\treturn function () {\n\t\tif (typeof memo === \"undefined\") memo = fn.apply(this, arguments);\n\t\treturn memo;\n\t};\n};\n\nvar isOldIE = memoize(function () {\n\t// Test for IE <= 9 as proposed by Browserhacks\n\t// @see http://browserhacks.com/#hack-e71d8692f65334173fee715c222cb805\n\t// Tests for existence of standard globals is to allow style-loader\n\t// to operate correctly into non-standard environments\n\t// @see https://github.com/webpack-contrib/style-loader/issues/177\n\treturn window && document && document.all && !window.atob;\n});\n\nvar getElement = (function (fn) {\n\tvar memo = {};\n\n\treturn function(selector) {\n\t\tif (typeof memo[selector] === \"undefined\") {\n\t\t\tvar styleTarget = fn.call(this, selector);\n\t\t\t// Special case to return head of iframe instead of iframe itself\n\t\t\tif (styleTarget instanceof window.HTMLIFrameElement) {\n\t\t\t\ttry {\n\t\t\t\t\t// This will throw an exception if access to iframe is blocked\n\t\t\t\t\t// due to cross-origin restrictions\n\t\t\t\t\tstyleTarget = styleTarget.contentDocument.head;\n\t\t\t\t} catch(e) {\n\t\t\t\t\tstyleTarget = null;\n\t\t\t\t}\n\t\t\t}\n\t\t\tmemo[selector] = styleTarget;\n\t\t}\n\t\treturn memo[selector]\n\t};\n})(function (target) {\n\treturn document.querySelector(target)\n});\n\nvar singleton = null;\nvar\tsingletonCounter = 0;\nvar\tstylesInsertedAtTop = [];\n\nvar\tfixUrls = __webpack_require__(/*! ./urls */ \"./node_modules/_style-loader@0.19.1@style-loader/lib/urls.js\");\n\nmodule.exports = function(list, options) {\n\tif (typeof DEBUG !== \"undefined\" && DEBUG) {\n\t\tif (typeof document !== \"object\") throw new Error(\"The style-loader cannot be used in a non-browser environment\");\n\t}\n\n\toptions = options || {};\n\n\toptions.attrs = typeof options.attrs === \"object\" ? options.attrs : {};\n\n\t// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>\n\t// tags it will allow on a page\n\tif (!options.singleton && typeof options.singleton !== \"boolean\") options.singleton = isOldIE();\n\n\t// By default, add <style> tags to the <head> element\n\tif (!options.insertInto) options.insertInto = \"head\";\n\n\t// By default, add <style> tags to the bottom of the target\n\tif (!options.insertAt) options.insertAt = \"bottom\";\n\n\tvar styles = listToStyles(list, options);\n\n\taddStylesToDom(styles, options);\n\n\treturn function update (newList) {\n\t\tvar mayRemove = [];\n\n\t\tfor (var i = 0; i < styles.length; i++) {\n\t\t\tvar item = styles[i];\n\t\t\tvar domStyle = stylesInDom[item.id];\n\n\t\t\tdomStyle.refs--;\n\t\t\tmayRemove.push(domStyle);\n\t\t}\n\n\t\tif(newList) {\n\t\t\tvar newStyles = listToStyles(newList, options);\n\t\t\taddStylesToDom(newStyles, options);\n\t\t}\n\n\t\tfor (var i = 0; i < mayRemove.length; i++) {\n\t\t\tvar domStyle = mayRemove[i];\n\n\t\t\tif(domStyle.refs === 0) {\n\t\t\t\tfor (var j = 0; j < domStyle.parts.length; j++) domStyle.parts[j]();\n\n\t\t\t\tdelete stylesInDom[domStyle.id];\n\t\t\t}\n\t\t}\n\t};\n};\n\nfunction addStylesToDom (styles, options) {\n\tfor (var i = 0; i < styles.length; i++) {\n\t\tvar item = styles[i];\n\t\tvar domStyle = stylesInDom[item.id];\n\n\t\tif(domStyle) {\n\t\t\tdomStyle.refs++;\n\n\t\t\tfor(var j = 0; j < domStyle.parts.length; j++) {\n\t\t\t\tdomStyle.parts[j](item.parts[j]);\n\t\t\t}\n\n\t\t\tfor(; j < item.parts.length; j++) {\n\t\t\t\tdomStyle.parts.push(addStyle(item.parts[j], options));\n\t\t\t}\n\t\t} else {\n\t\t\tvar parts = [];\n\n\t\t\tfor(var j = 0; j < item.parts.length; j++) {\n\t\t\t\tparts.push(addStyle(item.parts[j], options));\n\t\t\t}\n\n\t\t\tstylesInDom[item.id] = {id: item.id, refs: 1, parts: parts};\n\t\t}\n\t}\n}\n\nfunction listToStyles (list, options) {\n\tvar styles = [];\n\tvar newStyles = {};\n\n\tfor (var i = 0; i < list.length; i++) {\n\t\tvar item = list[i];\n\t\tvar id = options.base ? item[0] + options.base : item[0];\n\t\tvar css = item[1];\n\t\tvar media = item[2];\n\t\tvar sourceMap = item[3];\n\t\tvar part = {css: css, media: media, sourceMap: sourceMap};\n\n\t\tif(!newStyles[id]) styles.push(newStyles[id] = {id: id, parts: [part]});\n\t\telse newStyles[id].parts.push(part);\n\t}\n\n\treturn styles;\n}\n\nfunction insertStyleElement (options, style) {\n\tvar target = getElement(options.insertInto)\n\n\tif (!target) {\n\t\tthrow new Error(\"Couldn't find a style target. This probably means that the value for the 'insertInto' parameter is invalid.\");\n\t}\n\n\tvar lastStyleElementInsertedAtTop = stylesInsertedAtTop[stylesInsertedAtTop.length - 1];\n\n\tif (options.insertAt === \"top\") {\n\t\tif (!lastStyleElementInsertedAtTop) {\n\t\t\ttarget.insertBefore(style, target.firstChild);\n\t\t} else if (lastStyleElementInsertedAtTop.nextSibling) {\n\t\t\ttarget.insertBefore(style, lastStyleElementInsertedAtTop.nextSibling);\n\t\t} else {\n\t\t\ttarget.appendChild(style);\n\t\t}\n\t\tstylesInsertedAtTop.push(style);\n\t} else if (options.insertAt === \"bottom\") {\n\t\ttarget.appendChild(style);\n\t} else if (typeof options.insertAt === \"object\" && options.insertAt.before) {\n\t\tvar nextSibling = getElement(options.insertInto + \" \" + options.insertAt.before);\n\t\ttarget.insertBefore(style, nextSibling);\n\t} else {\n\t\tthrow new Error(\"[Style Loader]\\n\\n Invalid value for parameter 'insertAt' ('options.insertAt') found.\\n Must be 'top', 'bottom', or Object.\\n (https://github.com/webpack-contrib/style-loader#insertat)\\n\");\n\t}\n}\n\nfunction removeStyleElement (style) {\n\tif (style.parentNode === null) return false;\n\tstyle.parentNode.removeChild(style);\n\n\tvar idx = stylesInsertedAtTop.indexOf(style);\n\tif(idx >= 0) {\n\t\tstylesInsertedAtTop.splice(idx, 1);\n\t}\n}\n\nfunction createStyleElement (options) {\n\tvar style = document.createElement(\"style\");\n\n\toptions.attrs.type = \"text/css\";\n\n\taddAttrs(style, options.attrs);\n\tinsertStyleElement(options, style);\n\n\treturn style;\n}\n\nfunction createLinkElement (options) {\n\tvar link = document.createElement(\"link\");\n\n\toptions.attrs.type = \"text/css\";\n\toptions.attrs.rel = \"stylesheet\";\n\n\taddAttrs(link, options.attrs);\n\tinsertStyleElement(options, link);\n\n\treturn link;\n}\n\nfunction addAttrs (el, attrs) {\n\tObject.keys(attrs).forEach(function (key) {\n\t\tel.setAttribute(key, attrs[key]);\n\t});\n}\n\nfunction addStyle (obj, options) {\n\tvar style, update, remove, result;\n\n\t// If a transform function was defined, run it on the css\n\tif (options.transform && obj.css) {\n\t    result = options.transform(obj.css);\n\n\t    if (result) {\n\t    \t// If transform returns a value, use that instead of the original css.\n\t    \t// This allows running runtime transformations on the css.\n\t    \tobj.css = result;\n\t    } else {\n\t    \t// If the transform function returns a falsy value, don't add this css.\n\t    \t// This allows conditional loading of css\n\t    \treturn function() {\n\t    \t\t// noop\n\t    \t};\n\t    }\n\t}\n\n\tif (options.singleton) {\n\t\tvar styleIndex = singletonCounter++;\n\n\t\tstyle = singleton || (singleton = createStyleElement(options));\n\n\t\tupdate = applyToSingletonTag.bind(null, style, styleIndex, false);\n\t\tremove = applyToSingletonTag.bind(null, style, styleIndex, true);\n\n\t} else if (\n\t\tobj.sourceMap &&\n\t\ttypeof URL === \"function\" &&\n\t\ttypeof URL.createObjectURL === \"function\" &&\n\t\ttypeof URL.revokeObjectURL === \"function\" &&\n\t\ttypeof Blob === \"function\" &&\n\t\ttypeof btoa === \"function\"\n\t) {\n\t\tstyle = createLinkElement(options);\n\t\tupdate = updateLink.bind(null, style, options);\n\t\tremove = function () {\n\t\t\tremoveStyleElement(style);\n\n\t\t\tif(style.href) URL.revokeObjectURL(style.href);\n\t\t};\n\t} else {\n\t\tstyle = createStyleElement(options);\n\t\tupdate = applyToTag.bind(null, style);\n\t\tremove = function () {\n\t\t\tremoveStyleElement(style);\n\t\t};\n\t}\n\n\tupdate(obj);\n\n\treturn function updateStyle (newObj) {\n\t\tif (newObj) {\n\t\t\tif (\n\t\t\t\tnewObj.css === obj.css &&\n\t\t\t\tnewObj.media === obj.media &&\n\t\t\t\tnewObj.sourceMap === obj.sourceMap\n\t\t\t) {\n\t\t\t\treturn;\n\t\t\t}\n\n\t\t\tupdate(obj = newObj);\n\t\t} else {\n\t\t\tremove();\n\t\t}\n\t};\n}\n\nvar replaceText = (function () {\n\tvar textStore = [];\n\n\treturn function (index, replacement) {\n\t\ttextStore[index] = replacement;\n\n\t\treturn textStore.filter(Boolean).join('\\n');\n\t};\n})();\n\nfunction applyToSingletonTag (style, index, remove, obj) {\n\tvar css = remove ? \"\" : obj.css;\n\n\tif (style.styleSheet) {\n\t\tstyle.styleSheet.cssText = replaceText(index, css);\n\t} else {\n\t\tvar cssNode = document.createTextNode(css);\n\t\tvar childNodes = style.childNodes;\n\n\t\tif (childNodes[index]) style.removeChild(childNodes[index]);\n\n\t\tif (childNodes.length) {\n\t\t\tstyle.insertBefore(cssNode, childNodes[index]);\n\t\t} else {\n\t\t\tstyle.appendChild(cssNode);\n\t\t}\n\t}\n}\n\nfunction applyToTag (style, obj) {\n\tvar css = obj.css;\n\tvar media = obj.media;\n\n\tif(media) {\n\t\tstyle.setAttribute(\"media\", media)\n\t}\n\n\tif(style.styleSheet) {\n\t\tstyle.styleSheet.cssText = css;\n\t} else {\n\t\twhile(style.firstChild) {\n\t\t\tstyle.removeChild(style.firstChild);\n\t\t}\n\n\t\tstyle.appendChild(document.createTextNode(css));\n\t}\n}\n\nfunction updateLink (link, options, obj) {\n\tvar css = obj.css;\n\tvar sourceMap = obj.sourceMap;\n\n\t/*\n\t\tIf convertToAbsoluteUrls isn't defined, but sourcemaps are enabled\n\t\tand there is no publicPath defined then lets turn convertToAbsoluteUrls\n\t\ton by default.  Otherwise default to the convertToAbsoluteUrls option\n\t\tdirectly\n\t*/\n\tvar autoFixUrls = options.convertToAbsoluteUrls === undefined && sourceMap;\n\n\tif (options.convertToAbsoluteUrls || autoFixUrls) {\n\t\tcss = fixUrls(css);\n\t}\n\n\tif (sourceMap) {\n\t\t// http://stackoverflow.com/a/26603875\n\t\tcss += \"\\n/*# sourceMappingURL=data:application/json;base64,\" + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + \" */\";\n\t}\n\n\tvar blob = new Blob([css], { type: \"text/css\" });\n\n\tvar oldSrc = link.href;\n\n\tlink.href = URL.createObjectURL(blob);\n\n\tif(oldSrc) URL.revokeObjectURL(oldSrc);\n}\n\n\n//# sourceURL=webpack:///./node_modules/_style-loader@0.19.1@style-loader/lib/addStyles.js?");
 
 /***/ }),
-/* 5 */
+
+/***/ "./node_modules/_style-loader@0.19.1@style-loader/lib/urls.js":
+/*!********************************************************************!*\
+  !*** ./node_modules/_style-loader@0.19.1@style-loader/lib/urls.js ***!
+  \********************************************************************/
+/*! no static exports found */
 /***/ (function(module, exports) {
 
-
-/**
- * When source maps are enabled, `style-loader` uses a link element with a data-uri to
- * embed the css on the page. This breaks all relative urls because now they are relative to a
- * bundle instead of the current page.
- *
- * One solution is to only use full urls, but that may be impossible.
- *
- * Instead, this function "fixes" the relative urls to be absolute according to the current page location.
- *
- * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.
- *
- */
-
-module.exports = function (css) {
-  // get current location
-  var location = typeof window !== "undefined" && window.location;
-
-  if (!location) {
-    throw new Error("fixUrls requires window.location");
-  }
-
-	// blank or null?
-	if (!css || typeof css !== "string") {
-	  return css;
-  }
-
-  var baseUrl = location.protocol + "//" + location.host;
-  var currentDir = baseUrl + location.pathname.replace(/\/[^\/]*$/, "/");
-
-	// convert each url(...)
-	/*
-	This regular expression is just a way to recursively match brackets within
-	a string.
-
-	 /url\s*\(  = Match on the word "url" with any whitespace after it and then a parens
-	   (  = Start a capturing group
-	     (?:  = Start a non-capturing group
-	         [^)(]  = Match anything that isn't a parentheses
-	         |  = OR
-	         \(  = Match a start parentheses
-	             (?:  = Start another non-capturing groups
-	                 [^)(]+  = Match anything that isn't a parentheses
-	                 |  = OR
-	                 \(  = Match a start parentheses
-	                     [^)(]*  = Match anything that isn't a parentheses
-	                 \)  = Match a end parentheses
-	             )  = End Group
-              *\) = Match anything and then a close parens
-          )  = Close non-capturing group
-          *  = Match anything
-       )  = Close capturing group
-	 \)  = Match a close parens
-
-	 /gi  = Get all matches, not the first.  Be case insensitive.
-	 */
-	var fixedCss = css.replace(/url\s*\(((?:[^)(]|\((?:[^)(]+|\([^)(]*\))*\))*)\)/gi, function(fullMatch, origUrl) {
-		// strip quotes (if they exist)
-		var unquotedOrigUrl = origUrl
-			.trim()
-			.replace(/^"(.*)"$/, function(o, $1){ return $1; })
-			.replace(/^'(.*)'$/, function(o, $1){ return $1; });
-
-		// already a full url? no change
-		if (/^(#|data:|http:\/\/|https:\/\/|file:\/\/\/)/i.test(unquotedOrigUrl)) {
-		  return fullMatch;
-		}
-
-		// convert the url to a full url
-		var newUrl;
-
-		if (unquotedOrigUrl.indexOf("//") === 0) {
-		  	//TODO: should we add protocol?
-			newUrl = unquotedOrigUrl;
-		} else if (unquotedOrigUrl.indexOf("/") === 0) {
-			// path should be relative to the base url
-			newUrl = baseUrl + unquotedOrigUrl; // already starts with '/'
-		} else {
-			// path should be relative to current directory
-			newUrl = currentDir + unquotedOrigUrl.replace(/^\.\//, ""); // Strip leading './'
-		}
-
-		// send back the fixed url(...)
-		return "url(" + JSON.stringify(newUrl) + ")";
-	});
-
-	// send back the fixed css
-	return fixedCss;
-};
-
+eval("\n/**\n * When source maps are enabled, `style-loader` uses a link element with a data-uri to\n * embed the css on the page. This breaks all relative urls because now they are relative to a\n * bundle instead of the current page.\n *\n * One solution is to only use full urls, but that may be impossible.\n *\n * Instead, this function \"fixes\" the relative urls to be absolute according to the current page location.\n *\n * A rudimentary test suite is located at `test/fixUrls.js` and can be run via the `npm test` command.\n *\n */\n\nmodule.exports = function (css) {\n  // get current location\n  var location = typeof window !== \"undefined\" && window.location;\n\n  if (!location) {\n    throw new Error(\"fixUrls requires window.location\");\n  }\n\n\t// blank or null?\n\tif (!css || typeof css !== \"string\") {\n\t  return css;\n  }\n\n  var baseUrl = location.protocol + \"//\" + location.host;\n  var currentDir = baseUrl + location.pathname.replace(/\\/[^\\/]*$/, \"/\");\n\n\t// convert each url(...)\n\t/*\n\tThis regular expression is just a way to recursively match brackets within\n\ta string.\n\n\t /url\\s*\\(  = Match on the word \"url\" with any whitespace after it and then a parens\n\t   (  = Start a capturing group\n\t     (?:  = Start a non-capturing group\n\t         [^)(]  = Match anything that isn't a parentheses\n\t         |  = OR\n\t         \\(  = Match a start parentheses\n\t             (?:  = Start another non-capturing groups\n\t                 [^)(]+  = Match anything that isn't a parentheses\n\t                 |  = OR\n\t                 \\(  = Match a start parentheses\n\t                     [^)(]*  = Match anything that isn't a parentheses\n\t                 \\)  = Match a end parentheses\n\t             )  = End Group\n              *\\) = Match anything and then a close parens\n          )  = Close non-capturing group\n          *  = Match anything\n       )  = Close capturing group\n\t \\)  = Match a close parens\n\n\t /gi  = Get all matches, not the first.  Be case insensitive.\n\t */\n\tvar fixedCss = css.replace(/url\\s*\\(((?:[^)(]|\\((?:[^)(]+|\\([^)(]*\\))*\\))*)\\)/gi, function(fullMatch, origUrl) {\n\t\t// strip quotes (if they exist)\n\t\tvar unquotedOrigUrl = origUrl\n\t\t\t.trim()\n\t\t\t.replace(/^\"(.*)\"$/, function(o, $1){ return $1; })\n\t\t\t.replace(/^'(.*)'$/, function(o, $1){ return $1; });\n\n\t\t// already a full url? no change\n\t\tif (/^(#|data:|http:\\/\\/|https:\\/\\/|file:\\/\\/\\/)/i.test(unquotedOrigUrl)) {\n\t\t  return fullMatch;\n\t\t}\n\n\t\t// convert the url to a full url\n\t\tvar newUrl;\n\n\t\tif (unquotedOrigUrl.indexOf(\"//\") === 0) {\n\t\t  \t//TODO: should we add protocol?\n\t\t\tnewUrl = unquotedOrigUrl;\n\t\t} else if (unquotedOrigUrl.indexOf(\"/\") === 0) {\n\t\t\t// path should be relative to the base url\n\t\t\tnewUrl = baseUrl + unquotedOrigUrl; // already starts with '/'\n\t\t} else {\n\t\t\t// path should be relative to current directory\n\t\t\tnewUrl = currentDir + unquotedOrigUrl.replace(/^\\.\\//, \"\"); // Strip leading './'\n\t\t}\n\n\t\t// send back the fixed url(...)\n\t\treturn \"url(\" + JSON.stringify(newUrl) + \")\";\n\t});\n\n\t// send back the fixed css\n\treturn fixedCss;\n};\n\n\n//# sourceURL=webpack:///./node_modules/_style-loader@0.19.1@style-loader/lib/urls.js?");
 
 /***/ }),
-/* 6 */
+
+/***/ "./src/css/zx-editor.styl":
+/*!********************************!*\
+  !*** ./src/css/zx-editor.styl ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("// style-loader: Adds some css to the DOM by adding a <style> tag\n\n// load the styles\nvar content = __webpack_require__(/*! !../../node_modules/_css-loader@0.28.11@css-loader??ref--5-1!../../node_modules/_postcss-loader@2.1.3@postcss-loader/lib??postcss!../../node_modules/_stylus-loader@3.0.2@stylus-loader??ref--5-3!./zx-editor.styl */ \"./node_modules/_css-loader@0.28.11@css-loader/index.js??ref--5-1!./node_modules/_postcss-loader@2.1.3@postcss-loader/lib/index.js??postcss!./node_modules/_stylus-loader@3.0.2@stylus-loader/index.js??ref--5-3!./src/css/zx-editor.styl\");\nif(typeof content === 'string') content = [[module.i, content, '']];\n// Prepare cssTransformation\nvar transform;\n\nvar options = {\"hmr\":true}\noptions.transform = transform\n// add the styles to the DOM\nvar update = __webpack_require__(/*! ../../node_modules/_style-loader@0.19.1@style-loader/lib/addStyles.js */ \"./node_modules/_style-loader@0.19.1@style-loader/lib/addStyles.js\")(content, options);\nif(content.locals) module.exports = content.locals;\n// Hot Module Replacement\nif(true) {\n\t// When the styles change, update the <style> tags\n\tif(!content.locals) {\n\t\tmodule.hot.accept(/*! !../../node_modules/_css-loader@0.28.11@css-loader??ref--5-1!../../node_modules/_postcss-loader@2.1.3@postcss-loader/lib??postcss!../../node_modules/_stylus-loader@3.0.2@stylus-loader??ref--5-3!./zx-editor.styl */ \"./node_modules/_css-loader@0.28.11@css-loader/index.js??ref--5-1!./node_modules/_postcss-loader@2.1.3@postcss-loader/lib/index.js??postcss!./node_modules/_stylus-loader@3.0.2@stylus-loader/index.js??ref--5-3!./src/css/zx-editor.styl\", function(__WEBPACK_OUTDATED_DEPENDENCIES__) { (function() {\n\t\t\tvar newContent = __webpack_require__(/*! !../../node_modules/_css-loader@0.28.11@css-loader??ref--5-1!../../node_modules/_postcss-loader@2.1.3@postcss-loader/lib??postcss!../../node_modules/_stylus-loader@3.0.2@stylus-loader??ref--5-3!./zx-editor.styl */ \"./node_modules/_css-loader@0.28.11@css-loader/index.js??ref--5-1!./node_modules/_postcss-loader@2.1.3@postcss-loader/lib/index.js??postcss!./node_modules/_stylus-loader@3.0.2@stylus-loader/index.js??ref--5-3!./src/css/zx-editor.styl\");\n\t\t\tif(typeof newContent === 'string') newContent = [[module.i, newContent, '']];\n\t\t\tupdate(newContent);\n\t\t})(__WEBPACK_OUTDATED_DEPENDENCIES__); });\n\t}\n\t// When the module is disposed, remove the <style> tags\n\tmodule.hot.dispose(function() { update(); });\n}\n\n//# sourceURL=webpack:///./src/css/zx-editor.styl?");
+
+/***/ }),
+
+/***/ "./src/js/debug.js":
+/*!*************************!*\
+  !*** ./src/js/debug.js ***!
+  \*************************/
+/*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Create by zx1984
- * 2018/1/24 0024.
- * https://github.com/zx1984
- */
-exports.default = {
-  // 转换为整数
-  int: function int(n) {
-    var num = parseInt(n);
-    return isNaN(num) ? 0 : num;
-  },
-  trim: function trim(str) {
-    return str ? str.toString().replace(/^\s+|\s+$/g, '') : '';
-  },
-
-  // 十进制转十六进制
-  toHex: function toHex(num) {
-    var HEX_CODE = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
-    var hex = [];
-    // 余数
-    var surplus = 0;
-    // 商
-    var quotient = num;
-    do {
-      surplus = HEX_CODE[quotient % 16];
-      hex.unshift(surplus);
-      quotient = Math.floor(quotient / 16);
-    } while (quotient);
-
-    return hex.length === 1 ? '0' + hex[0] : hex.join('');
-  },
-
-  // rgb(68, 198, 123)
-  rgbToHex: function rgbToHex(rgb) {
-    var hex = '';
-    if (/rgb\((\d+)\D+?(\d+)\D+?(\d+)/.test(rgb)) {
-      hex += this.toHex(RegExp.$1);
-      hex += this.toHex(RegExp.$2);
-      hex += this.toHex(RegExp.$3);
-    }
-    return hex ? '#' + hex : rgb;
-  },
-
-  // 是否为http(s)链接
-  isHttpUrl: function isHttpUrl(url) {
-    return url && /^(http|https):\/\//i.test(url.toString());
-  }
-};
+eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\nexports.log = log;\nexports.error = error;\n/**\n * Created by zx1984 2018/3/21\n * https://github.com/zx1984\n */\n\nfunction log() {\n  for (var i = 0; i < arguments.length; i++) {\n    console.log(arguments[i]);\n  }\n}\n\nfunction error() {\n  for (var i = 0; i < arguments.length; i++) {\n    console.error(arguments[i]);\n  }\n}\n\n//# sourceURL=webpack:///./src/js/debug.js?");
 
 /***/ }),
-/* 7 */
+
+/***/ "./src/js/dom-core.js":
+/*!****************************!*\
+  !*** ./src/js/dom-core.js ***!
+  \****************************/
+/*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Create by zx1984
- * 2018/1/23 0023.
- * https://github.com/zx1984
- */
-// 添加样式
-HTMLElement.prototype.addClass = function (className) {
-  this.classList.add(className);
-};
-// 删除样式
-HTMLElement.prototype.removeClass = function (className) {
-  this.classList.remove(className);
-};
-
-// 包含某个样式
-HTMLElement.prototype.hasClass = function (className) {
-  var reg = new RegExp('\\b(' + className + ')\\b');
-  return className && reg.test(this.className);
-};
-
-exports.default = {
-  /**
-   * 创建DOM元素
-   * @param tag 标签名称
-   * @param opts 标签属性
-   * @returns {Element}
-   */
-  create: function create() {
-    var tag = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'div';
-    var opts = arguments[1];
-
-    var elm = document.createElement(tag);
-    if (opts && opts instanceof Object) {
-      for (var key in opts) {
-        if (opts.hasOwnProperty(key)) {
-          elm.setAttribute(key, opts[key]);
-        }
-      }
-    }
-    return elm;
-  },
-
-
-  /**
-   * 设置已有DOM节点的标签（实际是改变DOM节点标签）
-   * @param oldElm DOM节点对象
-   * @param newTagName 新标签名称
-   * @returns {Element}
-   */
-  changeTagName: function changeTagName(oldElm, newTagName) {
-    if (!newTagName || oldElm.nodeName === newTagName.toUpperCase()) {
-      return oldElm;
-    }
-    // 新的dom对象
-    var el = this.create(newTagName);
-    // 获取元素class/id/style属性，并赋予新DOM对象
-    var className = oldElm.className;
-    var id = oldElm.id;
-    // 是否有自定义style样式
-    var style = oldElm.getAttribute('style');
-
-    // innerHTML
-    // let innerHTML = oldElm.innerHTML
-    // innerText
-    var innerText = oldElm.innerText;
-    // blockquote
-    if (newTagName === 'blockquote') {
-      innerText = '<p style="color: inherit">' + innerText + '</p>';
-    } else if (newTagName === 'ul') {
-      innerText = '<li style="color: inherit">' + innerText + '</li>';
-    }
-
-    if (className) el.className = className;
-    if (id) el.id = id;
-    if (style) el.setAttribute('style', style);
-
-    el.innerHTML = innerText;
-    return el;
-  },
-
-
-  /**
-   * 查找当前元素节点(textNode、ElemNode等)，在context内的父根节点
-   * @param currentNode 当前DOM节点
-   * @param targetParent
-   * @returns {*}
-   */
-  closest: function closest(currentNode, context) {
-    var parentNode = void 0;
-    do {
-      parentNode = currentNode.parentNode;
-      if (parentNode === context) {
-        parentNode = null;
-        break;
-      } else {
-        currentNode = parentNode;
-      }
-    } while (parentNode);
-    return currentNode;
-  },
-
-
-  /**
-   * 判断元素innerText是否为空
-   * 如果元素内存在hr分割线，则不为空
-   * @param el
-   * @returns {boolean}
-   */
-  isInnerEmpty: function isInnerEmpty(el) {
-    return !el.innerHTML || el.innerHTML === '<br>';
-    // return !el.innerText.replace(/&nbsp;|\s/ig, '') && !el.querySelectorAll('hr')[0] && !el.querySelectorAll('img')[0]
-  },
-
-
-  /**
-   * 对象是否为HTML元素节点对象
-   * @param obj
-   * @returns {Function}
-   */
-  // isHTMLElement (obj) {
-  //   return (typeof HTMLElement === 'object') ?
-  //     function (obj) {
-  //       return obj instanceof HTMLElement
-  //     } :
-  //     function (obj) {
-  //       return obj && typeof obj === 'object' && obj.nodeType === 1 && typeof obj.nodeName === 'string'
-  //     }
-  // },
-
-  /**
-   * dom节点选择器
-   * @param selector 元素id、class、属性等
-   * @param context 作用域，默认为documet
-   * @returns {*}
-   */
-  query: function query(selector) {
-    var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
-
-    return context.querySelector(selector);
-  },
-  queryAll: function queryAll(selector) {
-    var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
-
-    return context.querySelectorAll(selector);
-  },
-
-
-  /**
-   * 在当前元素节点el后插入新节点newNode
-   * @param el 当前元素节点
-   * @param newNode 要插入的新元素节点
-   */
-  insertAfter: function insertAfter(el, newNode) {
-    var nextNode = el.nextElementSibling;
-    var parentNode = el.parentNode;
-    if (nextNode === null) {
-      parentNode.appendChild(newNode);
-    } else {
-      parentNode.insertBefore(newNode, nextNode);
-    }
-  },
-
-
-  /**
-   * 查找元素节点el的兄弟节点
-   * @param el
-   * @param 可选参数，className兄弟节点包含的样式名
-   * @returns {*}
-   */
-  siblings: function siblings(el, className) {
-    var arr = [];
-    var elmNodes = [];
-    var siblings = el.parentNode.childNodes;
-    // 只取元素节点
-    siblings.forEach(function (item) {
-      if (item.nodeType === 1 && item !== el) {
-        elmNodes.push(item);
-      }
-    });
-
-    if (className) {
-      var reg = new RegExp('\\b(' + className + ')\\b');
-      elmNodes.forEach(function (item) {
-        if (reg.test(item.className)) {
-          arr.push(item);
-        }
-      });
-    } else {
-      arr = elmNodes;
-    }
-    return arr.length ? arr : null;
-  },
-
-
-  /**
-   * 创建a标签链接字符串
-   * @param url 链接地址
-   * @param name 链接名称
-   * @returns {string}
-   */
-  createLinkStr: function createLinkStr(url, name) {
-    if (!url) return '';
-    url = url + '';
-    name = name || (url.length > 20 ? url.substr(0, 20) + '...' : url);
-    return '<a href="' + url + '" target="_blank" alt="' + name + '">' + name + '</a>';
-  },
-
-
-  /**
-   * 往字符串中插入字符串
-   * @param str 原字符串
-   * @param insertString 需要插入的字符串
-   * @param position 插入位置
-   * @returns {string}
-   */
-  insertStr: function insertStr(str, insertString, position) {
-    return str.substring(0, position) + insertString + str.substring(position);
-  },
-
-
-  /**
-   * 元素后面插入分割线
-   * @param el
-   */
-  insertHr: function insertHr(el) {
-    var p = this.isInnerEmpty(el) ? el : this.create('p');
-    p.innerHTML = '<hr>';
-    this.insertAfter(el, p);
-  },
-
-
-  // 获取当前元素节点最近的文本节点
-  getTextNode: function getTextNode(el) {
-    while (el && el.nodeType === 1) {
-      // 当el.childNodes[0] == <br>时，不能继续获取childNode
-      if (el.childNodes[0]) {
-        el = el.childNodes[0];
-      } else {
-        break;
-      }
-    }
-    return el;
-  }
-};
+eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\n/**\n * Create by zx1984\n * 2018/1/23 0023.\n * https://github.com/zx1984\n */\n// 添加样式\nHTMLElement.prototype.addClass = function (className) {\n  this.classList.add(className);\n};\n// 删除样式\nHTMLElement.prototype.removeClass = function (className) {\n  this.classList.remove(className);\n};\n\n// 包含某个样式\nHTMLElement.prototype.hasClass = function (className) {\n  var reg = new RegExp('\\\\b(' + className + ')\\\\b');\n  return className && reg.test(this.className);\n};\n\nexports.default = {\n  /**\n   * 创建DOM元素\n   * @param tag 标签名称\n   * @param opts 标签属性\n   * @returns {Element}\n   */\n  create: function create() {\n    var tag = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'div';\n    var opts = arguments[1];\n\n    var elm = document.createElement(tag);\n    if (opts && opts instanceof Object) {\n      for (var key in opts) {\n        if (opts.hasOwnProperty(key)) {\n          elm.setAttribute(key, opts[key]);\n        }\n      }\n    }\n    return elm;\n  },\n\n\n  /**\n   * 设置已有DOM节点的标签（实际是改变DOM节点标签）\n   * @param oldElm DOM节点对象\n   * @param newTagName 新标签名称\n   * @returns {Element}\n   */\n  changeTagName: function changeTagName(oldElm, newTagName) {\n    if (!newTagName || oldElm.nodeName === newTagName.toUpperCase()) {\n      return oldElm;\n    }\n    // 新的dom对象\n    var el = this.create(newTagName);\n    // 获取元素class/id/style属性，并赋予新DOM对象\n    var className = oldElm.className;\n    var id = oldElm.id;\n    // 是否有自定义style样式\n    var style = oldElm.getAttribute('style');\n\n    // innerHTML\n    // let innerHTML = oldElm.innerHTML\n    // innerText\n    var innerText = oldElm.innerText;\n    // blockquote\n    if (newTagName === 'blockquote') {\n      innerText = '<p style=\"color: inherit\">' + innerText + '</p>';\n    } else if (newTagName === 'ul') {\n      innerText = '<li style=\"color: inherit\">' + innerText + '</li>';\n    }\n\n    if (className) el.className = className;\n    if (id) el.id = id;\n    if (style) el.setAttribute('style', style);\n\n    el.innerHTML = innerText;\n    return el;\n  },\n\n\n  /**\n   * 查找当前元素节点(textNode、ElemNode等)，在context内的父根节点\n   * @param currentNode 当前DOM节点\n   * @param targetParent\n   * @returns {*}\n   */\n  closest: function closest(currentNode, context) {\n    var parentNode = void 0;\n    do {\n      parentNode = currentNode.parentNode;\n      if (parentNode === context) {\n        parentNode = null;\n        break;\n      } else {\n        currentNode = parentNode;\n      }\n    } while (parentNode);\n    return currentNode;\n  },\n\n\n  /**\n   * 判断元素innerText是否为空\n   * 如果元素内存在hr分割线，则不为空\n   * @param el\n   * @returns {boolean}\n   */\n  isInnerEmpty: function isInnerEmpty(el) {\n    return !el.innerHTML || el.innerHTML === '<br>';\n    // return !el.innerText.replace(/&nbsp;|\\s/ig, '') && !el.querySelectorAll('hr')[0] && !el.querySelectorAll('img')[0]\n  },\n\n\n  /**\n   * 对象是否为HTML元素节点对象\n   * @param obj\n   * @returns {Function}\n   */\n  // isHTMLElement (obj) {\n  //   return (typeof HTMLElement === 'object') ?\n  //     function (obj) {\n  //       return obj instanceof HTMLElement\n  //     } :\n  //     function (obj) {\n  //       return obj && typeof obj === 'object' && obj.nodeType === 1 && typeof obj.nodeName === 'string'\n  //     }\n  // },\n\n  /**\n   * dom节点选择器\n   * @param selector 元素id、class、属性等\n   * @param context 作用域，默认为documet\n   * @returns {*}\n   */\n  query: function query(selector) {\n    var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;\n\n    return context.querySelector(selector);\n  },\n  queryAll: function queryAll(selector) {\n    var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;\n\n    return context.querySelectorAll(selector);\n  },\n\n\n  /**\n   * 在当前元素节点el后插入新节点newNode\n   * @param el 当前元素节点\n   * @param newNode 要插入的新元素节点\n   */\n  insertAfter: function insertAfter(el, newNode) {\n    var nextNode = el.nextElementSibling;\n    var parentNode = el.parentNode;\n    if (nextNode === null) {\n      parentNode.appendChild(newNode);\n    } else {\n      parentNode.insertBefore(newNode, nextNode);\n    }\n  },\n\n\n  /**\n   * 查找元素节点el的兄弟节点\n   * @param el\n   * @param 可选参数，className兄弟节点包含的样式名\n   * @returns {*}\n   */\n  siblings: function siblings(el, className) {\n    var arr = [];\n    var elmNodes = [];\n    var siblings = el.parentNode.childNodes;\n    // 只取元素节点\n    siblings.forEach(function (item) {\n      if (item.nodeType === 1 && item !== el) {\n        elmNodes.push(item);\n      }\n    });\n\n    if (className) {\n      var reg = new RegExp('\\\\b(' + className + ')\\\\b');\n      elmNodes.forEach(function (item) {\n        if (reg.test(item.className)) {\n          arr.push(item);\n        }\n      });\n    } else {\n      arr = elmNodes;\n    }\n    return arr.length ? arr : null;\n  },\n\n\n  /**\n   * 创建a标签链接字符串\n   * @param url 链接地址\n   * @param name 链接名称\n   * @returns {string}\n   */\n  createLinkStr: function createLinkStr(url, name) {\n    if (!url) return '';\n    url = url + '';\n    name = name || (url.length > 20 ? url.substr(0, 20) + '...' : url);\n    return '<a href=\"' + url + '\" target=\"_blank\" alt=\"' + name + '\">' + name + '</a>';\n  },\n\n\n  /**\n   * 往字符串中插入字符串\n   * @param str 原字符串\n   * @param insertString 需要插入的字符串\n   * @param position 插入位置\n   * @returns {string}\n   */\n  insertStr: function insertStr(str, insertString, position) {\n    return str.substring(0, position) + insertString + str.substring(position);\n  },\n\n\n  /**\n   * 元素后面插入分割线\n   * @param el\n   */\n  insertHr: function insertHr(el) {\n    var p = this.isInnerEmpty(el) ? el : this.create('p');\n    p.innerHTML = '<hr>';\n    this.insertAfter(el, p);\n  },\n\n\n  // 获取当前元素节点最近的文本节点\n  getTextNode: function getTextNode(el) {\n    while (el && el.nodeType === 1) {\n      // 当el.childNodes[0] == <br>时，不能继续获取childNode\n      if (el.childNodes[0]) {\n        el = el.childNodes[0];\n      } else {\n        break;\n      }\n    }\n    return el;\n  }\n};\n\n//# sourceURL=webpack:///./src/js/dom-core.js?");
 
 /***/ }),
-/* 8 */
+
+/***/ "./src/js/extend-methods.js":
+/*!**********************************!*\
+  !*** ./src/js/extend-methods.js ***!
+  \**********************************/
+/*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * Created by zx1984 2018/3/21
- * https://github.com/zx1984
- */
-exports.default = {
-  top: function top() {
-    return window.pageYOffset !== undefined ? window.pageYOffset : document.documentElement.scrollTop || document.body.scrollTop;
-  },
-  height: function height() {
-    return (document.documentElement || document.body).scrollHeight;
-  },
-  to: function to(x, y) {
-    (document.documentElement || document.body.parentNode || document.body).scrollTo(x, y);
-  },
-  left: function left() {
-    return window.pageXOffset !== undefined ? window.pageXOffset : (document.documentElement || document.body.parentNode || document.body).scrollLeft;
-  }
-};
+eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\nexports.toBlobData = toBlobData;\n\nvar _debug = __webpack_require__(/*! ./debug */ \"./src/js/debug.js\");\n\n/**\n * 将image base64数据，转化为Bolb原始文件数\n * @param base64Data\n * @returns {*} Blob数据\n */\nfunction toBlobData(base64Data) {\n  // base64数据格式:\n  // \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAkGB+wgHBgkIBwgKCgkLDRYPDQw//9k=\"\n  var type = void 0,\n      onlyData = void 0;\n  if (/^data:(\\w+\\/\\w+);base64,(.+)/.test(base64Data)) {\n    type = RegExp.$1;\n    onlyData = RegExp.$2;\n  } else {\n    (0, _debug.error)('toBlobData(data), params\\'data is not base64 data!');\n    return null;\n  }\n\n  var data = window.atob(onlyData);\n  var ia = new Uint8Array(data.length);\n  for (var i = 0; i < data.length; i++) {\n    ia[i] = data.charCodeAt(i);\n  }\n  return new Blob([ia], { type: type });\n} /**\n   * Created by zx1984 2018/4/6\n   * https://github.com/zx1984\n   */\n\n//# sourceURL=webpack:///./src/js/extend-methods.js?");
 
 /***/ }),
-/* 9 */
+
+/***/ "./src/js/scroll.js":
+/*!**************************!*\
+  !*** ./src/js/scroll.js ***!
+  \**************************/
+/*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\n/**\n * Created by zx1984 2018/3/21\n * https://github.com/zx1984\n */\nexports.default = {\n  top: function top() {\n    return window.pageYOffset !== undefined ? window.pageYOffset : document.documentElement.scrollTop || document.body.scrollTop;\n  },\n  height: function height() {\n    return (document.documentElement || document.body).scrollHeight;\n  },\n  to: function to(x, y) {\n    (document.documentElement || document.body.parentNode || document.body).scrollTo(x, y);\n  },\n  left: function left() {\n    return window.pageXOffset !== undefined ? window.pageXOffset : (document.documentElement || document.body.parentNode || document.body).scrollLeft;\n  }\n};\n\n//# sourceURL=webpack:///./src/js/scroll.js?");
 
+/***/ }),
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.log = log;
-exports.error = error;
-/**
- * Created by zx1984 2018/3/21
- * https://github.com/zx1984
- */
+/***/ "./src/js/util.js":
+/*!************************!*\
+  !*** ./src/js/util.js ***!
+  \************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
-function log() {
-  for (var i = 0; i < arguments.length; i++) {
-    console.log(arguments[i]);
-  }
-}
+"use strict";
+eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\n/**\n * Create by zx1984\n * 2018/1/24 0024.\n * https://github.com/zx1984\n */\nexports.default = {\n  // 转换为整数\n  int: function int(n) {\n    var num = parseInt(n);\n    return isNaN(num) ? 0 : num;\n  },\n  trim: function trim(str) {\n    return str ? str.toString().replace(/^\\s+|\\s+$/g, '') : '';\n  },\n\n  // 十进制转十六进制\n  toHex: function toHex(num) {\n    var HEX_CODE = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];\n    var hex = [];\n    // 余数\n    var surplus = 0;\n    // 商\n    var quotient = num;\n    do {\n      surplus = HEX_CODE[quotient % 16];\n      hex.unshift(surplus);\n      quotient = Math.floor(quotient / 16);\n    } while (quotient);\n\n    return hex.length === 1 ? '0' + hex[0] : hex.join('');\n  },\n\n  // rgb(68, 198, 123)\n  rgbToHex: function rgbToHex(rgb) {\n    var hex = '';\n    if (/rgb\\((\\d+)\\D+?(\\d+)\\D+?(\\d+)/.test(rgb)) {\n      hex += this.toHex(RegExp.$1);\n      hex += this.toHex(RegExp.$2);\n      hex += this.toHex(RegExp.$3);\n    }\n    return hex ? '#' + hex : rgb;\n  },\n\n  // 是否为http(s)链接\n  isHttpUrl: function isHttpUrl(url) {\n    return url && /^(http|https):\\/\\//i.test(url.toString());\n  }\n};\n\n//# sourceURL=webpack:///./src/js/util.js?");
 
-function error() {
-  for (var i = 0; i < arguments.length; i++) {
-    console.error(arguments[i]);
-  }
-}
+/***/ }),
+
+/***/ "./src/js/zx-editor.js":
+/*!*****************************!*\
+  !*** ./src/js/zx-editor.js ***!
+  \*****************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\n\nObject.defineProperty(exports, \"__esModule\", {\n  value: true\n});\nexports.ZxEditor = undefined;\n\nvar _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if (\"value\" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * Create by zx1984\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * 2018/1/23 0023.\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * https://github.com/zx1984\n                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */\n\n\n__webpack_require__(/*! ../css/zx-editor.styl */ \"./src/css/zx-editor.styl\");\n\nvar _util = __webpack_require__(/*! ./util */ \"./src/js/util.js\");\n\nvar _util2 = _interopRequireDefault(_util);\n\nvar _domCore = __webpack_require__(/*! ./dom-core */ \"./src/js/dom-core.js\");\n\nvar _domCore2 = _interopRequireDefault(_domCore);\n\nvar _scroll = __webpack_require__(/*! ./scroll */ \"./src/js/scroll.js\");\n\nvar _scroll2 = _interopRequireDefault(_scroll);\n\nvar _extendMethods = __webpack_require__(/*! ./extend-methods */ \"./src/js/extend-methods.js\");\n\nvar _debug = __webpack_require__(/*! ./debug */ \"./src/js/debug.js\");\n\nfunction _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }\n\nfunction _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError(\"Cannot call a class as a function\"); } }\n\n// COLOR\nvar COLORS = {\n  black: '#333',\n  gray: '#d0d0d0',\n  red: '#ff583d',\n  yellow: '#fdaa25',\n  green: '#44c67b',\n  blue: '#14b2e0',\n  purple: '#b065e2'\n\n  // 工具栏高度\n};var TOOL_BAR_HEIGHT = 48 + 10;\n// 字体样式选择层高度\nvar TEXT_STYLE_HEIGHT = 310 + 10;\n\n// ZxEditor\n\nvar ZxEditor = function () {\n  // constructor\n  function ZxEditor() {\n    var selecotor = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'body';\n\n    _classCallCheck(this, ZxEditor);\n\n    this.editor = null;\n    this.toolbar = null;\n    this.editbox = null;\n    this.textstyle = null;\n    this.textstyleIsShow = false;\n    this.linkinput = null;\n    // 编辑的内容\n    // this.content = null\n    // 光标对象\n    this.selection = null;\n    this.range = null;\n    this.rangeOffset = 0;\n    this.rangeTimer = null;\n    // 当前光标所在的元素节点NodeType === 1\n    this.rangeElm = null;\n    this._initDoms(selecotor);\n  }\n\n  /**\n   * 初始化DOM节点\n   * @param selecotor Editor外层容器id或className\n   * @private\n   */\n\n\n  _createClass(ZxEditor, [{\n    key: '_initDoms',\n    value: function _initDoms(selecotor) {\n      // 外部容器\n      var outerWrapper = _domCore2.default.query(selecotor);\n\n      this.editor = _domCore2.default.create('div', { class: 'zxeditor-container' });\n      this.editbox = _domCore2.default.create('div', { class: 'zxeditor-content-wrapper', contenteditable: true, style: 'margin-bottom: ' + TOOL_BAR_HEIGHT + 'px' });\n      this.toolbar = _domCore2.default.create('div', { class: 'zxeditor-toolbar-wrapper' });\n      this.textstyle = _domCore2.default.create('div', { class: 'zxeditor-textstyle-wrapper', style: 'display: none' });\n\n      this.linkinput = _domCore2.default.create('div', { class: 'zxeditor-linkinput-wrapper', style: 'display: none' });\n\n      this.toolbar.innerHTML = '\\n      <div class=\"toolbar-item pic-hook\">\\u56FE\\u7247</div>\\n      <div class=\"toolbar-item text-hook\">\\u6587\\u5B57</div>\\n      <div class=\"toolbar-item link-hook\">\\u94FE\\u63A5</div>\\n      <div class=\"toolbar-item split-hook\">\\u5206\\u5272</div>\\n      <!--<div class=\"toolbar-item reward-hook\">\\u6253\\u8D4F</div>-->\\n    ';\n\n      this.textstyle.innerHTML = '\\n      <div class=\"abs-bar-wrapper border-bottom\">\\n        <div class=\"abs-bar-title\">\\u6837\\u5F0F</div>\\n        <div class=\"abs-bar-btn\">\\u5B8C\\u6210</div>\\n      </div>\\n      <div class=\"text-style-wrapper border-bottom\">\\n        <div class=\"style-item text-bold\" data-style=\"fontWeight:800\">B</div>\\n        <div class=\"style-item text-italic\" data-style=\"fontStyle:italic\">I</div>\\n        <div class=\"style-item through-line\" data-style=\"textDecoration:line-through\">abc</div>\\n      </div>\\n      <div class=\"text-color-wrapper border-bottom\">\\n        <div class=\"color-item color-black\" data-color=\"\"></div>\\n        <div class=\"color-item color-gray\" data-color=\"' + COLORS.gray + '\"></div>\\n        <div class=\"color-item color-red\" data-color=\"' + COLORS.red + '\"></div>\\n        <div class=\"color-item color-yellow\" data-color=\"' + COLORS.yellow + '\"></div>\\n        <div class=\"color-item color-green\" data-color=\"' + COLORS.green + '\"></div>\\n        <div class=\"color-item color-blue\" data-color=\"' + COLORS.blue + '\"></div>\\n        <div class=\"color-item color-purple\" data-color=\"' + COLORS.purple + '\"></div>\\n      </div>\\n      <div class=\"text-tag-wrapper\">\\n        <div class=\"tag-item big-hook\" data-tag=\"h2\">\\u5927\\u6807\\u9898</div>\\n        <div class=\"tag-item small-hook\" data-tag=\"h4\">\\u5C0F\\u6807\\u9898</div>\\n        <div class=\"tag-item normal-hook\" data-tag=\"p\">\\u6B63\\u6587</div>\\n        <div class=\"tag-item quote-hook\" data-tag=\"blockquote\"><b></b>\\u5F15\\u7528</div>\\n        <div class=\"tag-item unordered-hook\" data-tag=\"ul\"><b></b>\\u65E0\\u5E8F\\u5217\\u8868</div>\\n      </div>\\n    ';\n\n      this.linkinput.innerHTML = '\\n      <div class=\"linkinput-wrapper\">\\n        <div class=\"linkinput-title\">\\u6DFB\\u52A0\\u94FE\\u63A5</div>\\n        <div class=\"linkinput-group\">\\n          <input type=\"text\" class=\"link-input\" name=\"zxeditorLinkurl\" placeholder=\"http(s)://\">\\n          <input type=\"text\" class=\"link-input\" name=\"zxeditorLinkname\" placeholder=\"\\u94FE\\u63A5\\u540D\\u79F0(\\u9009\\u586B)\">\\n        </div>\\n        <div class=\"linkinput-footer\">\\n          <button class=\"cancel-hook\">\\u53D6\\u6D88</button>\\n          <button class=\"submit-hook disabled\">\\u786E\\u5B9A</button>\\n        </div>\\n      </div>\\n    ';\n\n      this.editor.appendChild(this.editbox);\n      this.editor.appendChild(this.toolbar);\n      this.editor.appendChild(this.textstyle);\n      this.editor.appendChild(this.linkinput);\n      outerWrapper.appendChild(this.editor);\n\n      this._eventHandle();\n    }\n\n    /**\n     * 初始化文本框内容及当前光标元素\n     * @private\n     */\n\n  }, {\n    key: '_initContentRang',\n    value: function _initContentRang() {\n      if (!this.editbox.innerHTML) {\n        var p = _domCore2.default.create('p');\n        p.innerHTML = '<br>';\n        this.rangeElm = p;\n        this.editbox.appendChild(p);\n        this._setRangePosition();\n      }\n    }\n\n    /**\n     * 显示文字样式设置\n     * @private\n     */\n\n  }, {\n    key: '_textstyleShow',\n    value: function _textstyleShow() {\n      this.textstyle.style.display = 'block';\n      this.editbox.style.marginBottom = TEXT_STYLE_HEIGHT + 'px';\n      this.textstyleIsShow = true;\n      this._initTextStyleCheck();\n      this.scrollToRange();\n    }\n\n    /**\n     * 隐藏文字样式设置\n     * @private\n     */\n\n  }, {\n    key: '_textstyleHide',\n    value: function _textstyleHide() {\n      this.textstyle.style.display = 'none';\n      this.editbox.style.marginBottom = TOOL_BAR_HEIGHT + 'px';\n      this.textstyleIsShow = false;\n      this.scrollToRange();\n      this._setRangePosition();\n    }\n\n    /**\n     * 操作事件绑定\n     */\n\n  }, {\n    key: '_eventHandle',\n    value: function _eventHandle() {\n      var _this = this;\n\n      // 激活文本编辑框\n      this.editbox.addEventListener('click', function (e) {\n        _this._initContentRang();\n        _this._getRange(function () {\n          // this._initTextStyleCheck()\n        });\n        // 隐藏显示的文字样式设置容器\n        if (_this.textstyleIsShow) {\n          _this._textstyleHide();\n        }\n      }, false);\n\n      // 离开编辑输入框时，内容是否为空\n      // 为空则添加<br>\n      this.editbox.addEventListener('blur', function (e) {\n        if (_this.rangeElm && !_this.rangeElm.innerHTML) {\n          _this.rangeElm.innerHTML = '<br>';\n        }\n      }, false);\n\n      // 文本编辑框内容输入\n      this.editbox.addEventListener('keyup', function () {\n        _this._getRange();\n        _this.scrollToRange();\n      }, false);\n\n      // 操作工具栏，上传图片、文字样式设置等\n      this.toolbar.addEventListener('click', function (e) {\n        var el = e.target;\n        // 判断内容是否为空，\n        // 即用户是否有激活过文本输入框\n        _this._initContentRang();\n\n        // 文字\n        if (el.hasClass('text-hook')) {\n          _this._textstyleShow();\n        }\n\n        // 链接\n        if (el.hasClass('link-hook')) {\n          if (_this.rangeElm.nodeName === 'P') {\n            _this.linkinput.style.display = 'flex';\n          } else {\n            alert('只支持在正文中插入链接！');\n          }\n        }\n\n        // 分割线\n        if (el.hasClass('split-hook')) {\n          _domCore2.default.insertHr(_this.rangeElm);\n        }\n\n        // 打赏\n        if (el.hasClass('reward-hook')) {\n          alert('开发中');\n        }\n      }, false);\n\n      // 文字样式选项控制\n      this.textstyle.addEventListener('click', function (e) {\n        var el = e.target;\n        // 字体标签\n        if (el.hasClass('tag-item')) {\n          _this._tagnameHandle(el);\n        }\n        // 字体样式\n        if (el.hasClass('style-item')) {\n          _this._textStyleHandle(el);\n        }\n        // 字体颜色\n        if (el.hasClass('color-item')) {\n          _this._textColorHandle(el);\n        }\n        // 关闭字体样式设置层\n        if (el.hasClass('abs-bar-btn')) {\n          _this._textstyleHide(el);\n        }\n      });\n\n      // 滑动文字样式设置层时，禁用document滑动\n      this.textstyle.addEventListener('touchmove', function (e) {\n        _domCore2.default.queryAll('body')[0].style.overflow = 'hidden';\n      });\n      this.textstyle.addEventListener('touchend', function (e) {\n        _domCore2.default.queryAll('body')[0].style.overflow = '';\n      });\n\n      // 链接：输入容器按钮\n      var submitBtn = this.linkinput.querySelector('.submit-hook');\n      var cancelBtn = this.linkinput.querySelector('.cancel-hook');\n      var linkInputs = this.linkinput.querySelectorAll('input');\n      // 确定\n      submitBtn.addEventListener('click', function (e) {\n        var el = e.target;\n        // const className = el.className\n        if (el.hasClass('disabled')) return;\n        // 创建url，并添加至焦点出\n        var linkStr = _domCore2.default.createLinkStr(linkInputs[0].value, linkInputs[1].value);\n        // 获取焦点在段落中的位置\n        var position = _this.range ? _this.range.startOffset : 0;\n        if (_this.rangeElm.nodeName === 'P') {\n          _this.rangeElm.innerHTML = _domCore2.default.insertStr(_this.rangeElm.innerText, linkStr, position);\n          _this.linkinput.style.display = 'none';\n        }\n      }, false);\n      // 取消\n      cancelBtn.addEventListener('click', function () {\n        _this.linkinput.style.display = 'none';\n      }, false);\n\n      // 链接输入框\n      linkInputs[0].addEventListener('keyup', function (e) {\n        var val = e.target.value;\n        if (_util2.default.isHttpUrl(val)) {\n          if (submitBtn.hasClass('disabled')) {\n            submitBtn.removeClass('disabled');\n          }\n        }\n      }, false);\n    }\n\n    /**\n     * 元素文字style样式处理\n     * @param el 样式按钮对象\n     * @private\n     */\n\n  }, {\n    key: '_textStyleHandle',\n    value: function _textStyleHandle(el) {\n      var value = el.getAttribute('data-style');\n      var style = value.split(':');\n      var key = style[0];\n      if (this.rangeElm.style[key] === style[1]) {\n        this.rangeElm.style[key] = '';\n      } else {\n        this.rangeElm.style[key] = style[1];\n      }\n      this._setRangePosition();\n    }\n\n    /**\n     * 元素文字Color处理\n     * @param el 颜色按钮对象\n     * @private\n     */\n\n  }, {\n    key: '_textColorHandle',\n    value: function _textColorHandle(el) {\n      var value = el.getAttribute('data-color');\n      this.rangeElm.style.color = value;\n      el.addClass('active');\n      var siblings = _domCore2.default.siblings(el, 'active') || [];\n      siblings.forEach(function (item) {\n        item.removeClass('active');\n      });\n      this._setRangePosition();\n    }\n\n    /**\n     * 标签样式处理\n     * @param el 标签按钮对象\n     * @private\n     */\n\n  }, {\n    key: '_tagnameHandle',\n    value: function _tagnameHandle(el) {\n      var _this2 = this;\n\n      var TAG_ITEMS = {\n        'big': 'h2',\n        'small': 'h4',\n        'normal': 'p',\n        'quote': 'blockquote',\n        'unordered': 'ul'\n      };\n\n      var className = el.className;\n\n      if (el.querySelector('.checked') === null) {\n        this._appendCheckedIcon(el);\n        // 去掉兄弟节点上的选中符号\n        var siblings = _domCore2.default.siblings(el) || [];\n        siblings.forEach(function (item) {\n          _this2._removeCheckedIcon(item);\n        });\n        // 给当前焦点元素节点，添加样式\n        var tag = 'p';\n        var tagMatch = className.match(/\\b(\\w+?)-hook\\b/);\n        if (tagMatch && tagMatch[1]) {\n          try {\n            tag = TAG_ITEMS[tagMatch[1]];\n          } catch (e) {}\n        }\n        // this.log(this.range)\n        var newElm = _domCore2.default.changeTagName(this.rangeElm, tag);\n        _domCore2.default.insertAfter(this.rangeElm, newElm);\n        this.editbox.removeChild(this.rangeElm);\n        this.rangeElm = newElm;\n        this._setRangePosition(this.rangeElm);\n      }\n    }\n\n    /**\n     * 初始化文字样式选项\n     * @private\n     */\n\n  }, {\n    key: '_initTextStyleCheck',\n    value: function _initTextStyleCheck() {\n      var _this3 = this;\n\n      if (!this.textstyleIsShow) return;\n      // 初始化节点类型 ****************************************\n      // 检查当前焦点DOM节点类型\n      var tagName = this.rangeElm.tagName.toLowerCase();\n      // this.log('this.rangeElm.tagName: ' + tagName)\n      var tagList = this.textstyle.querySelectorAll('.tag-item') || [];\n      tagList.forEach(function (item) {\n        var tag = item.getAttribute('data-tag');\n        if (tag === tagName) {\n          _this3._appendCheckedIcon(item);\n        } else {\n          _this3._removeCheckedIcon(item);\n        }\n      });\n\n      // 初始化文字颜色选 ****************************************\n      var color = this.rangeElm.style.color;\n      if (/rgb\\(/.test(color)) {\n        // 十进制转十六进制\n        color = _util2.default.rgbToHex(color);\n      }\n      // 获取颜色选项节点列表\n      var colorList = this.textstyle.querySelectorAll('.color-item') || [];\n      colorList.forEach(function (item) {\n        var tag = item.getAttribute('data-color');\n        if (tag === color) {\n          item.addClass('active');\n        } else {\n          item.removeClass('active');\n        }\n      });\n      // 标记焦点位置\n      this._setRangePosition();\n    }\n\n    /**\n     * 添加一个checked图标\n     * @param el\n     * @private\n     */\n\n  }, {\n    key: '_appendCheckedIcon',\n    value: function _appendCheckedIcon(el) {\n      if (el.querySelector('.checked')) return;\n      // 字体样式选中符号\n      var ICON_CHECKED = _domCore2.default.create('i', { class: 'checked' });\n      el.appendChild(ICON_CHECKED);\n    }\n\n    /**\n     * 移除checked图标\n     * @param el\n     * @private\n     */\n\n  }, {\n    key: '_removeCheckedIcon',\n    value: function _removeCheckedIcon(el) {\n      var checkedNode = el.querySelector('.checked');\n      if (checkedNode) el.removeChild(checkedNode);\n    }\n\n    /**\n     * 创建图片随机id\n     * @param prefix id前缀\n     * @returns {string}\n     * @private\n     */\n\n  }, {\n    key: '_randId',\n    value: function _randId() {\n      var prefix = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';\n\n      return 'zxEditor_' + prefix + +new Date();\n    }\n\n    /**\n     * 添加图片到编辑器中\n     * @param src 图片URL地址或base64数据\n     */\n\n  }, {\n    key: 'addImage',\n    value: function addImage(src) {\n      var _this4 = this;\n\n      var id = this._randId('img_');\n      var img = _domCore2.default.create('img', { src: src, width: '100%', height: 'auto', id: id });\n      var p = null;\n      if (_domCore2.default.isInnerEmpty(this.rangeElm)) {\n        p = this.rangeElm;\n        p.innerHTML = '';\n      } else {\n        p = _domCore2.default.create('p');\n        _domCore2.default.insertAfter(this.rangeElm, p);\n        this.rangeElm = p;\n      }\n      p.appendChild(img);\n\n      // 结尾插入的话，新增一段\n      if (this.editbox.lastElementChild === p) {\n        this._insertEmptyParagraph();\n      } else {\n        this.rangeElm = p.nextElementSibling;\n        this.rangeOffset = 0;\n        this._setRangePosition(this.rangeElm);\n      }\n      // 300毫秒后，文档高度跳转至焦点位置\n      var timer = setTimeout(function () {\n        _this4.scrollToRange();\n        if (timer) clearTimeout(timer);\n      }, 300);\n    }\n\n    /**\n     * 获取光标及当前光标所在的DOM元素节点\n     * @private\n     */\n\n  }, {\n    key: '_getRange',\n    value: function _getRange() {\n      // 获取选定对象\n      this.selection = getSelection();\n      // 设置最后光标对象\n      this.range = this.selection.getRangeAt(0);\n      this.rangeOffset = this.range.startOffset;\n      // 当前Node\n      var currentNode = this.range.endContainer;\n      this.rangeElm = _domCore2.default.closest(currentNode, this.editbox);\n    }\n\n    /**\n     * 设置或创建光标位置\n     * @param el\n     * @private\n     */\n\n  }, {\n    key: '_setRangePosition',\n    value: function _setRangePosition(el) {\n      var _this5 = this;\n\n      if (this.selection === null) {\n        this.selection = getSelection();\n        this.range = new Range();\n        this.rangeOffset = 0;\n      } else {\n        // 清除选定对象的所有光标对象\n        this.selection.removeAllRanges();\n      }\n      // 光标移动到到原来的位置加上新内容的长度\n      if (el) {\n        this.range.setStart(_domCore2.default.getTextNode(el), this.rangeOffset);\n      }\n      // 光标开始和光标结束重叠\n      this.range.collapse(true);\n\n      if (this.rangeTimer) clearTimeout(this.rangeTimer);\n      // 延时执行，键盘自动收起后再触发focus\n      this.rangeTimer = setTimeout(function () {\n        // 插入新的光标对象\n        _this5.selection.addRange(_this5.range);\n        if (_this5.rangeTimer) clearTimeout(_this5.rangeTimer);\n        _this5.rangeTimer = null;\n      }, 100);\n    }\n\n    /**\n     * 插入空行\n     * @private\n     */\n\n  }, {\n    key: '_insertEmptyParagraph',\n    value: function _insertEmptyParagraph() {\n      var p = _domCore2.default.create('p');\n      p.innerHTML = '<br>';\n      this.editbox.appendChild(p);\n      this.rangeElm = p;\n      this.rangeOffset = 0;\n      this._setRangePosition(p);\n    }\n\n    /**\n     * 滚动至顶部\n     */\n\n  }, {\n    key: 'scrollToTop',\n    value: function scrollToTop() {\n      var winHeight = window.innerHeight;\n      _scroll2.default.to(0, _scroll2.default.height() - winHeight);\n    }\n\n    /**\n     * 滚动至焦点可视区域\n     */\n\n  }, {\n    key: 'scrollToRange',\n    value: function scrollToRange() {\n      var winHeight = window.innerHeight;\n      var scrollTop = _scroll2.default.top();\n      var rect = this.rangeElm.getBoundingClientRect();\n      // fixed(ToolBar 或者 TEXT样式设置)层的高度\n      var fixedHeight = this.textstyleIsShow ? TEXT_STYLE_HEIGHT : TOOL_BAR_HEIGHT;\n      var scrollPostion = rect.bottom - (winHeight - fixedHeight);\n\n      if (scrollPostion > 0) {\n        _scroll2.default.to(0, scrollTop + scrollPostion);\n      } else if (rect.top < 0) {\n        _scroll2.default.to(0, scrollTop + rect.top);\n      }\n    }\n\n    /**\n     * 将image base64数据，转化为Bolb原始文件数\n     * @param base64Data\n     * @returns {*}\n     */\n\n  }, {\n    key: 'toBlobData',\n    value: function toBlobData(base64Data) {\n      return (0, _extendMethods.toBlobData)(base64Data);\n    }\n\n    /**\n     * 获取正文中的base64图片\n     * @returns {Array}\n     */\n\n  }, {\n    key: 'getBase64Images',\n    value: function getBase64Images() {\n      var arr = [];\n      var imgs = this.editbox.querySelectorAll('img');\n      for (var i = 0; i < imgs.length; i++) {\n        var img = imgs[i];\n        if (/^data:.+?;base64,/.test(img.src)) {\n          arr.push({\n            id: img.id,\n            data: img.src\n          });\n        }\n      }\n      return arr;\n    }\n\n    /**\n     * 设置指定id图片src\n     * @param id\n     * @param src\n     * @returns {boolean}\n     */\n\n  }, {\n    key: 'setImageSrc',\n    value: function setImageSrc(id, src) {\n      var img = this.editbox.querySelector('#' + id);\n      if (img) {\n        img.src = src;\n        return true;\n      }\n      return false;\n    }\n\n    /**\n     * 获取正文内容(html代码)\n     */\n\n  }, {\n    key: 'getContent',\n    value: function getContent() {\n      return this.editbox.innerHTML;\n    }\n  }]);\n\n  return ZxEditor;\n}();\n\nexports.ZxEditor = ZxEditor;\n\n//# sourceURL=webpack:///./src/js/zx-editor.js?");
 
 /***/ })
-/******/ ]);
+
+/******/ });
 });

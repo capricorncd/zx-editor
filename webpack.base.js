@@ -3,10 +3,16 @@
  * https://github.com/capricorncd
  */
 const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
   entry: {
     'zx-editor': './src/js/zx-editor.js'
+  },
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'js/[name].js',
+    libraryTarget: "umd"
   },
   module: {
     rules: [
@@ -49,5 +55,12 @@ module.exports = {
         ]
       }
     ]
-  }
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: 'index.html',
+      filename: 'index.html',
+      inject: false
+    })
+  ]
 }

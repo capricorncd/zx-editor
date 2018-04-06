@@ -87,6 +87,7 @@
 
   // 模拟异步上传文件
   function upload(data, id, callback) {
+    console.error(data)
     // data 上传的文件数据
     var timer = setTimeout(function () {
       callback({

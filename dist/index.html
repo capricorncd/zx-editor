@@ -30,7 +30,7 @@
 
 <script src="libs/image-process-tools.min.js"></script>
 <!--<script src="libs/bscroll.min.js"></script>-->
-<script src="js/zx-editor.js"></script>
+<script src="js/zx-editor.min.js"></script>
 <script>
   var zxEditor = new ZxEditor('#editorContainer');
   // 处理从相册选中或拍摄的图片
@@ -87,6 +87,7 @@
 
   // 模拟异步上传文件
   function upload(data, id, callback) {
+    console.error(data)
     // data 上传的文件数据
     var timer = setTimeout(function () {
       callback({

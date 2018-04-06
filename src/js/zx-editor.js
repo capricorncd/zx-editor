@@ -7,6 +7,7 @@ import '../css/zx-editor.styl'
 import util from './util'
 import dom from './dom-core'
 import scroll from './scroll'
+import {toBlobData} from './extend-methods'
 import { log, error } from './debug'
 
 // COLOR
@@ -36,7 +37,7 @@ class ZxEditor {
     this.textstyleIsShow = false
     this.linkinput = null
     // 编辑的内容
-    this.content = null
+    // this.content = null
     // 光标对象
     this.selection = null
     this.range = null
@@ -258,7 +259,7 @@ class ZxEditor {
     // 确定
     submitBtn.addEventListener('click', (e) => {
       const el = e.target
-      const className = el.className
+      // const className = el.className
       if (el.hasClass('disabled')) return
       // 创建url，并添加至焦点出
       let linkStr = dom.createLinkStr(linkInputs[0].value, linkInputs[1].value)
@@ -556,23 +557,7 @@ class ZxEditor {
    * @returns {*}
    */
   toBlobData (base64Data) {
-    // base64数据格式:
-    // "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAkGB+wgHBgkIBwgKCgkLDRYPDQw//9k="
-    let type, onlyData
-    if (/^data:(\w+\/\w+);base64,(.+)/) {
-      type = RegExp.$1
-      onlyData = RegExp.$2
-    } else {
-      error('toBlobData(data), params\'data is not base64 data!')
-      return null
-    }
-
-    let data = window.atob(onlyData)
-    let ia = new Uint8Array(data.length)
-    for (let i = 0; i < data.length; i++) {
-      ia[i] = data.charCodeAt(i)
-    }
-    return new Blob([ia], {type: type})
+    return toBlobData(base64Data)
   }
 
   /**
