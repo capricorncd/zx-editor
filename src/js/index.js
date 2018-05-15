@@ -55,7 +55,7 @@ class ZxEditor {
    */
   _initDoms (selecotor) {
     // 外部容器
-    const outerWrapper = dom.query(selecotor)
+    const $outerWrapper = dom.query(selecotor)
 
     this.editor = dom.create('div', {class: 'zxeditor-container'})
     this.editbox = dom.create('div', {class: 'zxeditor-content-wrapper', contenteditable: true, style: `margin-bottom: ${TOOL_BAR_HEIGHT}px`})
@@ -118,7 +118,7 @@ class ZxEditor {
     this.editor.appendChild(this.toolbar)
     this.editor.appendChild(this.textstyle)
     this.editor.appendChild(this.linkinput)
-    outerWrapper.appendChild(this.editor)
+    $outerWrapper.appendChild(this.editor)
 
     this._eventHandle()
   }

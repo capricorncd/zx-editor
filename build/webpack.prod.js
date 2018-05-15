@@ -7,14 +7,9 @@ const merge = require('webpack-merge')
 const webpackBase = require('./webpack.base')
 
 module.exports = merge(webpackBase, {
+  mode: 'production',
   output: {
-    filename: 'js/[name].min.js',
+    filename: 'js/[name].min.js'
   },
-  plugins: [
-    // new webpack.optimize.UglifyJsPlugin({
-    //   compress: {
-    //     warnings: false
-    //   }
-    // })
-  ]
+  plugins: []
 })

@@ -9,8 +9,9 @@ const merge = require('webpack-merge')
 const webpackBase = require('./webpack.base')
 
 module.exports = merge(webpackBase, {
+  mode: 'development',
   devServer: {
-    contentBase: path.resolve(__dirname, 'dist'),
+    contentBase: path.resolve(__dirname, '../dist'),
     host: '0.0.0.0',
     port: 9001,
     overlay: {
@@ -19,7 +20,7 @@ module.exports = merge(webpackBase, {
     hot: true
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
+    new webpack.HotModuleReplacementPlugin()
+    // new webpack.NoEmitOnErrorsPlugin()
   ]
 })

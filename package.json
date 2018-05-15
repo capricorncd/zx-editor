@@ -5,8 +5,8 @@
   "author": "zx1984",
   "github": "https://github.com/zx1984",
   "scripts": {
-    "dev": "webpack-dev-server --mode=development --inline --color --config webpack.dev.js",
-    "build": "webpack --mode=development --config webpack.dev.js && webpack --mode=production --color --config webpack.prod.js"
+    "dev": "webpack-dev-server --inline --color --config build/webpack.dev.js",
+    "build": "webpack --config build/webpack.dev.js && webpack --color --config build/webpack.prod.js"
   },
   "dependencies": {
     "webpack": "^4.5.0",

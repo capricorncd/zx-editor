@@ -7,12 +7,12 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
   entry: {
-    'zx-editor': './src/js/zx-editor.js'
+    'zx-editor': './src/js/index.js'
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, '../dist'),
     filename: 'js/[name].js',
-    libraryTarget: "umd"
+    libraryTarget: 'umd'
   },
   module: {
     rules: [

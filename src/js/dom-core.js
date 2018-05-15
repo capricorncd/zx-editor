@@ -14,8 +14,7 @@ HTMLElement.prototype.removeClass = function (className) {
 
 // 包含某个样式
 HTMLElement.prototype.hasClass = function (className) {
-  let reg = new RegExp(`\\b(${className})\\b`)
-  return className && reg.test(this.className)
+  return this.classList.contains(className)
 }
 
 export default  {

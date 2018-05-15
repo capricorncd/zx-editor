@@ -3,6 +3,7 @@
  * 2018/1/24 0024.
  * https://github.com/zx1984
  */
+// 十六进制
 export default {
   // 转换为整数
   int (n) {
@@ -14,19 +15,8 @@ export default {
   },
   // 十进制转十六进制
   toHex (num) {
-    const HEX_CODE = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']
-    let hex = []
-    // 余数
-    let surplus = 0
-    // 商
-    let quotient = num
-    do {
-      surplus = HEX_CODE[quotient % 16]
-      hex.unshift(surplus)
-      quotient = Math.floor(quotient / 16)
-    } while (quotient)
-
-    return hex.length === 1 ? '0' + hex[0] : hex.join('')
+    let hex = num.toString(16)
+    return hex[1] ? hex : '0' + hex
   },
   // rgb(68, 198, 123)
   rgbToHex (rgb) {
