@@ -59,11 +59,11 @@ npm run build
 </script>
 ```
 
-* ES6
+* ES6+
 
 ```javascript
-import ZxEditor from './dist/zx-editor'
-// import ZxEditor from './src/zx-editor'
+import { ZxEditor } from 'zx-editor'
+// import { ZxEditor } from './src/js/zx-editor/index.js'
 ```
 
 ## API
