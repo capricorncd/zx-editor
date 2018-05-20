@@ -24,7 +24,7 @@ const COLORS = {
 // 工具栏高度
 const TOOL_BAR_HEIGHT = 48 + 10
 // 字体样式选择层高度
-const TEXT_STYLE_HEIGHT = 310 + 10
+const TEXT_STYLE_HEIGHT = 260 + 10
 
 // ZxEditor
 class ZxEditor {
@@ -58,7 +58,7 @@ class ZxEditor {
     const $outerWrapper = dom.query(selecotor)
 
     this.editor = dom.create('div', {class: 'zxeditor-container'})
-    this.editbox = dom.create('div', {class: 'zxeditor-content-wrapper', contenteditable: true, style: `margin-bottom: ${TOOL_BAR_HEIGHT}px`})
+    this.editbox = dom.create('div', {class: 'zxeditor-content-wrapper', contenteditable: true, style: `bottom: ${TOOL_BAR_HEIGHT}px`})
     this.toolbar = dom.create('div', {class: 'zxeditor-toolbar-wrapper'})
     this.textstyle = dom.create('div', {class: 'zxeditor-textstyle-wrapper', style: 'display: none'})
 
@@ -143,7 +143,7 @@ class ZxEditor {
    */
   _textstyleShow () {
     this.textstyle.style.display = 'block'
-    this.editbox.style.marginBottom = TEXT_STYLE_HEIGHT + 'px'
+    this.editbox.style.bottom = TEXT_STYLE_HEIGHT + 'px'
     this.textstyleIsShow = true
     this._initTextStyleCheck()
     this.scrollToRange()
@@ -155,9 +155,9 @@ class ZxEditor {
    */
   _textstyleHide () {
     this.textstyle.style.display = 'none'
-    this.editbox.style.marginBottom = TOOL_BAR_HEIGHT + 'px'
+    this.editbox.style.bottom = TOOL_BAR_HEIGHT + 'px'
     this.textstyleIsShow = false
-    this.scrollToRange()
+    // this.scrollToRange()
     this._setRangePosition()
   }
 
@@ -188,7 +188,7 @@ class ZxEditor {
     // 文本编辑框内容输入
     this.editbox.addEventListener('keyup', () => {
       this._getRange()
-      this.scrollToRange()
+      // this.scrollToRange()
     }, false)
 
     // 操作工具栏，上传图片、文字样式设置等
@@ -462,7 +462,7 @@ class ZxEditor {
     let timer = setTimeout(() => {
       this.scrollToRange()
       if (timer) clearTimeout(timer)
-    }, 300)
+    }, 100)
   }
 
   /**
@@ -527,29 +527,45 @@ class ZxEditor {
   /**
    * 滚动至顶部
    */
-  scrollToTop () {
-    let winHeight = window.innerHeight
-    scroll.to(0, scroll.height() - winHeight)
+  // scrollToBottom ($el = document) {
+  //   let timer = setTimeout(function () {
+  //     // error($el.scrollTop, $el.scrollHeight)
+  //     $el.scrollTop = $el.scrollHeight
+  //     clearTimeout(timer)
+  //     timer = null
+  //   }, 100)
+  // }
+
+  /**
+   * 滚动至指定位置
+   * @param $el 对象
+   * @param position y轴滚动距离
+   */
+  scrollTo ($el = document, position) {
+    let timer = setTimeout(function () {
+      // error(position)
+      $el.scrollTop = position ? position : $el.scrollHeight
+      clearTimeout(timer)
+      timer = null
+    }, 0)
   }
 
   /**
    * 滚动至焦点可视区域
    */
   scrollToRange () {
-    let winHeight = window.innerHeight
-    let scrollTop = scroll.top()
     let rect = this.rangeElm.getBoundingClientRect()
-    // fixed(ToolBar 或者 TEXT样式设置)层的高度
-    let fixedHeight = this.textstyleIsShow ? TEXT_STYLE_HEIGHT : TOOL_BAR_HEIGHT
-    let scrollPostion = rect.bottom - (winHeight - fixedHeight)
-
-    if (scrollPostion > 0) {
-      scroll.to(0, scrollTop + scrollPostion)
-    } else if (rect.top < 0) {
-      scroll.to(0, scrollTop + rect.top)
+    // 编辑窗口
+    let $editbox = this.editbox
+    // 编辑窗口可视范围
+    let viewRange = $editbox.offsetHeight
+    // 当前焦点elem对象，不在焦点可视区域内
+    if (rect.bottom <= 0) {
+      this.scrollTo($editbox, $editbox.scrollTop + rect.top)
+    } else if (rect.bottom >= viewRange) {
+      this.scrollTo($editbox, $editbox.scrollTop + rect.bottom - viewRange)
     }
   }
-
 
   /**
    * 将image base64数据，转化为Bolb原始文件数

@@ -37,10 +37,14 @@ $borderColor = #eee;
     color: $black;
     box-sizing: border-box;
   .zxeditor-content-wrapper
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    min-height: 200px;
-    overflow: hidden;
+    bottom: 58px;
+    overflow-y: scroll;
     outline: none;
+    transition all .2s
     p, h1, h2, h3, h4, li
       line-height: 1.5em;
       padding: 10px 0;
