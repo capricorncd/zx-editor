@@ -1,6 +1,6 @@
 /**
  * Created by Capricorncd 2018/1/28
- * https://github.com/capricorncd
+ * https://github.com/zx1984
  */
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -20,7 +20,7 @@ module.exports = {
         test: /\.js$/,
         loader: 'babel-loader',
         exclude: path.resolve(__dirname, 'node_modules'),
-        include: path.resolve(__dirname, 'src'),
+        // include: path.resolve(__dirname, 'src'),
         query: {
           presets: ['env']
         }
@@ -53,6 +53,10 @@ module.exports = {
             }
           }
         ]
+      },
+      {
+        test: /\.(png|pneg|gif|jpg|jpeg)$/,
+        loader: 'url-loader'
       }
     ]
   },

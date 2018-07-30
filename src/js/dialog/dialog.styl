@@ -1,0 +1,56 @@
+@import "../../css/config.styl"
+
+.zx-dialog-wrapper
+  position: fixed;
+  top: 0;
+  left:0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .zx-dialog-inner
+    width: 70%;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow 0 0 10px rgba(0, 0, 0, .2);
+    .zx-dialog-message
+      margin: 0 auto;
+      padding: 10px 0;
+      width: 90%;
+      min-height 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    .zx-dialog-footer
+      position: relative;
+      display: flex;
+      &:after
+        position absolute;
+        top: 0;
+        left: 0;
+        width 100%;
+        transform: scaleY(.5);
+        border-top: 1px solid $borderColor;
+        content: '';
+      .__item
+        position: relative;
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 40px;
+        font-size: .8em;
+        letter-spacing 5px;
+        &:nth-child(2)
+          color: $primaryColor;
+          &:after
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            border-left: 1px solid $borderColor;
+            transform: scaleX(.5);
+            content: '';
+

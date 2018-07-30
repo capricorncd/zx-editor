@@ -2,7 +2,17 @@
  * Created by zx1984 2018/3/21
  * https://github.com/zx1984
  */
+import util from '../util/index'
 export default {
+  /**
+   * 滚动值底部
+   * 将$el scrollTop设为最大值
+   * @param $el
+   * @param offset 偏移量
+   */
+  toBottom ($el, offset = 0) {
+    $el.scrollTop = $el.scrollHeight - util.int(offset)
+  },
   top () {
     return (window.pageYOffset !== undefined)
       ? window.pageYOffset

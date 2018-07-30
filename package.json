@@ -1,15 +1,20 @@
 {
   "name": "zx-editor",
-  "version": "1.0.4",
-  "description": "This is html document editor",
+  "version": "2.0.0",
+  "description": "ZxEditor is a HTML5 rich text editor",
   "author": "zx1984",
   "github": "https://github.com/zx1984",
   "scripts": {
-    "start": "webpack-dev-server --inline --color --config build/webpack.dev.js",
-    "dev": "webpack --config build/webpack.dev.js",
-    "build": "npm run dev && webpack --color --config build/webpack.prod.js"
+    "dev": "webpack-dev-server --inline --color --config build/webpack.dev.js",
+    "build": "webpack --color --config build/webpack.prod.js && gulp"
   },
   "dependencies": {
+    "archiver": "^2.1.1",
+    "cos-nodejs-sdk-v5": "^2.4.7",
+    "fs-extra": "^7.0.0",
+    "needle": "^2.2.1",
+    "tar": "^4.4.4",
+    "tar.gz": "^1.0.7",
     "webpack": "^4.5.0",
     "webpack-cli": "^2.0.14"
   },
@@ -19,6 +24,9 @@
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.1",
     "css-loader": "^0.28.9",
+    "gulp": "^3.9.1",
+    "gulp-header": "^2.0.5",
+    "gulp-replace": "^1.0.0",
     "html-webpack-plugin": "^3.2.0",
     "postcss-loader": "^2.0.10",
     "style-loader": "^0.19.1",
