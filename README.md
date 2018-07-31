@@ -8,10 +8,6 @@
 
 ![ZxEditor](resource/qrcode.png)
 
-## Processes
-
-![ZxEditor](resource/processes.png)
-
 ## Build Setup
 
 * 安装项目依赖
@@ -52,10 +48,12 @@ npm run build
 <script src="./dist/zx-editor.js"></script>
 <script>
   // 初始化ZX编辑器
-  var zxEditor = new ZxEditor('#editorContainer')
+  var zxEditor = new ZxEditor('#editorContainer', {
+    // 开启debug模式
+    debug: true
+  })
   // 详见index.html文件
-  // demo依赖图片预处理插件 image-process-tools
-  // https://github.com/zx1984/image-process-tools
+  // 判断照片方向，并自动旋转需要依赖插件 exif.js
 </script>
 ```
 
@@ -82,7 +80,8 @@ import { ZxEditor } from 'zx-editor'
     [
       {
         id: 'zxEditor_img_1500001511111',
-        data: 'data:image/jpeg;base64,/9j4AAQSkZJDAAkGB+wgH....'
+        base64: 'data:image/jpeg;base64,/9j4AAQSkZJDAAkGB+wgH....',
+        blob: 'Blob数据，可以用于直接上传，或通过方法toBlobData(base64)转换'
       }
     ]
   ```
@@ -99,9 +98,11 @@ import { ZxEditor } from 'zx-editor'
 
   @return boolean
 
-* getContent()
+* getContent(isInnerText)
 
-  获取正文内容html
+  获取正文内容html。
+  
+  @params 'isInnerText'可选，默认为`false`，获取编辑器innerHTML。否则获取innerText。
 
 ## Copyright and license
 
