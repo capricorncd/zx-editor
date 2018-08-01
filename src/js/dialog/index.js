@@ -1,12 +1,18 @@
 import dom from '../util/dom-core'
 import util from '../util/index'
-import './dialog.styl'
+import broadcast from '../broadcast/index'
+import './index.styl'
 
 const DEFUALT_OPTS = {
-  maskOpacity: 0.3
+  // mask opacity
+  maskOpacity: 0.3,
+  // 确定按钮颜色
+  confirmBtnColor: '',
+  // 取消按钮颜色
+  cancelBtnColor: ''
 }
 
-export default class ZxDialog {
+class ZxDialog {
   constructor (opts ={}) {
     this.visible = false
     this.opts = Object.assign({}, DEFUALT_OPTS, opts)
@@ -16,42 +22,11 @@ export default class ZxDialog {
     this.$loadings = []
     // 初始化
     this._init()
+    this.version = '__VERSION__'
   }
 
   _init () {
-    this.events = {}
-  }
-
-  on (notifyName, callback) {
-    if(typeof notifyName === 'string' && typeof callback === 'function') {
-      this.events[notifyName] = {
-        fun: callback
-      }
-    }
-    return this
-  }
-
-  off (notifyName) {
-    let _event = this.events[notifyName]
-    if (_event) {
-      this.events[notifyName] = null
-      delete this.events[notifyName]
-    }
-    return this
-  }
-
-  emit (notifyName) {
-    if (zxDebug) zxDebug.add('[dialog]emit: ' + notifyName)
-    const args = util.slice(arguments, 1)
-    try {
-      this.events[notifyName].fun.apply(null, args)
-    } catch (e) {
-      if (zxDebug) {
-        zxDebug.add('[dialog]emit Error', notifyName)
-        zxDebug.add(e)
-      }
-    }
-    return this
+    this.broadcast = broadcast.broadcast
   }
 
   /**
@@ -88,43 +63,25 @@ export default class ZxDialog {
       dom.lock($body)
       $body.appendChild($dialog)
       // 按钮
-      let $confirmBtn, $cancelBtn
+      const $confirmBtn = dom.query('.__confirm', $dialog)
+      const $cancelBtn = dom.query('.__cancel', $dialog)
+
       // 绑定事件
-      const $btns = dom.queryAll('.__item', $dialog)
-      // console.log($btns)
-      const length = $btns.length
-      if (length === 1) {
-        $confirmBtn = $btns[0]
-      }
-      if (length === 2) {
-        $cancelBtn = $btns[0]
-        $confirmBtn = $btns[1]
-      }
-
-      // 回调参数
-      let params
-      // 确定
-      dom.addEvent($confirmBtn, 'click', e => {
-        if (type === 'confirm') {
-          params = true
-        }
-        this.emit(dialogId, params)
-        this.destroy(e.currentTarget, dialogId)
+      dom.addEvent($confirmBtn, 'click', _ => {
+        this.emit(dialogId, true)
+        this.destroy($dialog, dialogId)
       })
-
       // 取消
-      dom.addEvent($cancelBtn, 'click', e => {
-        if (type === 'confirm') {
-          params = false
-        }
-        this.emit(dialogId, params)
-        this.destroy(e.currentTarget, dialogId)
+      dom.addEvent($cancelBtn, 'click', _ => {
+        this.emit(dialogId, false)
+        this.destroy($dialog, dialogId)
       })
     }
     return $dialog
   }
 
   alert (s, callback) {
+    const opts = this.opts
     // 生产随机id
     const dialogId = util.randStr('zxDialog_')
     const $innerVnode = []
@@ -132,7 +89,7 @@ export default class ZxDialog {
       attrs: {
         class: 'zx-dialog-message',
       },
-      child: s || '无提示内容'
+      child: s || 'not message!'
     })
     $innerVnode.push({
       attrs: {
@@ -140,8 +97,10 @@ export default class ZxDialog {
       },
       child: [
         {
+          tag: 'span',
           attrs: {
-            class: '__item'
+            class: '__confirm',
+            style: opts.confirmBtnColor ? `color:${opts.confirmBtnColor}` : ''
           },
           child: '确定'
         }
@@ -155,6 +114,7 @@ export default class ZxDialog {
   }
 
   confirm (s, callback) {
+    const opts = this.opts
     // 生产随机id
     const dialogId = util.randStr('zxDialog_')
     const $innerVnode = []
@@ -170,14 +130,18 @@ export default class ZxDialog {
       },
       child: [
         {
+          tag: 'span',
           attrs: {
-            class: '__item'
+            class: '__cancel',
+            style: opts.cancelBtnColor ? `color:${opts.cancelBtnColor}` : ''
           },
           child: '取消'
         },
         {
+          tag: 'span',
           attrs: {
-            class: '__item'
+            class: '__confirm',
+            style: opts.confirmBtnColor ? `color:${opts.confirmBtnColor}` : ''
           },
           child: '确定'
         }
@@ -212,7 +176,6 @@ export default class ZxDialog {
 
   /**
    * 移除loading
-   * @param $el
    */
   removeLoading () {
     let $el
@@ -228,14 +191,12 @@ export default class ZxDialog {
 
   /**
    * 销毁$dialog
-   * @param $current
+   * @param $dialog
    * @param dialogId
    */
-  destroy ($current, dialogId) {
-    if (zxDebug) zxDebug.add('[dialog]destroy: ' + dialogId)
-    const $el = dom.closest('.zx-dialog-wrapper', $current)
-    if ($el && $el.parentNode) {
-      $el.parentNode.removeChild($el)
+  destroy ($dialog, dialogId) {
+    if ($dialog && $dialog.parentNode) {
+      $dialog.parentNode.removeChild($dialog)
     }
     // 删除事件
     this.off(dialogId)
@@ -246,3 +207,9 @@ export default class ZxDialog {
     dom.unlock()
   }
 }
+
+ZxDialog.prototype.on = broadcast.on
+ZxDialog.prototype.emit = broadcast.emit
+ZxDialog.prototype.off = broadcast.off
+
+export default ZxDialog

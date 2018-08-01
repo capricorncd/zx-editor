@@ -4,13 +4,10 @@
  */
 import dom from './util/dom-core'
 import util from './util/index'
-import imgHandler from './image'
 import { createErrmsg } from './errors'
 
 export function initEvent (_this) {
   const cursor = _this.cursor
-  const potions = _this.options
-  const _events = _this._events
   const $content = _this.$content
 
   /**
@@ -26,7 +23,7 @@ export function initEvent (_this) {
       p.focus()
       _this.$cursorElm = p
     } else {
-      _this.$cursorElm = _this.cursor.getRange()
+      _this.$cursorElm = cursor.getRange()
     }
   }
 
@@ -48,12 +45,20 @@ export function initEvent (_this) {
     if (nodeName === 'I' && $target.className === '__remove') {
       // 阻止触发a标签默认事件
       e.preventDefault()
-      _this.confirm(`您确定要删除该链接吗？`, result => {
+      _this.emit('debug', 'delete A tag:')
+      _this.dialog.confirm(`您确定要删除该链接吗？`, result => {
         if (result) {
           const $parent = dom.closest('p', $target)
           if ($parent) {
+            // 获取相邻元素
+            let $sibling = $parent.nextElementSibling || $parent.previousElementSibling
             $parent.parentNode.removeChild($parent)
+            // 移动光标
+            cursor.setRange($sibling, 0)
           }
+          _this.emit('debug', 'delete A tag is confirm')
+        } else {
+          _this.emit('debug', 'delete A tag is cancel')
         }
       })
       return
@@ -64,13 +69,9 @@ export function initEvent (_this) {
     if ($el !== $content) return
     initRangElm()
     removeContentClass($content)
-    // 隐藏显示的文字样式设置容器
-    if (_this.state.textstyleShow) {
-      _this._textstyleHide()
-    }
   })
 
-  // 阻止内容被删空
+  // 阻止$content内容被删空
   dom.addEvent($content, 'keydown', e => {
     // 判断容器内容是否被删空
     if (e.keyCode === 8 && checkContentInnerNull($content)) {
@@ -78,7 +79,7 @@ export function initEvent (_this) {
     }
   })
 
-  // 移除$content placeholder
+  // focus移除$content placeholder
   dom.addEvent($content, 'focus', _ => {
     removeContentClass($content)
   })
@@ -99,71 +100,6 @@ export function initEvent (_this) {
     _this.checkCursorPosition()
   }, false)
 
-  const $toolbarBtns = dom.queryAll('dd', _this.$toolbar)
-  dom.addEvent($toolbarBtns, 'click', toolbarChildClickHandler)
-
-  // 创建fileInput
-  const $fileInput = initToolbarPicClik()
-
-  /**
-   * 点击工具栏按钮处理函数
-   * @param e
-   */
-  function toolbarChildClickHandler (e) {
-    const $current = e.currentTarget
-    let index = dom.findIndex($current, $toolbarBtns)
-    let params = potions.toolbar[index]
-    let customEvent = params.on
-    // 图片
-    if (dom.hasClass('pic-hook', $current)) {
-      if (_events[customEvent]) {
-        _this.emit(customEvent)
-      } else if ($fileInput) {
-        $fileInput.click()
-      } else {
-        _this.emit('error', `[click-pic-btn]'s handler is not defined`)
-      }
-    }
-
-    // 表情
-    if (dom.hasClass('emoji-hook', $current)) {
-      _this.emojiModal.show()
-      _this.resetContentPostion(_this.bottomModalHeight)
-      _this.checkCursorPosition()
-    }
-
-    // 文字
-    if (dom.hasClass('text-hook', $current)) {
-      _this.textstyleModal.show()
-      _this.resetContentPostion(_this.bottomModalHeight)
-      _this.checkCursorPosition()
-    }
-
-    // 链接
-    if (dom.hasClass('link-hook', $current)) {
-      if (_events[customEvent]) {
-        _this.emit(customEvent, (url, title) => {
-          _this.addLink(url, title)
-        })
-      } else {
-        if (_this.$cursorElm.nodeName === 'P') {
-          _this.$link.style.display = 'flex'
-        } else {
-          _this.emit('error', createErrmsg(1))
-        }
-      }
-    }
-
-    // 分割线
-    if (dom.hasClass('split-hook', $current)) {
-      dom.insertHr(_this.$cursorElm)
-    }
-
-    // 摘要
-    if (dom.hasClass('summary-hook', $current)) {
-      _this.emit(customEvent)
-    }
-  }
 
   // 链接：输入容器按钮
   const $submitBtn = dom.query('.submit-hook', _this.$link)
@@ -181,13 +117,6 @@ export function initEvent (_this) {
       _this.addLink(url, title)
       _this.$link.style.display = 'none'
     }
-    // let linkStr = dom.createLinkStr($linkInputs[0].value, $linkInputs[1].value)
-    // // 获取焦点在段落中的位置
-    // const position = _this.cursor ? _this.cursor.startOffset : 0
-    // if (_this.$cursorElm.nodeName === 'P') {
-    //   _this.$cursorElm.innerHTML = dom.insertStr(_this.$cursorElm.innerText, linkStr, position)
-    //   _this.$link.style.display = 'none'
-    // }
   }, false)
 
   // 取消
@@ -204,61 +133,6 @@ export function initEvent (_this) {
       }
     }
   }, false)
-
-  /**
-   * 初始化toolbar点击pic图标
-   * @returns {*}
-   */
-  function initToolbarPicClik() {
-    // 有自定义监听点击选择图片按钮
-    if (_events['click-pic-btn']) return null
-    // 未设置监听事件，则模拟input[file]获取图片数据
-    const $input = dom.createVdom({
-      tag: 'input',
-      attrs: {
-        style: 'display: none',
-        type: 'file',
-        accept: 'image/*'
-        // multiple: 'multiple'
-      }
-    })
-    // 添加至文档流中
-    _this.$wrapper.appendChild($input)
-    // 绑定change事件
-    dom.addEvent($input, 'change', fileInputChangeHandler)
-    // 返回$input，模拟click时使用
-    return $input
-  }
-
-  /**
-   * input[file]选中文件后处理函数
-   * @param e
-   */
-  function fileInputChangeHandler (e) {
-    _this.$loading = _this.loading('图片处理中...')
-    const files = this.files
-    // 转数组
-    const arr = util.slice(files)
-    _this.debug.add('filesArray', arr)
-    // 处理图片数据
-    imgHandler.filesToBase64(arr, {width: 640}, (err, res) => {
-      if (err) {
-        _this.debug.add('Error[filesToBase64]:', err)
-        // 移除_this.$loading
-        _this.removeLoading(_this.$loading)
-      }
-      if (res) {
-        console.log('filesToBase64', res)
-        // _this.debug.add(res)
-        res.forEach(item => {
-          _this.addImage(item.base64)
-          _this.pics.push(item)
-        })
-        // 移除_this.$loading
-        _this.removeLoading(_this.$loading)
-      }
-    }, _this.debug)
-  }
 }
 
 /**

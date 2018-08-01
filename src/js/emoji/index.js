@@ -22,7 +22,17 @@ export function initEmoji (_this) {
         child: bodyChildVnode
       }
     ],
-    debug: _this.debug
+    onError (errMsg) {
+      _this.emit('error', errMsg)
+    },
+    onShow () {
+      _this.emit('debug', 'emojiModal is showed')
+    },
+    onHide () {
+      _this.checkCursorPosition()
+      _this.resetContentPostion(_this.toolbarHeight)
+      _this.emit('debug', 'emojiModal is hidden')
+    }
   })
 
   _this.emojiModal = emojiModal
@@ -52,7 +62,5 @@ export function initEmoji (_this) {
   // 隐藏emojiModal
   dom.addEvent(emojiModal.$switch, 'click', _ => {
     emojiModal.hide()
-    _this.checkCursorPosition()
-    _this.resetContentPostion(_this.toolbarHeight)
   })
 }

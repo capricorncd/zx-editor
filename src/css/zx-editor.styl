@@ -17,7 +17,9 @@ $listHeight = 50;
       border-top: 1px solid $borderColor;
       transform: scaleY(.5);
 
+
 .zxeditor-container
+  position: relative;
   display: block;
   margin: 0;
   padding: 0;
@@ -28,16 +30,17 @@ $listHeight = 50;
     color: $black;
     box-sizing: border-box;
   .zxeditor-content-wrapper
-    position relative
+    position: relative;
     //position: absolute;
     //top: 0;
     //left: 0;
-    //width: 100%;
+    width: 100%;
     //bottom: 58px;
     min-height: 200px;
     overflow-y: scroll;
     outline: none;
     transition all .2s
+    box-sizing: border-box;
     &.is-empty
       &:before
         position absolute
@@ -106,15 +109,17 @@ $listHeight = 50;
     width: 100%;
     height: $toolbarHeight px;
     background-color: #fff;
-    &:after
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      content: '';
-      border-top: 1px solid $gray;
-      transform: scaleY(.5);
     dl
+      position relative
+      min-width 100%
+      &:after
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        content: '';
+        border-top: 1px solid $gray;
+        transform: scaleY(.5);
       dd
         float: left;
         display: flex;
@@ -141,6 +146,17 @@ $listHeight = 50;
           height: 25px;
           -webkit-background-size: cover;
           background-size: cover;
+
+
+//fixed
+.zxeditor-container
+  &.fixed
+    .zxeditor-content-wrapper
+      position: fixed;
+      &.is-empty
+        &:before
+          top: 15px;
+          left: 15px;
 
 //linkinput-wrapper
 .zxeditor-container

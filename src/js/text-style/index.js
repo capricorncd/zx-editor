@@ -161,11 +161,23 @@ export function initTextStyle (_this) {
     child: textStyleChild
   }
 
+  // 实例化 textstyleModal
   const textstyleModal = new BottomModal({
     headTitle: '样式',
     headSwitch: '完成',
     $parent: _this.$editor,
-    bodyChildVnode: textStyleVnode
+    bodyChildVnode: textStyleVnode,
+    onError (errMsg) {
+      _this.emit('error', errMsg)
+    },
+    onShow () {
+      _this.emit('debug', 'textstyleModal is showed')
+    },
+    onHide () {
+      _this.checkCursorPosition()
+      _this.resetContentPostion(_this.toolbarHeight)
+      _this.emit('debug', 'textstyleModal is hidden')
+    }
   })
 
   _this.textstyleModal = textstyleModal
@@ -280,7 +292,5 @@ export function initTextStyle (_this) {
   // 隐藏textstyleModal
   dom.addEvent(textstyleModal.$switch, 'click', _ => {
     textstyleModal.hide()
-    _this.checkCursorPosition()
-    _this.resetContentPostion(_this.toolbarHeight)
   })
 }

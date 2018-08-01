@@ -5,19 +5,21 @@
  */
 import '../css/zx-editor.styl'
 import '../css/bottom-modal.styl'
-import {
-  initMixin,
-  TEXT_STYLE_HEIGHT
-} from './init'
-import {
-  initEvent,
-  checkContentInnerNull,
-  removeContentClass } from './event'
+import broadcast from './broadcast/index'
+import { initMixin } from './init'
+import {initEvent, checkContentInnerNull, removeContentClass} from './event'
 import { initEmoji } from './emoji/index'
 import { initTextStyle } from './text-style/index'
+import { initLink } from './link'
+import { initToolbar } from './toolbar'
 import util from './util/index'
 import dom from './util/dom-core'
-import imgHandler from './image'
+import { toBlobData, filesToBase64, createImgElm } from './image'
+
+/**
+ * Note:
+ * 1.带$符号的属性为Element对象
+ */
 
 class ZxEditor {
   /**
@@ -41,51 +43,23 @@ class ZxEditor {
    * @private
    */
   _init (selector, options) {
+    // version
+    this.version = '__VERSION__'
+    // broadcast
+    this.broadcast = broadcast.broadcast
     // 初始化dom、参数
     initMixin(this, selector, options)
-    // 自定义事件
-    this._events = {}
+    // 初始化 toolbar
+    initToolbar(this)
     // 初始化 emojiModal
     initEmoji(this)
     // 初始化 textStyleModal
     initTextStyle(this)
+    // 初始化link
+    initLink(this)
     // 初始化事件
     initEvent(this)
-    // 扩展属性
-    this.toBlobData = imgHandler.toBlobData
-    this.filesToBase64 = imgHandler.filesToBase64
-  }
-
-  /**
-   * 注册自定义事件
-   * @param notifyName 通知名称
-   * @param callback 回调函数
-   * @returns {ZxEditor}
-   */
-  on (notifyName, callback) {
-    if(typeof notifyName === 'string' && typeof callback === 'function') {
-      this._events[notifyName] = {
-        fun: callback
-      }
-    }
-    return this
-  }
-
-  /**
-   * 派发事件
-   * @param notifyName
-   * @returns {ZxEditor}
-   */
-  emit (notifyName) {
-    const ev = this._events[notifyName]
-    const args = util.slice(arguments, 1)
-    try {
-      this.debug.log(notifyName, args)
-      ev.fun.apply(null, args)
-    } catch (e) {
-      this.debug.error(notifyName, e)
-    }
-    return this
+    this.initVisiblePostion()
   }
 
   /**
@@ -93,14 +67,15 @@ class ZxEditor {
    * @param src
    */
   addImage (src) {
-    console.log('$cursorElm', this.$cursorElm)
-    imgHandler.create(src, (err, $img) => {
+    this.emit('debug', 'addImage is start', src)
+    createImgElm(src, (err, $img) => {
       if (err) {
-        this.debug.add('addImage', e)
+        this.emit('error', 'from addImage', err)
         return
       }
       // 将图片插入至合适位置
       this.$cursorElm = dom.insertToRangeElm($img, this.$cursorElm, 'child-node-is-img')
+      this.emit('debug', 'addImage is ended')
       // 重置光标位置
       this.cursor.setRange(this.$cursorElm, 0)
       // 延时执行光标所在元素位置计算
@@ -118,6 +93,7 @@ class ZxEditor {
    * @param url
    */
   addLink (url, title) {
+    this.emit('debug', 'addLink() is start', {url, title})
     if (!url) return
     if (!title) {
       title = url
@@ -143,6 +119,7 @@ class ZxEditor {
     // 创建$a元素
     const $a = dom.createVdom(avnode)
     this.$cursorElm = dom.insertToRangeElm($a, this.$cursorElm, 'child-node-is-a')
+    this.emit('debug', 'addLink() is ended')
     // 重置光标位置
     this.cursor.setRange(this.$cursorElm, 0)
     this.checkCursorPosition()
@@ -207,18 +184,6 @@ class ZxEditor {
   }
 
   /**
-   * 滚动至顶部
-   */
-  // scrollToBottom ($el = document) {
-  //   let timer = setTimeout(function () {
-  //     // error($el.scrollTop, $el.scrollHeight)
-  //     $el.scrollTop = $el.scrollHeight
-  //     clearTimeout(timer)
-  //     timer = null
-  //   }, 100)
-  // }
-
-  /**
    * 获取正文中的base64图片
    * @returns {Array}
    */
@@ -233,7 +198,7 @@ class ZxEditor {
         arr.push({
           id: $img.id,
           base64: base64,
-          blob: imgHandler.toBlobData(base64)
+          blob: toBlobData(base64)
         })
       }
     }
@@ -278,7 +243,7 @@ class ZxEditor {
       startY: NAVBAR_HEIGHT,
       endY: winH - toolbarHeight - bottomModalHeight - NAVBAR_HEIGHT
     }
-    this.debug.add(this.visiblePosition)
+    this.emit('message', this.visiblePosition)
   }
 
   /**
@@ -322,14 +287,23 @@ class ZxEditor {
   }
 }
 
+// 扩展属性
+ZxEditor.prototype.on = broadcast.on
+ZxEditor.prototype.off = broadcast.off
+ZxEditor.prototype.emit = broadcast.emit
+ZxEditor.prototype.toBlobData = toBlobData
+ZxEditor.prototype.filesToBase64 = filesToBase64
+
 for (let key in dom) {
-  ZxEditor.prototype[key] = dom[key]
+  if (dom.hasOwnProperty(key)) {
+    ZxEditor.prototype[key] = dom[key]
+  }
 }
 
 for (let key in util) {
-  ZxEditor.prototype[key] = util[key]
+  if (util.hasOwnProperty(key)) {
+    ZxEditor.prototype[key] = util[key]
+  }
 }
-
-ZxEditor.version = '__VERSION__'
 
 export { ZxEditor }

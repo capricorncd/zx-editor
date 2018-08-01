@@ -7,7 +7,10 @@
 var zxEditor = new ZxEditor('#editorContainer', {
   debug: true
 });
-var zxDebug = window.zxDebug || zxEditor.debug;
+var zxDebug = new ZxDebug({
+  position: 'top',
+  offset: 100
+});
 
 var $ = zxEditor.query || function (selector, context) {
   return (context || document).querySelector(selector)
@@ -232,7 +235,7 @@ function handleCoverWrapper () {
   var $img = zxEditor.query('img', $cover);
   // 点击封面容器处理
   zxEditor.addEvent($cover, 'click', function (e) {
-    zxDebug.add('coverClickHandler', e)
+    zxDebug.log('coverClickHandler', e)
     var oldSrc = $img.src;
     console.log(oldSrc);
     $input.click();

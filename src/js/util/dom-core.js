@@ -80,11 +80,11 @@ const dom = {
     let child = vnode.child
     if (!tag && !attrs && !child) return null
     // 创建dom
-    const $el = this.createElm(vnode.tag || 'div', vnode.attrs)
+    const $el = dom.createElm(vnode.tag || 'div', vnode.attrs)
     if (Array.isArray(child) && child.length) {
       let $itemNode
       child.forEach(item => {
-        $itemNode = this.createVdom(item)
+        $itemNode = dom.createVdom(item)
         if ($itemNode) $el.appendChild($itemNode)
       })
     } else if (child && typeof child === 'string') {
@@ -102,7 +102,7 @@ const dom = {
   changeTagName ($el, newTagName) {
     if (!newTagName || $el.nodeName === newTagName.toUpperCase()) return $el
     // 新的dom对象
-    const $new = this.createElm(newTagName)
+    const $new = dom.createElm(newTagName)
     // 获取旧标签名
     const oldTagName = $el.nodeName.toLowerCase()
     // 获取旧元素class/id/style属性，并赋予新DOM对象
@@ -225,7 +225,7 @@ const dom = {
    * @returns {*}
    */
   getStyle ($el, prop) {
-    if (!this.isHTMLElement($el)) return null
+    if (!dom.isHTMLElement($el)) return null
     const style = window.getComputedStyle($el, null)
     let result = null
     if (prop) {
@@ -249,7 +249,7 @@ const dom = {
     for (let i = 0; i < $els.length; i++) {
       $el = $els[i]
       if ($el.nodeType !== 1) continue
-      css = this.getStyle($el) || {}
+      css = dom.getStyle($el) || {}
       if (css.position !== 'static') {
         zindex = util.int(css.zIndex)
         if (zindex > 0) arr.push(zindex)
@@ -303,7 +303,7 @@ const dom = {
     }
     // 如果是在$content结尾插入的话，新增一占位段落
     const $content = $p.parentNode
-    if ($content.lastElementChild === $p) {
+    if ($content && $content.lastElementChild === $p) {
       return dom.insertParagraph($content)
     } else {
       return $p.nextElementSibling
@@ -354,6 +354,25 @@ const dom = {
   },
 
   /**
+   * 设置或获取$el data-属性
+   * @param $el
+   * @param suffix data-后缀
+   * @param value 值
+   * @returns {*}
+   */
+  data ($el, suffix, value) {
+    if (!$el || !suffix) return null
+    if (dom.isHTMLElement($el)) {
+      if (value) {
+        $el.setAttribute(`data-${suffix}`, value)
+      } else {
+        return $el.getAttribute(`data-${suffix}`)
+      }
+    }
+    return null
+  },
+
+  /**
    * 往字符串中插入字符串
    * @param str 原字符串
    * @param insertString 需要插入的字符串
@@ -369,9 +388,9 @@ const dom = {
    * @param el
    */
   insertHr ($el) {
-    let $p = this.isEmptyInner($el) ? $el : this.createElm('p')
+    let $p = dom.isEmptyInner($el) ? $el : dom.createElm('p')
     $p.innerHTML = '<hr>'
-    this.insertAfter($el, $p)
+    dom.insertAfter($el, $p)
   },
 
   /**
@@ -412,9 +431,11 @@ const dom = {
    * @returns {*|Element} p元素
    */
   insertParagraph ($parent) {
-    const $p = this.createElm('p')
+    const $p = dom.createElm('p')
     $p.innerHTML = '<br>'
-    $parent.appendChild($p)
+    if (dom.isHTMLElement($parent)) {
+      $parent.appendChild($p)
+    }
     return $p
   },
 
@@ -426,7 +447,7 @@ const dom = {
     if (typeof $el === 'undefined') {
       $el = dom.query('body')
     }
-    if (this.isHTMLElement($el)) {
+    if (dom.isHTMLElement($el)) {
       $el.style.overflow = 'hidden'
     }
   },
@@ -439,7 +460,7 @@ const dom = {
     if (typeof $el === 'undefined') {
       $el = dom.query('body')
     }
-    if (this.isHTMLElement($el)) {
+    if (dom.isHTMLElement($el)) {
       $el.style.overflow = ''
     }
   }

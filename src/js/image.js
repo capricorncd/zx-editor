@@ -1,136 +1,136 @@
 import dom from './util/dom-core'
 import util from './util/index'
-import { error } from './debug/index'
 
-const imageHandler = {
-  /**
-   * 添加图片到编辑器中
-   * @param src 图片URL地址或base64数据
-   * @returns {*} 当前光标元素
-   */
-  create (src, callback) {
-    const id = util.randStr('zxeditor_img_')
-    const $img = dom.createElm('img', {
-      src: src,
-      width: '100%',
-      height: 'auto',
-      id: id
-    })
-    $img.onload = function () {
-      callback(null, $img)
+/**
+ * 创建img元素
+ * @param src 图片地址
+ * @param callback
+ */
+export function createImgElm (src, callback) {
+  const id = util.randStr('zxeditor_img_')
+  const $img = dom.createElm('img', {
+    src: src,
+    width: '100%',
+    height: 'auto',
+    id: id
+  })
+  $img.onload = function () {
+    callback(null, $img)
+  }
+  $img.onerror = function (e) {
+    callback(e)
+  }
+}
+
+/**
+ * 判断文件是否为图片格式
+ * @param file 图片文件名称
+ * @return {boolean}
+ */
+export function isImage (file) {
+  // 图片类型
+  const imageType = ['png', 'pneg', 'jpg', 'jpeg', 'gif', 'webp', 'bmp']
+  // 文件后缀
+  let suf = util.getSuffix(file)
+  // 判断文件名是否带有?search
+  if (/(\w+)\?/.test(suf)) suf = RegExp.$1
+  return imageType.indexOf(suf) > -1
+}
+
+
+/**
+ * base64转换为Blob数据
+ * @param base64Data
+ * @returns {*}
+ */
+export function toBlobData (base64Data) {
+  // base64数据格式:
+  // "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAkGB+wgHBgkIBwgKCgkLDRYPDQw//9k="
+  let type, onlyData
+  if (/^data:(\w+\/\w+);base64,(.+)/.test(base64Data)) {
+    type = RegExp.$1
+    onlyData = RegExp.$2
+  } else {
+    console.error(`toBlobData(data), ${base64Data} is not base64 data!`)
+    return null
+  }
+
+  let data = window.atob(onlyData)
+  let ia = new Uint8Array(data.length)
+  for (let i = 0; i < data.length; i++) {
+    ia[i] = data.charCodeAt(i)
+  }
+  return new Blob([ia], {type: type})
+}
+
+/**
+ * 图片文件数据转为base64/blob
+ * @param files原始文件数据数组
+ * @param callback(errArray, sucArray)
+ */
+export function filesToBase64 (files, opts, callback) {
+  if (!files || !files.length) {
+    callback([{code: 2, msg: `files is not valid`}])
+    return
+  }
+  if (typeof callback === 'undefined' && typeof opts === 'function') {
+    callback = opts
+    opts = {}
+  }
+  let len = files.length
+  let count = 0
+  let errArray = []
+  let sucArray = []
+  let i, file
+  for (i = 0; i < len; i++) {
+    file = files[i]
+    // 非图片文件
+    if (!isImage(file.name)) {
+      errArray.push({code: 3, msg: `files[${i}]: ${file.name} is not Image File!`})
+      _checkCount()
+      continue
     }
-    $img.onerror = function (e) {
-      callback(e)
-    }
-  },
 
-  /**
-   * 判断文件是否为图片格式
-   * @param file 图片文件名称
-   * @return {boolean}
-   */
-  isImage (file) {
-    // 图片类型
-    const imageType = ['png', 'pneg', 'jpg', 'jpeg', 'gif', 'webp', 'bmp']
-    // 文件后缀
-    let suf = util.getSuffix(file)
-    // 判断文件名是否带有?search
-    if (/(\w+)\?/.test(suf)) suf = RegExp.$1
-    return imageType.indexOf(suf) > -1 ? true : false
-  },
-
-  /**
-   * base64转换为Blob数据
-   * @param base64Data
-   * @returns {*}
-   */
-  toBlobData (base64Data) {
-    // base64数据格式:
-    // "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAAkGB+wgHBgkIBwgKCgkLDRYPDQw//9k="
-    let type, onlyData
-    if (/^data:(\w+\/\w+);base64,(.+)/.test(base64Data)) {
-      type = RegExp.$1
-      onlyData = RegExp.$2
+    if (typeof EXIF === 'undefined') {
+      opts.orientation = 0
+      _handler(file)
     } else {
-      console.error(`toBlobData(data), ${base64Data} is not base64 data!`)
-      return null
+      EXIF.getData(file, function () {
+        let info = EXIF.getAllTags(this) || {}
+        // 拍摄方向
+        opts.orientation = info.Orientation
+        _handler(file)
+      })
     }
+  } // end of for
 
-    let data = window.atob(onlyData)
-    let ia = new Uint8Array(data.length)
-    for (let i = 0; i < data.length; i++) {
-      ia[i] = data.charCodeAt(i)
-    }
-    return new Blob([ia], {type: type})
-  },
+  function _handler (file) {
+    // 转换为Base64数据
+    imgFileToBase64(file, opts, (err, res) => {
+      if (err) {
+        errArray.push(err)
+      } else if (res) {
+        sucArray.push(res)
+      }
+      _checkCount()
+    })
+  }
 
   /**
-   * 图片文件数据转为base64
-   * @param files原始文件数据数组
-   * @param callback
+   * check 文件是否处理完成
+   * @private
    */
-  filesToBase64 (files, opts, callback, debug) {
-    if (!files || !files.length) {
-      callback([{code: 2, msg: `files is not valid`}])
-      return
-    }
-    if (typeof callback === 'undefined' && typeof opts === 'function') {
-      callback = opts
-      opts = {}
-    }
-    let len = files.length
-    let count = 0
-    let _errs = []
-    let arr = []
-    let i, file
-    for (i = 0; i < len; i++) {
-      file = files[i]
-      // 非图片文件
-      if (!imageHandler.isImage(file.name)) {
-        _errs.push({code: 3, msg: `files[${i}]: ${file.name} is not Image File!`})
-        _checkCount()
-        continue
-      }
-
-      EXIF.getData(file, function () {
-        let info = EXIF.getAllTags(this)
-        let orientation = info.Orientation
-        if (debug) {
-          debug.log(`EXIF[Orientation] ${orientation}`)
-          debug.log(info)
-        }
-
-        // 拍摄方向
-        opts.orientation = orientation
-
-        // 转换为Base64数据
-        _fileToBase64(file, opts, (err, res) => {
-          if (err) {
-            _errs.push(err)
-          } else if (res) {
-            arr.push(res)
-          }
-          _checkCount()
-        })
-      })
-    } // end of for
-
-    /**
-     * check 文件是否处理完成
-     * @private
-     */
-    function _checkCount () {
-      count++
-      if (len === count) callback(
-        _errs.length ? _errs : null,
-        arr.length ? arr : null
-      )
-    }
+  function _checkCount () {
+    count++
+    if (len === count) callback(
+      errArray.length ? errArray : null,
+      sucArray.length ? sucArray : null
+    )
   }
 }
 
 // 图片文件数据转为base64
-function _fileToBase64 (file, opts, callback) {
+function imgFileToBase64 (file, opts, callback) {
   // 实例化FileReader
   const reader = new FileReader()
   // readAsDataURL方法用于读取指定Blob或File的内容。
@@ -233,7 +233,7 @@ function _handleImageData (imageInfo, opts, callback) {
   })
 
   let base64 = canvas.toDataURL(dataType)
-  let blob = imageHandler.toBlobData(base64, dataType)
+  let blob = toBlobData(base64, dataType)
 
   callback(null, {
     element: canvas,
@@ -420,5 +420,3 @@ function rotateAndToBase64 ($img, opts) {
     size: opts.size
   }
 }
-
-export default imageHandler

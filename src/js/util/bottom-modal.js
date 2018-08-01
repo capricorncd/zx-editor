@@ -15,9 +15,9 @@ const DEFAULT_OPTS = {
   $parent: null,
   // body内容
   bodyChildVnode: null,
-  debug: {
-    add () {}
-  }
+  onShow () {},
+  onHide () {},
+  onError () {}
 }
 
 class BottomModal {
@@ -28,10 +28,15 @@ class BottomModal {
   }
 
   init (opts) {
+    // 父容器
     const $parent = opts.$parent
-    const headHeight = opts.headHeight
+    // head height
+    const headHeight = util.int(opts.headHeight)
+    // modal height
+    const modalHeight = util.int(opts.height)
     if (!$parent || !dom.isHTMLElement($parent)) {
-      util.err(`class[BottomModal]: opts.$parent is not HTMLElement, is ${$parent}`)
+      opts.onError(`class[BottomModal]: opts.$parent is not HTMLElement, is ${$parent}`)
+      return
     }
 
     const bodyChildVnode = opts.bodyChildVnode
@@ -40,7 +45,7 @@ class BottomModal {
       tag: 'div',
       attrs: {
         class: 'zxeditor-modal-wrapper ' + opts.classHook,
-        style: 'display: ' + (opts.visible ? '' : 'none') + `;height:${opts.height}px`
+        style: 'display: ' + (opts.visible ? '' : 'none') + `;height:${modalHeight}px`
       },
       child: [
         {
@@ -68,7 +73,7 @@ class BottomModal {
         {
           attrs: {
             class: 'zxeditor-modal-body',
-            style: `height:${opts.height - headHeight}px;`
+            style: `height:${modalHeight - headHeight}px;`
           },
           child: Array.isArray(bodyChildVnode) ? bodyChildVnode : [bodyChildVnode]
         }
@@ -88,8 +93,6 @@ class BottomModal {
     const $docBody = dom.query('body')
     // modal body
     const $modalBody = this.$body
-    // debug
-    const debug = this.opts.debug
     // 是否以touch
     let isTouched = false
 
@@ -97,12 +100,10 @@ class BottomModal {
     dom.addEvent($modalBody, 'touchstart', e => {
       isTouched = true
       dom.lock($docBody)
-      debug.add('touchstart')
     })
 
     dom.addEvent($modalBody, 'touchmove', e => {
       if (!isTouched) return
-      debug.add('touchmove')
     })
 
     dom.addEvent($modalBody, 'touchend', e => {
@@ -113,18 +114,19 @@ class BottomModal {
         clearTimeout(timer)
         timer = null
       }, 300)
-      debug.add('touchend')
     })
   }
 
   show () {
     if (this.visible) return
+    this.opts.onShow()
     this.$modal.style.display = ''
     this.visible = true
   }
 
   hide () {
     if (this.visible) {
+      this.opts.onHide()
       this.$modal.style.display = 'none'
       this.visible = false
     }
