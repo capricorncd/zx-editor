@@ -111,9 +111,10 @@ const dom = {
     // 是否有自定义style样式
     const style = $el.getAttribute('style')
 
-    let inner = '';
+    let inner = ''
     if (oldTagName === 'ul') {
-      $el.children.forEach($item => {
+      const $ulChildren = util.slice($el.children)
+      $ulChildren.forEach($item => {
         inner += $item.innerHTML
       })
     } else if (oldTagName === 'blockquote') {

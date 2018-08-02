@@ -5,7 +5,7 @@
 import dom from './util/dom-core'
 import util from './util/index'
 import Cursor from './cursor'
-import ZxDialog from './dialog/index'
+import { ZxDialog } from 'zx-dialog'
 
 // 工具栏高度
 export const TOOL_BAR_HEIGHT = 48

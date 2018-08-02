@@ -1,4 +1,5 @@
 import dom from '../util/dom-core'
+import util from '../util/index'
 import BottomModal from '../util/bottom-modal'
 
 // COLOR
@@ -110,21 +111,39 @@ export function initTextStyle (_this) {
             class: '__h2',
             'data-tag': 'h2'
           },
-          child: '大标题'
+          child: [
+            '大标题',
+            {
+              tag: 'i'
+            }
+          ]
         },
         {
           attrs: {
             class: '__h4',
             'data-tag': 'h4'
           },
-          child: '小标题'
+          child: [
+            '小标题',
+            {
+              tag: 'i'
+            }
+          ]
         },
         {
           attrs: {
             class: '__p',
             'data-tag': 'p'
           },
-          child: '正文'
+          child: [
+            '正文',
+            {
+              tag: 'i',
+              attrs: {
+                class: 'checked'
+              }
+            }
+          ]
         },
         {
           attrs: {
@@ -135,7 +154,10 @@ export function initTextStyle (_this) {
             {
               tag: 'b'
             },
-            '引用'
+            '引用',
+            {
+              tag: 'i'
+            }
           ]
         },
         {
@@ -147,7 +169,10 @@ export function initTextStyle (_this) {
             {
               tag: 'b'
             },
-            '无序列表'
+            '无序列表',
+            {
+              tag: 'i'
+            }
           ]
         }
       ]
@@ -172,6 +197,7 @@ export function initTextStyle (_this) {
     },
     onShow () {
       _this.emit('debug', 'textstyleModal is showed')
+      _initTextStyleCheck()
     },
     onHide () {
       _this.checkCursorPosition()
@@ -190,14 +216,14 @@ export function initTextStyle (_this) {
    * ***************************************************
    */
   const $styleWrapper = dom.query('.__style-wrapper', $modalBody)
+  const $styleChildren = util.slice($styleWrapper.children)
   if ($styleWrapper) {
     handleStyleItemClick()
   }
 
   function handleStyleItemClick () {
-    const $textStyleItems = $styleWrapper.children
-    for (let i = 0; i < $textStyleItems.length; i++) {
-      dom.addEvent($textStyleItems[i], 'click', _textStyleHandler)
+    for (let i = 0; i < $styleChildren.length; i++) {
+      dom.addEvent($styleChildren[i], 'click', _textStyleHandler)
     }
   }
 
@@ -220,14 +246,14 @@ export function initTextStyle (_this) {
    * ***************************************************
    */
   const $colorWrapper = dom.query('.__color-wrapper', $modalBody)
+  const $colorChildren = util.slice($colorWrapper.children)
   if ($colorWrapper) {
     handleColorItemClick()
   }
 
   function handleColorItemClick () {
-    const $colorItems = $colorWrapper.children
-    for (let i = 0; i < $colorItems.length; i++) {
-      dom.addEvent($colorItems[i], 'click', _colorClickHandler)
+    for (let i = 0; i < $colorChildren.length; i++) {
+      dom.addEvent($colorChildren[i], 'click', _colorClickHandler)
     }
   }
 
@@ -245,43 +271,114 @@ export function initTextStyle (_this) {
 
   /**
    * ***************************************************
+   * tag change
+   * ***************************************************
+   */
+  const $tagWrapper = dom.query('.__tag-wrapper', $modalBody)
+  const $tagChildren = util.slice($tagWrapper.children)
+  if ($tagWrapper) {
+    handleTagItemClick()
+  }
+
+  function handleTagItemClick () {
+    for (let i = 0; i < $tagChildren.length; i++) {
+      dom.addEvent($tagChildren[i], 'click', _tagClickHandler)
+    }
+  }
+
+  /**
+   * 点击修改段落风格处理器
+   * @param e
+   * @private
+   */
+  function _tagClickHandler (e) {
+    const $current = e.currentTarget
+    // 已被选中
+    if (dom.query('checked', $current)) return
+    // 显示选中图标
+    _showCheckedIcon($current)
+    // 去掉兄弟节点上的选中图标
+    const $siblings = dom.siblings($current) || []
+    $siblings.forEach(($item) => {
+      _hideCheckedIcon($item)
+    })
+    // 给当前焦点元素，添加样式
+    _addCursorElmStyle($current)
+  }
+
+  // 给当前焦点元素，添加样式
+  function _addCursorElmStyle ($el) {
+    let tag = dom.data($el, 'tag')
+    // this.log(this.range)
+    let $newElm = dom.changeTagName(_this.$cursorElm, tag)
+    dom.insertAfter(_this.$cursorElm, $newElm)
+    _this.$content.removeChild(_this.$cursorElm)
+    _this.$cursorElm = $newElm
+    _this.cursor.setRange(_this.$cursorElm)
+  }
+
+  /**
+   * ***************************************************
    * 初始化文字样式选项
    * ***************************************************
    */
   function _initTextStyleCheck () {
-    if (!this.$el) return
+    if (!$modalBody) return
     // 初始化节点类型 ****************************************
     // 检查当前焦点DOM节点类型
-    let tagName = this.$cursorElm.tagName.toLowerCase()
-    // this.log('this.$cursorElm.tagName: ' + tagName)
-    let tagList = this.$el.querySelectorAll('.tag-item') || []
-    tagList.forEach((item) => {
-      let tag = item.getAttribute('data-tag')
+    let tagName = _this.$cursorElm.tagName.toLowerCase()
+    console.error('$cursorElm: ' + tagName)
+
+    $tagChildren.forEach(($item) => {
+      let tag = dom.data($item, 'tag')
+      console.error('tag: ' + tag)
       if (tag === tagName) {
-        this._appendCheckedIcon(item)
+        _showCheckedIcon($item)
       } else {
-        this._removeCheckedIcon(item)
+        _hideCheckedIcon($item)
       }
     })
 
     // 初始化文字颜色选 ****************************************
-    let color = this.$cursorElm.style.color
+    let color = _this.$cursorElm.style.color
     if (/rgb\(/.test(color)) {
       // 十进制转十六进制
       color = util.rgbToHex(color)
     }
-    // 获取颜色选项节点列表
-    let colorList = this.$el.querySelectorAll('.color-item') || []
-    colorList.forEach(item => {
-      let tag = item.getAttribute('data-color')
+
+    $colorChildren.forEach($item => {
+      let tag = dom.data($item, 'color')
       if (tag === color) {
-        dom.addClass('active', item)
+        dom.addClass('active', $item)
       } else {
-        dom.removeClass('active', item)
+        dom.removeClass('active', $item)
       }
     })
     // 标记焦点位置
-    this.cursor.setPosition()
+    _this.cursor.setRange()
+  }
+
+  /**
+   * 添加一个checked图标
+   * @param el
+   * @private
+   */
+  function _showCheckedIcon ($el) {
+    const $i = dom.query('i', $el)
+    if (dom.hasClass('checked', $i)) return
+    dom.addClass('checked', $i)
+  }
+
+  /**
+   * 移除checked图标
+   * @param el
+   * @private
+   */
+  function _hideCheckedIcon ($el) {
+    const $i = dom.query('i', $el)
+    if (dom.hasClass('checked', $i)) {
+      dom.removeClass('checked', $i)
+    }
   }
 
   /**

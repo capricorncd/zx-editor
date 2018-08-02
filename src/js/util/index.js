@@ -47,7 +47,8 @@ export default {
    * @returns {string}
    */
   toHex (num) {
-    let hex = num.toString(16)
+    let n = typeof num === 'number' ? num : this.int(num)
+    let hex = n.toString(16)
     return hex[1] ? hex : '0' + hex
   },
 

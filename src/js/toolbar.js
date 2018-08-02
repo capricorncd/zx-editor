@@ -17,19 +17,19 @@ const TOOL_BAR_OPTIONS = [
     title: '表情',
     class: 'emoji-hook',
     icon: '__emoji',
-    on: 'click-emoji-btn'
+    on: 'show-emoji'
   },
-  // {
-  //   title: 'T',
-  //   class: 'text-hook',
-  //   // icon: '__text',
-  //   on: 'click-text-btn'
-  // },
+  {
+    title: 'T',
+    class: 'text-hook',
+    icon: '__text',
+    on: 'show-textstyle'
+  },
   {
     title: '链接',
     class: 'link-hook',
     icon: '__link',
-    on: 'click-link-btn'
+    on: 'add-link'
   },
   // {
   //   title: '分割',

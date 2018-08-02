@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>editor-only</title>
+  <title>ZxEditor - 移动端H5富文本编辑器</title>
   <style>
     body {
       margin: 0;
@@ -25,46 +25,38 @@
 <!--编辑器-->
 <script src="js/zx-editor.min.js"></script>
 <script>
-  // debug
+  // 实例化 ZxEditor
+  var zxEditor = new ZxEditor('#editorContainer', {
+    fixed: true
+  });
+
+  // 实例化 ZxDebug
   var debug = new ZxDebug({
     position: 'top',
     offset: 100
   });
-  var zxEditor = new ZxEditor('#editorContainer', {
-//    fixed: true
-  });
-  debug.log(zxEditor);
+
+  debug.log('实例化 ZxEditor', zxEditor);
 
   zxEditor.on('loading', function (msg) {
-    log('loading', msg)
+    debug.log('loading', msg)
   })
 
   zxEditor.on('removeLoading', function () {
-    log('removeLoading')
+    debug.log('removeLoading')
   })
 
   zxEditor.on('debug', function () {
-    error('debug:')
-    console.warn.apply(null, arguments)
+    debug.log.apply(debug, arguments)
   })
 
   zxEditor.on('error', function () {
-    error('error:')
-    console.warn.apply(null, arguments)
+    debug.error.apply(debug, arguments)
   })
 
   zxEditor.on('message', function () {
-    error('message:')
     console.log.apply(null, arguments)
   })
-
-  function log () {
-    console.log.apply(null, arguments)
-  }
-
-  function error () {
-    console.error.apply(null, arguments)
-  }
 </script>
 </body>
 </html>

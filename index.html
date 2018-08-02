@@ -25,14 +25,15 @@
 <!--编辑器-->
 <script src="<%= htmlWebpackPlugin.files.chunks['zx-editor'].entry %>"></script>
 <script>
+  // 实例化 ZxEditor
+  var zxEditor = new ZxEditor('#editorContainer', {
+    fixed: true
+  });
+
   // 实例化 ZxDebug
   var debug = new ZxDebug({
     position: 'top',
     offset: 100
-  });
-  // 实例化 ZxEditor
-  var zxEditor = new ZxEditor('#editorContainer', {
-    fixed: true
   });
 
   debug.log('实例化 ZxEditor', zxEditor);

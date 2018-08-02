@@ -3,8 +3,7 @@
  * 2018/1/23 0023.
  * https://github.com/zx1984
  */
-import '../css/zx-editor.styl'
-import '../css/bottom-modal.styl'
+import '../css/index.styl'
 import broadcast from './broadcast/index'
 import { initMixin } from './init'
 import {initEvent, checkContentInnerNull, removeContentClass} from './event'
@@ -132,55 +131,6 @@ class ZxEditor {
    */
   resetContentPostion (pos, offset = 13) {
     this.$content.style.marginBottom = pos + offset + 'px'
-  }
-
-  /**
-   * 标签样式处理
-   * @param el 标签按钮对象
-   * @private
-   */
-  _tagnameHandle (el) {
-    const TAG_ITEMS = {
-      'big': 'h2',
-      'small': 'h4',
-      'normal': 'p',
-      'quote': 'blockquote',
-      'unordered': 'ul'
-    }
-
-    const className = el.className
-
-    if (el.querySelector('.checked') === null) {
-      this._appendCheckedIcon(el)
-      // 去掉兄弟节点上的选中符号
-      let siblings = dom.siblings(el) || []
-      siblings.forEach((item) => {
-        this._removeCheckedIcon(item)
-      })
-      // 给当前焦点元素节点，添加样式
-      let tag = 'p'
-      let tagMatch = className.match(/\b(\w+?)-hook\b/)
-      if (tagMatch && tagMatch[1]) {
-        try {
-          tag = TAG_ITEMS[tagMatch[1]]
-        } catch (e) {}
-      }
-      // this.log(this.cursor)
-      let newElm = dom.changeTagName(this.$cursorElm, tag)
-      dom.insertAfter(this.$cursorElm, newElm)
-      this.$content.removeChild(this.$cursorElm)
-      this.$cursorElm = newElm
-      this.cursor.setPosition(this.$cursorElm)
-    }
-  }
-
-  /**
-   * 插入空行
-   * @private
-   */
-  _insertEmptyParagraph () {
-    this.$cursorElm = dom.insertParagraph(this.$content)
-    this.cursor.setPosition(p, this.$cursorElm)
   }
 
   /**
