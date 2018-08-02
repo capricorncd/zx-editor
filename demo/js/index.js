@@ -12,6 +12,16 @@ var zxDebug = new ZxDebug({
   offset: 100
 });
 
+// 监听编辑器处理通知
+zxEditor.on('debug', function () {
+  zxDebug.log.apply(zxDebug, arguments)
+})
+
+zxEditor.on('error', function () {
+  zxDebug.error.apply(zxDebug, arguments)
+})
+
+
 var $ = zxEditor.query || function (selector, context) {
   return (context || document).querySelector(selector)
 }
@@ -46,20 +56,20 @@ function handlePreviewClick () {
   // 获取文章数据
   var data = getArticleData();
   if (!data) {
-    zxEditor.alert('还未添加任何内容！');
+    zxEditor.dialog.alert('还未添加任何内容！');
     return;
   }
   // 判断内容是否完善
   if (!data.cover) {
-    zxEditor.alert('请添加文章封面');
+    zxEditor.dialog.alert('请添加文章封面');
     return
   }
   if (!data.title) {
-    zxEditor.alert('请添加文章标题');
+    zxEditor.dialog.alert('请添加文章标题');
     return
   }
   if (!data.content || data.content === '<p><br></p>') {
-    zxEditor.alert('请添加文章内容');
+    zxEditor.dialog.alert('请添加文章内容');
     return
   }
 
@@ -93,7 +103,7 @@ function handleBackPreviewClick () {
 }
 
 function handleBackClick () {
-  zxEditor.alert('点击了返回按钮');
+  zxEditor.dialog.alert('点击了返回按钮');
 }
 
 /**
@@ -103,7 +113,7 @@ function handleSubmitClick () {
   // 获取文章数据
   var data = getArticleData() || {};
   // 显示loading
-  zxEditor.loading();
+  zxEditor.dialog.loading();
 
   // 上传图片数据
   // 上传封面图省略...
@@ -124,8 +134,8 @@ function handleSubmitClick () {
     // 发送至服务器
     // ...
     // end
-    zxEditor.removeLoading();
-    zxEditor.alert('文章模拟发布成功!', function () {
+    zxEditor.dialog.removeLoading();
+    zxEditor.dialog.alert('文章模拟发布成功!', function () {
       // location.reload()
     })
   })
@@ -244,13 +254,13 @@ function handleCoverWrapper () {
   // 选中图片文件
   zxEditor.addEvent($input, 'change', function (e) {
     // 添加loading
-    zxEditor.loading('图片处理中...');
+    zxEditor.dialog.loading('图片处理中...');
     var files = this.files;
     // 处理图片数据(file数据转base64,blobData)
     zxEditor.filesToBase64(files, imageParams, function (err, res) {
-      zxEditor.removeLoading();
+      zxEditor.dialog.removeLoading();
       if (err) {
-        zxEditor.alert(err[0].message || '图片处理错误！')
+        zxEditor.dialog.alert(err[0].message || '图片处理错误！')
       }
       if (res) {
         $img.src = res[0].base64;
