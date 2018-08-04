@@ -263,10 +263,10 @@ class ZxEditor {
     //   $body = dom.query('body')
     //   console.warn($body.scrollHeight, $body.scrollTop, document.body.scrollTop)
     // }
-    // console.error(top)
+    console.error(pos.top)
 
     if (pos.top < vpos.startY) {
-      $body.scrollTop = bodyScrollTop + vpos.startY - pos.top - offsetY
+      $body.scrollTop = bodyScrollTop - (vpos.startY - pos.top) - offsetY
     }
     if (pos.bottom > vpos.endY) {
       $body.scrollTop = bodyScrollTop + vpos.endY + offsetY

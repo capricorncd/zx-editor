@@ -5,6 +5,9 @@
 'use strict';
 // 实例化 ZxEditor
 var zxEditor = new ZxEditor('#editorContainer', {
+  // 顶部偏移距离
+  // demo有顶部导航栏，高度44
+  top: 44,
   // 编辑框左右边距
   padding: 13
 });
@@ -27,6 +30,10 @@ var zxDebug = new ZxDebug({
 
 // 监听编辑器处理通知
 zxEditor.on('debug', function () {
+  zxDebug.log.apply(zxDebug, arguments)
+})
+
+zxEditor.on('message', function () {
   zxDebug.log.apply(zxDebug, arguments)
 })
 
@@ -61,6 +68,31 @@ handlePlaceholderInputWrapper('.title-wrapper');
 handlePlaceholderInputWrapper('.summary-wrapper');
 // 初始化容器高度
 initHeight();
+// 初始化本地存储的数据
+initLoaclData();
+
+function initLoaclData () {
+  var data = zxEditor.storage.get('article')
+  if (data) {
+    if (data.cover) {
+      zxEditor.addClass('has-pic', $('.cover'));
+      $coverPic.setAttribute('src', data.cover);
+    }
+    if (data.title) {
+      $titleItems[0].style.display = 'none'
+      $titleItems[1].style.display = ''
+      $titleItems[1].innerText = data.title
+    }
+    if (data.summary) {
+      summaryShow = true;
+      $('.summary-wrapper').style.display = '';
+      $summaryItems[0].style.display = 'none'
+      $summaryItems[1].style.display = ''
+      $summaryItems[1].innerText = data.summary
+    }
+    zxEditor.setContent(data.content);
+  }
+}
 
 /**
  * 预览
