@@ -11,8 +11,8 @@
       padding: 0
     }
     #editorContainer {
-      padding: 15px;
-      box-sizing: border-box;
+      /*padding: 15px;*/
+      /*box-sizing: border-box;*/
     }
   </style>
 </head>
@@ -27,12 +27,17 @@
 <script>
   // 实例化 ZxEditor
   var zxEditor = new ZxEditor('#editorContainer', {
-    fixed: true
-  });
+    // 编辑器固定
+    fixed: true,
+    // 20秒自动保存一次编辑内容
+    autoSave: 20
+  })
 
   // 实例化 ZxDebug
   var debug = new ZxDebug({
+    // 位置居top
     position: 'top',
+    // 位置偏移100px
     offset: 100
   })
 

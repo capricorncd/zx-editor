@@ -4,6 +4,9 @@
  * https://github.com/zx1984
  */
 import '../css/index.styl'
+import './util/polyfill'
+import dom from './util/dom-core'
+import util from './util/index'
 import broadcast from './broadcast/index'
 import { initMixin } from './init'
 import {initEvent, checkContentInnerNull, removeContentClass} from './event'
@@ -11,13 +14,11 @@ import { initEmoji } from './emoji/index'
 import { initTextStyle } from './text-style/index'
 import { initLink } from './link'
 import { initToolbar, handlerToolbarOptions } from './toolbar'
-import util from './util/index'
-import dom from './util/dom-core'
 import { toBlobData, filesToBase64, createImgElm } from './image'
 
 /**
  * Note:
- * 1.带$符号的属性为Element对象
+ * 1. 非特殊说明，带$符号的属性为Element对象
  */
 
 class ZxEditor {
@@ -254,9 +255,9 @@ class ZxEditor {
     const pos = $el.getBoundingClientRect()
     // 获取滚动容器
     let $body = vpos.fixed ? this.$content : dom.query('html')
-    let bodyScrollHeight = $body.scrollHeight
+    // let bodyScrollHeight = $body.scrollHeight
     let bodyScrollTop = $body.scrollTop
-    console.log(bodyScrollHeight, bodyScrollTop, document.body.scrollTop)
+    console.log(bodyScrollTop, document.body.scrollTop)
     // 不能获取html scrollTop
     // if (bodyScrollHeight === 0) {
     //   $body = dom.query('body')
@@ -286,10 +287,47 @@ class ZxEditor {
 
   /**
    * 获取正文内容
-   * @param isText 是否为纯文本，默认为false，html代码
+   * @param isText 只需要文本内容，即不含html标签
+   * 默认为false，获取html代码
    */
   getContent (isText = false) {
     return this.$content[isText ? 'innerText' : 'innerHTML']
+  }
+
+  /**
+   * 自动保存
+   * @param interval 保存间隔时间，单位秒
+   */
+  autoSave (interval) {
+    if (typeof interval !== 'number' || interval <= 0) return
+    this.saveTimer = setInterval(_ => {
+      this.save()
+    }, interval * 1000)
+  }
+
+  /**
+   * 停止自动保存
+   * @private
+   */
+  stopAutoSave () {
+    if (this.saveTimer) {
+      clearInterval(this.saveTimer)
+      this.saveTimer = null
+    }
+  }
+
+  /**
+   * 本地存储
+   */
+  save () {
+    this.storage.set('content', this.getContent())
+  }
+
+  /**
+   * 移除本地存储的content内容
+   */
+  removeSave () {
+    this.storage.remove('content')
   }
 }
 

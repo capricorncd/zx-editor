@@ -1,30 +1,39 @@
+const DEFAULT_OPTS = {
+  // onSet () {},
+  prefix: 'zxEditor'
+}
+
 class ZxStorage {
-  constructor (prefix) {
-    this.prefix = (prefix || 'zxEditor') + '_'
+  constructor (opts) {
+    this.opts = Object.assign({}, DEFAULT_OPTS, opts)
+  }
+
+  _key (key) {
+    return key ? this.opts.prefix + '_' + key : null
   }
 
   set (key, data, isSession) {
     // check key
+    key = this._key(key)
     if (!key) return false
-    key = this.prefix + key
     // check data
     if (data && typeof data === 'object') {
       data = JSON.stringify(data)
-    }
-    // check isSession
-    if (typeof isSession !== 'boolean') {
-      isSession = false
     }
     if (!data || data === '{}' || data === '[]') {
       this.remove(key)
       return false
     }
-    const storage = isSession ? sessionStorage : localStorage
+    const storage = getStorage(isSession)
     // 存储
     try {
       storage.setItem(key, data)
     } catch (e) {
-      console.dir(e)
+      // this.opts.onSet({
+      //   code: 1,
+      //   msg: 'set error',
+      //   data: e
+      // })
       return false
     }
     return true
@@ -32,13 +41,9 @@ class ZxStorage {
 
   get (key, isSession) {
     // check key
+    key = this._key(key)
     if (!key) return null
-    key = this.prefix + key
-    // check isSession
-    if (typeof isSession !== 'boolean') {
-      isSession = false
-    }
-    const storage = isSession ? sessionStorage : localStorage
+    const storage = getStorage(isSession)
     let data = storage.getItem(key)
     if (data) {
       try {
@@ -51,15 +56,19 @@ class ZxStorage {
 
   remove (key, isSession) {
     // check key
+    key = this._key(key)
     if (!key) return
-    key = this.prefix + key
-    // check isSession
-    if (typeof isSession !== 'boolean') {
-      isSession = false
-    }
-    const storage = isSession ? sessionStorage : localStorage
+    const storage = getStorage(isSession)
     storage.removeItem(key)
   }
+}
+
+function getStorage (isSession) {
+  // check isSession
+  if (typeof isSession !== 'boolean') {
+    isSession = false
+  }
+  return isSession ? sessionStorage : localStorage
 }
 
 export default ZxStorage

@@ -59,7 +59,8 @@ export function initToolbar (_this) {
   const toolbarVnoe = {
     tag: 'div',
     attrs: {
-      class: 'zxeditor-toolbar-wrapper'
+      class: 'zxeditor-toolbar-wrapper',
+      style: _this.options.showToolbar ? '' : `display:none;`
     },
     child: [
       {

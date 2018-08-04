@@ -5,7 +5,8 @@
 'use strict';
 // 实例化 ZxEditor
 var zxEditor = new ZxEditor('#editorContainer', {
-  debug: true
+  // 编辑框左右边距
+  padding: 13
 });
 
 // 底部工具栏添加一个“导语”按钮
@@ -67,6 +68,8 @@ initHeight();
 function handlePreviewClick () {
   // 获取文章数据
   var data = getArticleData();
+  // 保存文章数据
+  zxEditor.storage.set('article', data)
   if (!data) {
     zxEditor.dialog.alert('还未添加任何内容！');
     return;
@@ -143,12 +146,19 @@ function handleSubmitClick () {
     $('.preveiw-content', $previewWrapper).innerHTML = data.content;
     // 需要提交的数据
     zxDebug.log('提交的数据', data);
+    // 防止提交失败，再保存一次base64图片上传后的文章数据
+    zxEditor.storage.set('article', data)
     // 发送至服务器
     // ...
     // end
     zxEditor.dialog.removeLoading();
     zxEditor.dialog.alert('文章模拟发布成功!', function () {
-      // location.reload()
+      // 文章发布成功
+      // 清除本地存储的文章数据
+      zxEditor.storage.remove('article')
+      // 其他操作
+      // ...
+      location.reload()
     })
   })
 
@@ -182,7 +192,7 @@ function initHeight () {
   // 编辑器
   var $editorContent = zxEditor.$content;
   var contentTop = $editorContent.getBoundingClientRect().top;
-  $editorContent.style.minHeight = winHeight - contentTop - zxEditor.toolbarHeight + 'px';
+  $editorContent.style.minHeight = winHeight - contentTop - (zxEditor.toolbarHeight + 10) + 'px';
   // $previewWrapper
   $('.preview-wrapper').style.height = winHeight - headerHeight + 'px';
 }
@@ -191,8 +201,10 @@ function initHeight () {
  * 点击链接按钮
  */
 zxEditor.on('add-link', function (next) {
-  // 获取原生链接
-  next('http://192.168.5.8:81/index.php?s=/12&page_id=1151', '这是一个测试连接地址，如果文字很长会自动省略');
+  zxEditor.dialog.alert('可以调用原生接口，获取剪切板url数据', function () {
+    // 获取原生链接
+    next('http://192.168.5.8:81/index.php?s=/12&page_id=1151', '这是一个测试连接地址，如果文字很长会自动省略');
+  })
 })
 
 // 点击导语按钮

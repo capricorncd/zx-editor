@@ -212,13 +212,8 @@ article {
   overflow: hidden;
 }
 
-#editorContainer {
-  /*background-color: #fefefe;*/
-  border-bottom: 1px solid #eee;
-}
-
 .zx-eidtor-container {
-  margin: 10px 13px 0;
+  margin: 10px 0 0;
 }
 
 .article-preview-wrapper {
