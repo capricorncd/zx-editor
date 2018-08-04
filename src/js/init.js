@@ -8,16 +8,18 @@ import Cursor from './cursor'
 import { ZxDialog } from 'zx-dialog'
 
 // 工具栏高度
-export const TOOL_BAR_HEIGHT = 48
+const TOOL_BAR_HEIGHT = 48
 // 字体样式选择层高度
-export const BOTTOM_MODAL_HEIGHT = 260
+const BOTTOM_MODAL_HEIGHT = 260
 
 // 默认参数
 const DEFAULT_OPTIONS = {
   // 是否绝对定位
   fixed: false,
-  // 顶部距离,即导航栏高度
-  offsetTop: 44,
+  // 顶部距离, fixed为true时生效
+  top: 0,
+  // 底部距离, fixed为true时生效
+  bottom: 0,
   // 内边距
   padding: 15,
   // 显示工具栏
@@ -30,7 +32,7 @@ const DEFAULT_OPTIONS = {
  * @param selector
  * @param options
  */
-export function initMixin (_this, selector, options) {
+export function initMixin (_this, selector, params) {
   // check selector
   if (!selector || typeof selector !== 'string') {
     util.err(`selector is '${selector}', is not valid`)
@@ -42,7 +44,7 @@ export function initMixin (_this, selector, options) {
   }
 
   // 初始化参数
-  const params = Object.assign({}, DEFAULT_OPTIONS, options)
+  const options = Object.assign({}, DEFAULT_OPTIONS, params)
   // id
   _this.id = util.randStr()
   /**
@@ -65,7 +67,9 @@ export function initMixin (_this, selector, options) {
    * 参数处理
    * ***************************************************
    */
-  _this.options = params
+  _this.options = options
+  // 是否固定内容输入
+  _this.fixed = options.fixed
   // bottomModalHeight
   _this.bottomModalHeight = BOTTOM_MODAL_HEIGHT
   // toolbarHeight
@@ -76,9 +80,6 @@ export function initMixin (_this, selector, options) {
    * 状态
    * ***************************************************
    */
-  _this.state = {
-    toolbarShow: true
-  }
 
   /**
    * ***************************************************
@@ -87,17 +88,17 @@ export function initMixin (_this, selector, options) {
    */
   let editorStyle = ''
   let contentStyle = ''
-  if (params.fixed) {
-    let padding = util.int(params.padding)
+  if (options.fixed) {
+    let padding = util.int(options.padding)
     editorStyle = ``
-    contentStyle = `top:${util.int(params.top)}px;bottom:${util.int(params.bottom)}px;left:0;padding:${padding}px`
+    contentStyle = `top:${util.int(options.top)}px;bottom:${util.int(options.bottom)}px;padding:0 ${padding}px`
   }
 
   // dom结构
   const editorVnode = {
     tag: 'div',
     attrs: {
-      class: 'zxeditor-container' + (params.fixed ? ' fixed' : ''),
+      class: 'zxeditor-container' + (options.fixed ? ' fixed' : ''),
       style: editorStyle
     },
     child: [
@@ -129,8 +130,8 @@ export function initMixin (_this, selector, options) {
   _this.$content = dom.query('.zxeditor-content-wrapper', _this.$editor)
 
 
-  if (_this.state.toolbarShow) {
-    _this.resetContentPostion(TOOL_BAR_HEIGHT)
+  if (options.showToolbar) {
+    _this.resetContentPostion(options.bottom + TOOL_BAR_HEIGHT)
   }
 
   // 添加$editor至文档流中

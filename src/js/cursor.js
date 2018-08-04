@@ -65,8 +65,28 @@ class Cursor {
     // 当前Node
     let currentNode = this.range.endContainer
     // 获取光标所在元素的父级为this.$content.children
-    return dom.findParagraphRootNode(currentNode, this.$content)
+    return findParagraphRootNode(currentNode, this.$content)
   }
+}
+
+/**
+ * 查找当前元素节点(textNode、ElemNode等)，在$context内的父根节点
+ * @param currentNode 当前DOM节点
+ * @param $context
+ * @returns {*}
+ */
+function findParagraphRootNode (currentNode, $context) {
+  let $node = currentNode
+  let $parentNode
+  do {
+    $parentNode = $node.parentNode
+    if ($parentNode === $context) {
+      return $node
+    } else {
+      $node = $parentNode
+    }
+  } while ($parentNode)
+  return null
 }
 
 export default Cursor

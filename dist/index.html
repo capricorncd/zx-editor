@@ -34,17 +34,9 @@
   var debug = new ZxDebug({
     position: 'top',
     offset: 100
-  });
+  })
 
   debug.log('实例化 ZxEditor', zxEditor);
-
-  zxEditor.on('loading', function (msg) {
-    debug.log('loading', msg)
-  })
-
-  zxEditor.on('removeLoading', function () {
-    debug.log('removeLoading')
-  })
 
   zxEditor.on('debug', function () {
     debug.log.apply(debug, arguments)
@@ -55,7 +47,8 @@
   })
 
   zxEditor.on('message', function () {
-    console.log.apply(null, arguments)
+    debug.log.apply(debug, arguments)
+//    console.log.apply(null, arguments)
   })
 </script>
 </body>

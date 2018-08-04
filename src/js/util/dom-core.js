@@ -57,7 +57,7 @@ const dom = {
     let elm = document.createElement(tag)
     if (opts && opts instanceof Object) {
       for (let key in opts) {
-        if (opts.hasOwnProperty(key)) {
+        if (opts.hasOwnProperty(key) && opts[key]) {
           elm.setAttribute(key, opts[key])
         }
       }
@@ -136,26 +136,6 @@ const dom = {
 
     $new.innerHTML = inner
     return $new
-  },
-
-  /**
-   * 查找当前元素节点(textNode、ElemNode等)，在$context内的父根节点
-   * @param currentNode 当前DOM节点
-   * @param $context
-   * @returns {*}
-   */
-  findParagraphRootNode (currentNode, $context) {
-    let $node = currentNode
-    let $parentNode
-    do {
-      $parentNode = $node.parentNode
-      if ($parentNode === $context) {
-        return $node
-      } else {
-        $node = $parentNode
-      }
-    } while ($parentNode)
-    return null
   },
 
   /**

@@ -7,6 +7,18 @@
 var zxEditor = new ZxEditor('#editorContainer', {
   debug: true
 });
+
+// 底部工具栏添加一个“导语”按钮
+zxEditor.addFooterButton({
+  title: '导语',
+  // 按钮外容器样式
+  class: 'demo-summary-button',
+  // 按钮内i元素样式名
+  icon: '',
+  // 需要注册的监听事件名
+  on: 'summary-button'
+})
+
 var zxDebug = new ZxDebug({
   position: 'top',
   offset: 100
@@ -178,13 +190,13 @@ function initHeight () {
 /**
  * 点击链接按钮
  */
-zxEditor.on('click-link-btn', function (next) {
+zxEditor.on('add-link', function (next) {
   // 获取原生链接
   next('http://192.168.5.8:81/index.php?s=/12&page_id=1151', '这是一个测试连接地址，如果文字很长会自动省略');
 })
 
 // 点击导语按钮
-zxEditor.on('click-summary-btn', function () {
+zxEditor.on('summary-button', function () {
   summaryShow = !summaryShow;
   $('.summary-wrapper').style.display = summaryShow ? '' : 'none';
 })

@@ -25,15 +25,11 @@
     box-sizing: border-box;
   .zxeditor-content-wrapper
     position: relative;
-    //position: absolute;
-    //top: 0;
-    //left: 0;
     width: 100%;
-    //bottom: 58px;
     min-height: 200px;
     overflow-y: scroll;
     outline: none;
-    transition all .2s
+    //transition all .2s
     box-sizing: border-box;
     &.is-empty
       &:before
@@ -41,7 +37,7 @@
         z-index: 0
         top: 0;
         left: 0;
-        padding: 10px 0;
+        padding: 0;
         content: '输入正文';
         color: #ccc;
     p, h1, h2, h3, h4, li
@@ -93,7 +89,6 @@
           width: 18px;
           height: 18px;
           bgImage('../img/link-remove');
-          -webkit-background-size: cover;
           background-size: cover;
 
 
@@ -102,9 +97,10 @@
   &.fixed
     .zxeditor-content-wrapper
       position: fixed;
+      left: 0;
       &.is-empty
         &:before
-          top: 15px;
+          top: 10px;
           left: 15px;
 
 //zxeditor-emoji-wrapper

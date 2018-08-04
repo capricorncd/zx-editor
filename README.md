@@ -66,6 +66,23 @@ import { ZxEditor } from 'zx-editor'
 
 ## API
 
+* addFooterButton(option)
+
+  底部工具栏添加按钮，`option`: `Object|Array`
+
+  ```
+  // 底部工具栏添加一个“导语”按钮
+  zxEditor.addFooterButton({
+    title: '导语',
+    // 按钮外容器样式
+    class: 'demo-summary-button',
+    // 按钮内i元素样式名
+    icon: '',
+    // 需要注册的监听事件名
+    on: 'summary-button'
+  })
+  ```
+
 * addImage(src|base64)
 
   向正文焦点处添加一张图片，支持图片url地址或base64数据
@@ -101,7 +118,7 @@ import { ZxEditor } from 'zx-editor'
 * getContent(isInnerText)
 
   获取正文内容html。
-  
+
   @params 'isInnerText'可选，默认为`false`，获取编辑器innerHTML。否则获取innerText。
 
 ## Copyright and license

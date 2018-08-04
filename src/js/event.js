@@ -4,7 +4,6 @@
  */
 import dom from './util/dom-core'
 import util from './util/index'
-import { createErrmsg } from './errors'
 
 export function initEvent (_this) {
   const cursor = _this.cursor

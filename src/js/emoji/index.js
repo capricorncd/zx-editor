@@ -27,11 +27,13 @@ export function initEmoji (_this) {
     },
     onShow () {
       _this.emit('debug', 'emojiModal is showed')
+      _this.resetContentPostion(emojiModal.height)
+      _this.checkCursorPosition()
     },
     onHide () {
-      _this.checkCursorPosition()
-      _this.resetContentPostion(_this.toolbarHeight)
       _this.emit('debug', 'emojiModal is hidden')
+      _this.resetContentPostion(_this.toolbarHeight)
+      _this.checkCursorPosition()
     }
   })
 

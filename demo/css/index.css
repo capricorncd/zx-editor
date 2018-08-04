@@ -317,3 +317,17 @@ article {
   margin: 0;
   padding: 10px 0 0;
 }
+
+/** *******************************
+ * 编辑器底部样式扩展
+ * ********************************
+ */
+.demo-summary-button i {
+  background-image: url('../img/summary@2x.png');
+}
+
+@media (-webkit-min-device-pixel-ratio: 3), (min-device-pixel-ratio: 3) {
+  .demo-summary-button i {
+    background-image: url('../img/summary@3x.png');
+  }
+}

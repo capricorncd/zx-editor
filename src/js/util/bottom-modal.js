@@ -23,6 +23,7 @@ const DEFAULT_OPTS = {
 class BottomModal {
   constructor (opts = {}) {
     this.opts = Object.assign({}, DEFAULT_OPTS, opts)
+    this.height = util.int(this.opts.height)
     this.visible = opts.visible
     this.init(this.opts)
   }
@@ -119,16 +120,16 @@ class BottomModal {
 
   show () {
     if (this.visible) return
-    this.opts.onShow()
     this.$modal.style.display = ''
     this.visible = true
+    this.opts.onShow()
   }
 
   hide () {
     if (this.visible) {
-      this.opts.onHide()
       this.$modal.style.display = 'none'
       this.visible = false
+      this.opts.onHide()
     }
   }
 }

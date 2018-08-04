@@ -198,10 +198,12 @@ export function initTextStyle (_this) {
     onShow () {
       _this.emit('debug', 'textstyleModal is showed')
       _initTextStyleCheck()
+      _this.resetContentPostion(textstyleModal.height)
+      _this.checkCursorPosition()
     },
     onHide () {
-      _this.checkCursorPosition()
       _this.resetContentPostion(_this.toolbarHeight)
+      _this.checkCursorPosition()
       _this.emit('debug', 'textstyleModal is hidden')
     }
   })
@@ -311,8 +313,8 @@ export function initTextStyle (_this) {
     let tag = dom.data($el, 'tag')
     // this.log(this.range)
     let $newElm = dom.changeTagName(_this.$cursorElm, tag)
-    dom.insertAfter(_this.$cursorElm, $newElm)
-    _this.$content.removeChild(_this.$cursorElm)
+    _this.$content.replaceChild($newElm, _this.$cursorElm)
+
     _this.$cursorElm = $newElm
     _this.cursor.setRange(_this.$cursorElm)
   }
@@ -327,11 +329,11 @@ export function initTextStyle (_this) {
     // 初始化节点类型 ****************************************
     // 检查当前焦点DOM节点类型
     let tagName = _this.$cursorElm.tagName.toLowerCase()
-    console.error('$cursorElm: ' + tagName)
+    // console.error('$cursorElm: ' + tagName)
 
     $tagChildren.forEach(($item) => {
       let tag = dom.data($item, 'tag')
-      console.error('tag: ' + tag)
+      // console.error('tag: ' + tag)
       if (tag === tagName) {
         _showCheckedIcon($item)
       } else {

@@ -9,40 +9,41 @@ import util from './util/index'
 const TOOL_BAR_OPTIONS = [
   {
     title: '图片',
-    class: 'pic-hook',
-    icon: '__pic',
-    on: 'select-picture'
+    class: '__pic',
+    icon: '',
+    on: 'select-picture',
+    show: true
   },
   {
     title: '表情',
-    class: 'emoji-hook',
-    icon: '__emoji',
+    class: '__emoji',
+    icon: '',
     on: 'show-emoji'
   },
   {
     title: 'T',
-    class: 'text-hook',
-    icon: '__text',
+    class: '__text',
+    icon: '',
     on: 'show-textstyle'
   },
   {
     title: '链接',
-    class: 'link-hook',
-    icon: '__link',
+    class: '__link',
+    icon: '',
     on: 'add-link'
-  },
+  }
   // {
   //   title: '分割',
-  //   class: 'split-hook',
-  //   // icon: '__split',
+  //   class: '__split',
+  //   // icon: '',
   //   on: 'click-split-btn'
   // },
-  {
-    title: '导语',
-    class: 'summary-hook',
-    icon: '__summary',
-    on: 'click-summary-btn'
-  }
+  // {
+  //   title: '导语',
+  //   class: '__summary',
+  //   icon: '',
+  //   on: 'click-summary-btn'
+  // }
 ]
 
 /**
@@ -60,7 +61,12 @@ export function initToolbar (_this) {
     attrs: {
       class: 'zxeditor-toolbar-wrapper'
     },
-    child: handlerToolbarOptions(TOOL_BAR_OPTIONS)
+    child: [
+      {
+        tag: 'dl',
+        child: handlerToolbarOptions(TOOL_BAR_OPTIONS)
+      }
+    ]
   }
 
   _this.$toolbar = dom.createVdom(toolbarVnoe)
@@ -89,7 +95,7 @@ export function initToolbar (_this) {
     let customEvent = dom.data($current, 'on')
     _this.emit('debug', 'toolbarClick:', customEvent)
     // 图片
-    if (dom.hasClass('pic-hook', $current)) {
+    if (dom.hasClass('__pic', $current)) {
       if (_this.broadcast[customEvent]) {
         _this.emit(customEvent)
       } else if ($fileInput) {
@@ -98,21 +104,17 @@ export function initToolbar (_this) {
     }
 
     // 表情
-    if (dom.hasClass('emoji-hook', $current)) {
+    if (dom.hasClass('__emoji', $current)) {
       _this.emojiModal.show()
-      _this.resetContentPostion(_this.bottomModalHeight)
-      _this.checkCursorPosition()
     }
 
     // 文字
-    if (dom.hasClass('text-hook', $current)) {
+    if (dom.hasClass('__text', $current)) {
       _this.textstyleModal.show()
-      _this.resetContentPostion(_this.bottomModalHeight)
-      _this.checkCursorPosition()
     }
 
     // 链接
-    if (dom.hasClass('link-hook', $current)) {
+    if (dom.hasClass('__link', $current)) {
       if (_this.broadcast[customEvent]) {
         _this.emit(customEvent, (url, title) => {
           _this.addLink(url, title)
@@ -121,20 +123,18 @@ export function initToolbar (_this) {
         if (_this.$cursorElm.nodeName === 'P') {
           _this.$link.style.display = 'flex'
         } else {
-          _this.emit('error', createErrmsg(1))
+          _this.emit('error', '只支持在正文中插入链接，获取光标位置异常！')
         }
       }
     }
 
     // 分割线
-    if (dom.hasClass('split-hook', $current)) {
+    if (dom.hasClass('__split', $current)) {
       dom.insertHr(_this.$cursorElm)
     }
 
-    // 摘要
-    if (dom.hasClass('summary-hook', $current)) {
-      _this.emit(customEvent)
-    }
+    // 其他自定义
+    // _this.emit(customEvent)
   }
 
 
@@ -202,9 +202,19 @@ export function initToolbar (_this) {
  * @param options 配置参数
  * @returns {[null]}
  */
-function handlerToolbarOptions (options) {
+export function handlerToolbarOptions (options) {
   const arr = []
+  const _DEFAULT = {
+    title: '',
+    // 按钮外容器样式
+    class: '',
+    // 按钮内i元素样式名
+    icon: '',
+    // 需要注册的监听事件名
+    on: ''
+  }
   options.forEach((item, index) => {
+    item = Object.assign({}, _DEFAULT, item)
     arr.push({
       tag: 'dd',
       attrs: {
@@ -213,18 +223,16 @@ function handlerToolbarOptions (options) {
         'data-on': item.on
       },
       child: [
-        item.icon
-          ? { tag: 'i', attrs: { class: item.icon } }
-          : item.title
+        {
+          tag: 'i',
+          attrs: {
+            class: item.icon
+          }
+        }
       ]
     })
   })
-  return [
-    {
-      tag: 'dl',
-      child: arr
-    }
-  ]
+  return arr
 }
 
 /**

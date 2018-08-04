@@ -10,7 +10,7 @@ import {initEvent, checkContentInnerNull, removeContentClass} from './event'
 import { initEmoji } from './emoji/index'
 import { initTextStyle } from './text-style/index'
 import { initLink } from './link'
-import { initToolbar } from './toolbar'
+import { initToolbar, handlerToolbarOptions } from './toolbar'
 import util from './util/index'
 import dom from './util/dom-core'
 import { toBlobData, filesToBase64, createImgElm } from './image'
@@ -58,7 +58,7 @@ class ZxEditor {
     initLink(this)
     // 初始化事件
     initEvent(this)
-    this.initVisiblePostion()
+    this.checkCursorPosition()
   }
 
   /**
@@ -125,12 +125,49 @@ class ZxEditor {
   }
 
   /**
+   * 添加toolbar button
+   * @param opts
+   */
+  addFooterButton (opts) {
+    this.emit('debug', 'addFooterButton start')
+    let arr = []
+    if (util.isObject(opts)) {
+      arr.push(opts)
+    } else if (Array.isArray(opts)) {
+      arr = opts
+    } else {
+      this.emit('debug', 'addFooterButton failure', arr)
+      return
+    }
+    this._addToolbarChild(arr)
+  }
+
+  _addToolbarChild (arr) {
+    const vnodeArray = handlerToolbarOptions(arr)
+    const $dl = dom.query('dl', this.$toolbar)
+    let $item, onEvent
+    vnodeArray.forEach(item => {
+      $item = dom.createVdom(item)
+      onEvent = dom.data($item, 'on')
+      // 添加事件
+      dom.addEvent($item, 'click', _ => {
+        this.emit('debug', 'toolbarClick:', onEvent)
+        this.emit(onEvent)
+      })
+      $dl.appendChild($item)
+    })
+    this.emit('debug', 'addFooterButton ended')
+  }
+
+  /**
    * 设置$content底部距离
    * @param pos
    * @param offset 偏移量，使文章内容更容易查看
    */
-  resetContentPostion (pos, offset = 13) {
-    this.$content.style.marginBottom = pos + offset + 'px'
+  resetContentPostion (pos, offset = 10) {
+    let isFixed = this.options.fixed
+    let styleName = isFixed ? 'bottom' : 'marginBottom'
+    this.$content.style[styleName] = pos + util.int(offset) + 'px'
   }
 
   /**
@@ -172,47 +209,66 @@ class ZxEditor {
   }
 
   /**
-   * 初始化可视区间位置参数
+   * 可视区间位置参数
    */
-  initVisiblePostion () {
-    const NAVBAR_HEIGHT = util.int(this.options.offsetTop)
-    let state = this.state
-    let toolbarHeight = 0
-    const winW = window.innerWidth
+  _visiblePostion () {
+    // const winW = window.innerWidth
     const winH = window.innerHeight
+    const opts = this.options
+    let top = util.int(opts.top)
+    // 底部位置
+    let bottom = 0
+    // 底部modal容器
+    // 是否显示
     let bottomModalShow = (this.emojiModal && this.emojiModal.visible) || (this.textstyleModal && this.textstyleModal.visible)
-    let bottomModalHeight = bottomModalShow ? this.bottomModalHeight : 0
-    if (state.toolbarShow) {
-      toolbarHeight = this.$toolbar.offsetHeight
+    if (bottomModalShow) {
+      bottom = this.bottomModalHeight
+    }
+    // 设置的bottom + 底部工具栏高度
+    else {
+      bottom = util.int(opts.bottom) + (opts.showToolbar ? this.toolbarHeight : 0)
     }
 
-    this.visiblePosition = {
-      window: [winW, winH],
-      startX: 0,
-      endX: winW,
-      startY: NAVBAR_HEIGHT,
-      endY: winH - toolbarHeight - bottomModalHeight - NAVBAR_HEIGHT
+    let visiblePosition = {
+      fixed: opts.fixed,
+      // winWidth: winW,
+      winHeight: winH,
+      // startX: 0,
+      // endX: winW,
+      startY: top,
+      endY: winH - bottom - top
     }
-    this.emit('message', this.visiblePosition)
+    this.emit('message', visiblePosition)
+    return visiblePosition
   }
 
   /**
    * 检查光标元素位置
    */
   checkCursorPosition () {
-    this.initVisiblePostion()
-    const vpos = this.visiblePosition
+    const vpos = this._visiblePostion()
     const $el = this.$cursorElm
     if (!$el) return
-    let pos = $el.getBoundingClientRect()
-    const $body = dom.query('html')
-    let scrollHeight = $body.scrollHeight
-    let top = $body.scrollTop + pos.bottom - vpos.endY
+    // 垂直偏移量，使内容滚动位置不要太贴边
+    const offsetY = 10
+    const pos = $el.getBoundingClientRect()
+    // 获取滚动容器
+    let $body = vpos.fixed ? this.$content : dom.query('html')
+    let bodyScrollHeight = $body.scrollHeight
+    let bodyScrollTop = $body.scrollTop
+    console.log(bodyScrollHeight, bodyScrollTop, document.body.scrollTop)
+    // 不能获取html scrollTop
+    // if (bodyScrollHeight === 0) {
+    //   $body = dom.query('body')
+    //   console.warn($body.scrollHeight, $body.scrollTop, document.body.scrollTop)
+    // }
     // console.error(top)
-    // console.log(scrollHeight, document.body.scrollTop)
+
+    if (pos.top < vpos.startY) {
+      $body.scrollTop = bodyScrollTop + vpos.startY - pos.top - offsetY
+    }
     if (pos.bottom > vpos.endY) {
-      // document.scrollTo()
-      $body.scrollTop = top
+      $body.scrollTop = bodyScrollTop + vpos.endY + offsetY
     }
   }
 
