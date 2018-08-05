@@ -75,7 +75,7 @@ import { ZxEditor } from 'zx-editor'
 
   监听编辑器部分通知
 
-  |notifyName|参数|说明|
+  |notifyName|callback(参数)|说明|
   |:--|:--|:--|
   |add-link|`next()`|点击底部`添加连接`图标时触发。监听此通知，将阻止编辑器默认处理逻辑执行|
   |debug|messge|消息通知|
@@ -83,7 +83,6 @@ import { ZxEditor } from 'zx-editor'
   |select-picture|-|点击底部`选择图片`图标时触发。监听此通知，将阻止编辑器默认处理逻辑执行|
   |show-emoji|-|点击底部`emoji`图标时触发|
   |show-textstyle|-|点击底部`文字样式`图标时触发|
-  |add-link|`next()`|点击底部`添加连接`图标时触发。监听此通知，将阻止编辑器默认处理逻辑执行|
 
   例子：
 
