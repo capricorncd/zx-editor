@@ -8,7 +8,7 @@ class Cursor {
     this.range = null
     this.offset = 0
     this.timer = null
-    this.setRange($content.children[0] || $content, 0)
+    this.init()
   }
 
   init () {
@@ -59,13 +59,20 @@ class Cursor {
     if (!this.selection) {
       this.init()
     } else {
-      this.range = this.selection.getRangeAt(0)
+      try {
+        this.range = this.selection.getRangeAt(0)
+      } catch (e) {}
       this.offset = this.range.startOffset
     }
     // 当前Node
     let currentNode = this.range.endContainer
     // 获取光标所在元素的父级为this.$content.children
-    return findParagraphRootNode(currentNode, this.$content)
+    return findRootNode(currentNode, this.$content)
+      // 或获取$content的最后一个元素
+      || this.$content.lastElementChild
+      // 以上未获取到任何元素，
+      // 则向$content中插入一个新p元素
+      || dom.insertParagraph(this.$content)
   }
 }
 
@@ -75,7 +82,7 @@ class Cursor {
  * @param $context
  * @returns {*}
  */
-function findParagraphRootNode (currentNode, $context) {
+export function findRootNode (currentNode, $context) {
   let $node = currentNode
   let $parentNode
   do {

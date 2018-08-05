@@ -4,6 +4,16 @@
  */
 import dom from './util/dom-core'
 import util from './util/index'
+import { findRootNode } from './cursor'
+
+// 可使用标签范围数组
+const NODENAME_ARRAY = [
+  'p',
+  'h2',
+  'h4',
+  'ul',
+  'blockquote'
+]
 
 export function initEvent (_this) {
   const cursor = _this.cursor
@@ -44,7 +54,7 @@ export function initEvent (_this) {
     if (nodeName === 'I' && $target.className === '__remove') {
       // 阻止触发a标签默认事件
       e.preventDefault()
-      _this.emit('debug', 'delete A tag:')
+      _this.emit('debug', 'Delete A tag')
       _this.dialog.confirm(`您确定要删除该链接吗？`, result => {
         if (result) {
           const $parent = dom.closest('p', $target)
@@ -55,9 +65,6 @@ export function initEvent (_this) {
             // 移动光标
             cursor.setRange($sibling, 0)
           }
-          _this.emit('debug', 'delete A tag is confirm')
-        } else {
-          _this.emit('debug', 'delete A tag is cancel')
         }
       })
       return
@@ -86,16 +93,25 @@ export function initEvent (_this) {
   // 离开编辑输入框时，内容是否为空
   // 为空则添加<br>
   dom.addEvent($content, 'blur', e => {
+    // 存储$curor element
+    _this.$cursorElm = cursor.getRange()
+    // 检查$content是否为空
     checkContentIsEmpty($content)
+    // $cursorElm内容检查
     if (_this.$cursorElm && !_this.$cursorElm.innerHTML) {
       _this.$cursorElm.innerHTML = '<br>'
     }
+
+    // 检查光标元素是否为指定(p, h2, h4, ul, blockquote)元素
+    // className
+    checkChildName()
+
+    // 校验光标所在元素位置
+    _this.checkCursorPosition()
   })
 
   // 文本编辑框内容输入
-  dom.addEvent($content, 'keyup', e => {
-    _this.$cursorElm = cursor.getRange()
-    // _this.scrollToRange()
+  dom.addEvent($content, 'keyup', _ => {
     _this.checkCursorPosition()
   }, false)
 
@@ -132,6 +148,33 @@ export function initEvent (_this) {
       }
     }
   }, false)
+
+  /**
+   * 检查$content子元素的合法性
+   * @param _this
+   */
+  function checkChildName () {
+    const $rootNode = findRootNode(_this.$cursorElm, $content)
+    if ($rootNode) {
+      // 标签内容检查
+      let className = $rootNode.className
+      if (className) {
+        let type = className.replace(/child-node-is-(\w+)/ig, '$1')
+        if (type && !dom.query(type, $rootNode)) {
+          $rootNode.removeAttribute('class')
+          // dom.removeClass('child-node-is-a', $rootNode)
+        }
+      }
+
+      // 检查光标元素是否为指定(p, h2, h4, ul, blockquote)元素
+      const nodeName = $rootNode.nodeName.toLowerCase()
+      if (NODENAME_ARRAY.indexOf(nodeName) === -1) {
+        // 修改器标签为p
+        const $newNode = dom.changeTagName($rootNode, 'p')
+        $content.replaceChild($newNode, $rootNode)
+      }
+    }
+  }
 }
 
 /**

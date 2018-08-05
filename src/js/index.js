@@ -73,6 +73,7 @@ class ZxEditor {
         this.emit('error', 'from addImage', err)
         return
       }
+      // console.log('this.$cursorElm++++++++++', this.$cursorElm)
       // 将图片插入至合适位置
       this.$cursorElm = dom.insertToRangeElm($img, this.$cursorElm, 'child-node-is-img')
       this.emit('debug', 'addImage is ended')
@@ -221,9 +222,11 @@ class ZxEditor {
     let bottom = 0
     // 底部modal容器
     // 是否显示
-    let bottomModalShow = (this.emojiModal && this.emojiModal.visible) || (this.textstyleModal && this.textstyleModal.visible)
-    if (bottomModalShow) {
-      bottom = this.bottomModalHeight
+    if (this.emojiModal && this.emojiModal.visible) {
+      bottom = this.emojiModal.height
+    }
+    else if (this.textstyleModal && this.textstyleModal.visible) {
+      bottom = this.textstyleModal.height
     }
     // 设置的bottom + 底部工具栏高度
     else {
@@ -257,13 +260,13 @@ class ZxEditor {
     let $body = vpos.fixed ? this.$content : dom.query('html')
     // let bodyScrollHeight = $body.scrollHeight
     let bodyScrollTop = $body.scrollTop
-    console.log(bodyScrollTop, document.body.scrollTop)
+    // console.log(bodyScrollTop, document.body.scrollTop)
     // 不能获取html scrollTop
     // if (bodyScrollHeight === 0) {
     //   $body = dom.query('body')
     //   console.warn($body.scrollHeight, $body.scrollTop, document.body.scrollTop)
     // }
-    console.error(pos.top)
+    // console.error(pos.top)
 
     if (pos.top < vpos.startY) {
       $body.scrollTop = bodyScrollTop - (vpos.startY - pos.top) - offsetY
@@ -283,6 +286,8 @@ class ZxEditor {
     if (!checkContentInnerNull(this.$content)) {
       removeContentClass(this.$content)
     }
+    // 重新获取$content 内光标元素
+    this.$cursorElm = this.cursor.getRange()
   }
 
   /**

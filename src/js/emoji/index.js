@@ -26,12 +26,12 @@ export function initEmoji (_this) {
       _this.emit('error', errMsg)
     },
     onShow () {
-      _this.emit('debug', 'emojiModal is showed')
+      _this.emit('debug', 'emoji showed')
       _this.resetContentPostion(emojiModal.height)
       _this.checkCursorPosition()
     },
     onHide () {
-      _this.emit('debug', 'emojiModal is hidden')
+      _this.emit('debug', 'emoji hidden')
       _this.resetContentPostion(_this.toolbarHeight)
       _this.checkCursorPosition()
     }
@@ -54,10 +54,12 @@ export function initEmoji (_this) {
    */
   function addEmoji (emojiCode) {
     let offset = _this.cursor.offset
-    if (_this.$cursorElm.nodeName === 'P') {
+    try {
       _this.$cursorElm.innerHTML = dom.insertStr(_this.$cursorElm.innerText, emojiCode, offset)
       _this.cursor.setRange(_this.$cursorElm, offset + 2)
       _this.checkCursorPosition()
+    } catch (e) {
+      _this.emit('error', 'addEmoji', e)
     }
   }
 

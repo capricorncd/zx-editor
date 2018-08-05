@@ -141,12 +141,15 @@ export function initMixin (_this, selector, params) {
 
   // 添加$editor至文档流中
   _this.$wrapper.appendChild(_this.$editor)
-  // 编辑器已添加至document
-  _this.cursor = new Cursor(_this.$content)
-  _this.$cursorElm = dom.query('p', _this.$editor)
 
   // 本地存储内容初始化
   _getStorageAndInitContent(_this)
+
+  // 编辑器已添加至document
+  // 初始化关闭及元素
+  _this.cursor = new Cursor(_this.$content)
+  // $content 内光标元素
+  _this.$cursorElm = _this.cursor.getRange()
 }
 
 /**
