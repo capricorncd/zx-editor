@@ -287,7 +287,10 @@ class ZxEditor {
       removeContentClass(this.$content)
     }
     // 重新获取$content 内光标元素
-    this.$cursorElm = this.cursor.getRange()
+    if (this.cursor) {
+      // 初始化完成后
+      this.$cursorElm = this.cursor.getRange()
+    }
   }
 
   /**

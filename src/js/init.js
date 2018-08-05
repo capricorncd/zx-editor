@@ -17,9 +17,9 @@ const DEFAULT_OPTIONS = {
   autoSave: 0,
   // 是否绝对定位
   fixed: false,
-  // 顶部距离, fixed为true时生效
+  // 顶部距离
   top: 0,
-  // 底部距离, fixed为true时生效
+  // 底部距离
   bottom: 0,
   // 内边距
   padding: 15,

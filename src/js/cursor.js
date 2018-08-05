@@ -65,9 +65,9 @@ class Cursor {
       this.offset = this.range.startOffset
     }
     // 当前Node
-    let currentNode = this.range.endContainer
+    let $currentNode = this.range.endContainer
     // 获取光标所在元素的父级为this.$content.children
-    return findRootNode(currentNode, this.$content)
+    return findRootNode($currentNode, this.$content)
       // 或获取$content的最后一个元素
       || this.$content.lastElementChild
       // 以上未获取到任何元素，
