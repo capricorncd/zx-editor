@@ -96,14 +96,14 @@ import { ZxEditor } from 'zx-editor'
 
   |方法|说明|
   |:--|:--|
-  |set(key, data)|key:存储键名，会自动加默认前缀, data:需要存储的数据|
-  |get(key)|key:存储键名，返回null或data|
-  |remove(key)|删除key对应的本地数据|
+  |set(key, data, isSessionStorage)|key:存储键名，会自动加默认前缀, data:需要存储的数据|
+  |get(key, isSessionStorage)|key:存储键名，返回null或data|
+  |remove(key, isSessionStorage)|删除key对应的本地数据|
+
+  `isSessionStorage`，可选参数。默认值为false。
 
   ```javascript
-  zxEditor.storage.set('这是alert提示框', function () {
-    // do something ...
-  })
+  zxEditor.storage.set('content', {title: '标题', content: '内容'})
   ```
 
 ## 方法 methods

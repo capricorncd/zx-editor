@@ -95,7 +95,7 @@ const dom = {
 
   /**
    * 设置已有DOM节点的标签（实际是改变DOM节点标签）
-   * @param oldElm DOM节点对象
+   * @param $el DOM节点对象
    * @param newTagName 新标签名称
    * @returns {Element}
    */
