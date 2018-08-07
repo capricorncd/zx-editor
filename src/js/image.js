@@ -59,7 +59,7 @@ export function toBlobData (base64Data) {
     type = RegExp.$1
     onlyData = RegExp.$2
   } else {
-    console.error(`toBlobData(data), ${base64Data} is not base64 data!`)
+    console.error(`toBlobData(data), "${base64Data}" is not base64 data!`)
     return null
   }
 
@@ -106,14 +106,14 @@ export function filesToBase64 (files, opts, callback) {
     file = files[i]
     // 非图片文件
     if (!isImage(file.name)) {
-      errArray.push({code: 2, msg: `files[${i}]: ${file.name} is not Image File!`})
+      errArray.push({code: 2, msg: `files[${i}]: "${file.name}" is not Image File!`})
       _checkCount()
       continue
     }
 
     // 文件大小判断
     if (file.size > imageMaxSize) {
-      errArray.push({code: 2, msg: `files[${i}]: '${file.name}' size is beyond the ${this.options.imageMaxSize}MB!`})
+      errArray.push({code: 2, msg: `files[${i}]: "${file.name}" size is beyond the ${this.options.imageMaxSize}MB!`})
       _checkCount()
       continue
     }

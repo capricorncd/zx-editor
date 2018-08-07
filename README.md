@@ -67,7 +67,11 @@ import { ZxEditor } from 'zx-editor'
 
 * padding: `Number`，编辑器左右内边距，默认15像素,
 
-* showToolbar: `Boolean`，是否显示底部工具栏（图片、标签、连接添加等图标）。默认为`true`
+* showToolbar: `Array|Boolean`，是否显示底部工具栏（图片、标签、连接添加等图标）。
+
+  默认为`true`，显示全部图标。
+
+  Array可选值：`['pic', 'emoji', 'text', 'link', 'split']`，数组中元素顺序，决定按钮的显示顺序。
 
 * top: `Number`，顶部距离，绝对定位时，相对于WebView顶部的距离。
 

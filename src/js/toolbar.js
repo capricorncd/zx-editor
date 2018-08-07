@@ -5,52 +5,58 @@
 import dom from './util/dom-core'
 import util from './util/index'
 
+
+// 编辑器默认图标
+const TOOL_BAR_ICONS = ['pic', 'emoji', 'text', 'link', 'split']
 // toolbar配置
-const TOOL_BAR_OPTIONS = [
-  {
-    title: '图片',
-    class: '__pic',
-    icon: '',
-    on: 'select-picture',
-    show: true
-  },
-  {
-    title: '表情',
-    class: '__emoji',
-    icon: '',
-    on: 'show-emoji'
-  },
-  {
-    title: 'T',
-    class: '__text',
-    icon: '',
-    on: 'show-textstyle'
-  },
-  {
-    title: '链接',
-    class: '__link',
-    icon: '',
-    on: 'add-link'
-  }
-  // {
-  //   title: '分割',
-  //   class: '__split',
-  //   // icon: '',
-  //   on: 'click-split-btn'
-  // },
-  // {
-  //   title: '导语',
-  //   class: '__summary',
-  //   icon: '',
-  //   on: 'click-summary-btn'
-  // }
-]
+const TOOL_BAR_OPTIONS = Object.create(null)
+
+TOOL_BAR_OPTIONS.pic = {
+  name: 'pic',
+  class: '__pic',
+  icon: '',
+  on: 'select-picture'
+}
+
+TOOL_BAR_OPTIONS.emoji = {
+  name: 'emoji',
+  class: '__emoji',
+  icon: '',
+  on: 'show-emoji'
+}
+
+TOOL_BAR_OPTIONS.text = {
+  name: 'text',
+  class: '__text',
+  icon: '',
+  on: 'show-textstyle'
+}
+
+TOOL_BAR_OPTIONS.link = {
+  name: 'link',
+  class: '__link',
+  icon: '',
+  on: 'add-link'
+}
+
+TOOL_BAR_OPTIONS.split = {
+  name: 'split',
+  class: '__split',
+  icon: '',
+  on: 'add-split-line'
+}
 
 /**
  * 初始化toolbar
  * @param _this
  */
 export function initToolbar (_this) {
+  // 获取参数
+  const showToolbar = _this.options.showToolbar
+  // 获取图标
+  const toolbarArray = Array.isArray(showToolbar)
+    ? showToolbar
+    : showToolbar ? TOOL_BAR_ICONS : []
   /**
    * ***************************************************
    * 创建dom结构
@@ -60,12 +66,12 @@ export function initToolbar (_this) {
     tag: 'div',
     attrs: {
       class: 'zxeditor-toolbar-wrapper',
-      style: _this.options.showToolbar ? '' : `display:none;`
+      style: toolbarArray.length ? '' : `display:none;`
     },
     child: [
       {
         tag: 'dl',
-        child: handlerToolbarOptions(TOOL_BAR_OPTIONS)
+        child: handlerToolbarOptions(toolbarArray)
       }
     ]
   }
@@ -81,7 +87,9 @@ export function initToolbar (_this) {
    */
   const $toolbarBtns = dom.queryAll('dd', _this.$toolbar)
   // 点击toolbar
-  dom.addEvent($toolbarBtns, 'click', toolbarChildClickHandler)
+  if ($toolbarBtns.length) {
+    dom.addEvent($toolbarBtns, 'click', toolbarChildClickHandler)
+  }
 
   // 创建fileInput
   const $fileInput = initFileInput()
@@ -94,44 +102,42 @@ export function initToolbar (_this) {
     const $current = e.currentTarget
     // 通知名称
     let customEvent = dom.data($current, 'on')
+    // 按钮名称
+    let name = dom.data($current, 'name')
     _this.emit('debug', 'toolbarClick:', customEvent)
-    // 图片
-    if (dom.hasClass('__pic', $current)) {
-      if (_this.broadcast[customEvent]) {
-        _this.emit(customEvent)
-      } else if ($fileInput) {
-        $fileInput.click()
-      }
-    }
 
-    // 表情
-    if (dom.hasClass('__emoji', $current)) {
-      _this.emojiModal.show()
+    switch (name) {
+      // 图片
+      case 'pic':
+        if (_this.broadcast[customEvent]) {
+          _this.emit(customEvent)
+        } else if ($fileInput) {
+          $fileInput.click()
+        }
+        break
+      // 表情
+      case 'emoji':
+        _this.emojiModal.show()
+        break
+      // 文字样式
+      case 'text':
+        _this.textstyleModal.show()
+        break
+      // 链接
+      case 'link':
+        if (_this.broadcast[customEvent]) {
+          _this.emit(customEvent, (url, title) => {
+            _this.addLink(url, title)
+          })
+        } else {
+          _this.$link.style.display = 'flex'
+        }
+        break
+      // 分割线
+      case 'split':
+        dom.insertHr(_this.$cursorElm)
+        break
     }
-
-    // 文字
-    if (dom.hasClass('__text', $current)) {
-      _this.textstyleModal.show()
-    }
-
-    // 链接
-    if (dom.hasClass('__link', $current)) {
-      if (_this.broadcast[customEvent]) {
-        _this.emit(customEvent, (url, title) => {
-          _this.addLink(url, title)
-        })
-      } else {
-        _this.$link.style.display = 'flex'
-      }
-    }
-
-    // 分割线
-    if (dom.hasClass('__split', $current)) {
-      dom.insertHr(_this.$cursorElm)
-    }
-
-    // 其他自定义
-    // _this.emit(customEvent)
   }
 
 
@@ -201,24 +207,25 @@ export function initToolbar (_this) {
  * @param options 配置参数
  * @returns {[null]}
  */
-export function handlerToolbarOptions (options) {
+export function handlerToolbarOptions (toolbarArray) {
   const arr = []
-  const _DEFAULT = {
-    title: '',
-    // 按钮外容器样式
-    class: '',
-    // 按钮内i元素样式名
-    icon: '',
-    // 需要注册的监听事件名
-    on: ''
-  }
-  options.forEach((item, index) => {
-    item = Object.assign({}, _DEFAULT, item)
+  // const _DEFAULT = {
+  //   title: '',
+  //   // 按钮外容器样式
+  //   class: '',
+  //   // 按钮内i元素样式名
+  //   icon: '',
+  //   // 需要注册的监听事件名
+  //   on: ''
+  // }
+
+  let item
+  toolbarArray.forEach(keyName => {
+    item = TOOL_BAR_OPTIONS[keyName]
     arr.push({
       tag: 'dd',
       attrs: {
         class: `${item.class}`,
-        'data-index': index,
         'data-on': item.on
       },
       child: [
@@ -241,6 +248,7 @@ export function handlerToolbarOptions (options) {
 function calculationToolbarWidth ($el) {
   const $dl = dom.query('dl', $el)
   const $dd = $dl.children
+  if (!$dd[0]) return
   // 获取一个$dd元素的宽度
   let itemWidth = $dd[0].offsetWidth * $dd.length
   $dl.style.width = itemWidth + 'px'
