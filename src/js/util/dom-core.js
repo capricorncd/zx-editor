@@ -57,7 +57,7 @@ const dom = {
     let elm = document.createElement(tag)
     if (opts && opts instanceof Object) {
       for (let key in opts) {
-        if (opts.hasOwnProperty(key) && opts[key]) {
+        if (opts.hasOwnProperty(key)) {
           elm.setAttribute(key, opts[key])
         }
       }

@@ -116,7 +116,7 @@ import { ZxEditor } from 'zx-editor'
   |:--|:--|:--|
   |add-link|`next()`|点击底部`添加连接`图标时触发。监听此通知，将阻止编辑器默认处理逻辑执行|
   |debug|messge|消息通知|
-  |error|errorMessage|错误异常通知|
+  |error|{code: 1, msg: 'message'}|错误异常通知|
   |select-picture|-|点击底部`选择图片`图标时触发。监听此通知，将阻止编辑器默认处理逻辑执行|
   |show-emoji|-|点击底部`emoji`图标时触发|
   |show-textstyle|-|点击底部`文字样式`图标时触发|

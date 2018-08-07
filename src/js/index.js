@@ -76,7 +76,7 @@ class ZxEditor {
     }
     // 元素类型
     type = type || $el.nodeName.toLowerCase()
-    console.log($el, type)
+    // console.log($el, type)
     // 将图片插入至合适位置
     this.$cursorElm = dom.insertToRangeElm($el, this.$cursorElm, 'child-node-is-' + type)
     this.emit('debug', 'insertElm ended')
@@ -119,7 +119,6 @@ class ZxEditor {
    * @param src
    */
   addImage (src) {
-    this.emit('debug', 'addImage start', src)
     this.addMedia(src, 'img')
   }
 

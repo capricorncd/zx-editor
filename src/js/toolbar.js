@@ -121,13 +121,7 @@ export function initToolbar (_this) {
           _this.addLink(url, title)
         })
       } else {
-        if (_this.$cursorElm.nodeName === 'P') {
-          _this.$link.style.display = 'flex'
-        } else {
-          _this.emit('error', {
-            msg: '只支持在正文中插入链接，获取光标位置异常！'
-          })
-        }
+        _this.$link.style.display = 'flex'
       }
     }
 
