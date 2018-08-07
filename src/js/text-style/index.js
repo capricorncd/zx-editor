@@ -261,7 +261,7 @@ export function initTextStyle (_this) {
 
   function _colorClickHandler (e) {
     const $el = e.currentTarget
-    const color = $el.getAttribute('data-color')
+    let color = dom.data($el, 'color')
     _this.$cursorElm.style.color = color
     dom.addClass('active', $el)
     let $siblings = dom.siblings($el, 'active') || []

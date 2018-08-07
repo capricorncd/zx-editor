@@ -168,7 +168,10 @@ class ZxEditor {
     } else if (Array.isArray(opts)) {
       arr = opts
     } else {
-      this.emit('debug', 'addFooterButton failure', arr)
+      this.emit('error', {
+        msg: 'addFooterButton failure',
+        data: arr
+      })
       return
     }
     this._addToolbarChild(arr)
