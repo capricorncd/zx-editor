@@ -222,21 +222,24 @@ export function handlerToolbarOptions (toolbarArray) {
   let item
   toolbarArray.forEach(keyName => {
     item = TOOL_BAR_OPTIONS[keyName]
-    arr.push({
-      tag: 'dd',
-      attrs: {
-        class: `${item.class}`,
-        'data-on': item.on
-      },
-      child: [
-        {
-          tag: 'i',
-          attrs: {
-            class: item.icon
+    if (item) {
+      arr.push({
+        tag: 'dd',
+        attrs: {
+          class: `${item.class}`,
+          'data-name': item.name,
+          'data-on': item.on
+        },
+        child: [
+          {
+            tag: 'i',
+            attrs: {
+              class: item.icon
+            }
           }
-        }
-      ]
-    })
+        ]
+      })
+    }
   })
   return arr
 }
