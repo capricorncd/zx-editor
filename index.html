@@ -47,7 +47,8 @@
     debug.log.apply(debug, arguments)
   })
 
-  zxEditor.on('error', function () {
+  zxEditor.on('error', function (err) {
+    zxEditor.dialog.alert(err.msg)
     debug.error.apply(debug, arguments)
   })
 

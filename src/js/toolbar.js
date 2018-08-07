@@ -124,7 +124,9 @@ export function initToolbar (_this) {
         if (_this.$cursorElm.nodeName === 'P') {
           _this.$link.style.display = 'flex'
         } else {
-          _this.emit('error', '只支持在正文中插入链接，获取光标位置异常！')
+          _this.emit('error', {
+            msg: '只支持在正文中插入链接，获取光标位置异常！'
+          })
         }
       }
     }
@@ -185,10 +187,12 @@ export function initToolbar (_this) {
     _this.filesToBase64(arr, {width: 640}, (err, res) => {
       _this.emit('removeLoading')
       if (err) {
-        _this.emit('error', 'from filesToBase64()', err)
+        err.forEach(errItem => {
+          _this.emit('error', errItem)
+        })
       }
       if (res) {
-        console.log('filesToBase64', res)
+        // console.log(res)
         res.forEach(item => {
           _this.addImage(item.base64)
         })

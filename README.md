@@ -59,15 +59,52 @@ import { ZxEditor } from 'zx-editor'
 
 * autoSave: `Number`，自动保存编辑内容至localStorage，单位秒。等于0则不自动保存编辑内容。
 
+* bottom: `Number`，底部距离。
+
 * fixed: `Boolean`，编辑器是否绝对定位，默认为false。
 
-* top: `Number`，顶部距离，绝对定位时，相对于WebView顶部的距离。
-
-* bottom: `Number`，底部距离。
+* imageMaxSize: `Number`，图片文件最大尺寸限制，单位MB，默认20
 
 * padding: `Number`，编辑器左右内边距，默认15像素,
 
 * showToolbar: `Boolean`，是否显示底部工具栏（图片、标签、连接添加等图标）。默认为`true`
+
+* top: `Number`，顶部距离，绝对定位时，相对于WebView顶部的距离。
+
+## 属性 property
+
+* dialog: `Object` 消息提示框
+
+  alert、confirm、loading对话框
+
+  |方法|说明|
+  |:--|:--|
+  |alert(msg, callback)|msg:提示消息, callback():回调函数|
+  |confirm(msg, callback)|msg:提示消息, callback(true或false):回调函数|
+  |loading(msg)|msg:提示消息，默认`loading...`|
+  |removeLoading()|移除loading元素节点|
+
+  ```javascript
+  zxEditor.dialog.alert('这是alert提示框', function () {
+    // do something ...
+  })
+  ```
+
+* storage: `Object` 本地存储
+
+  localStorage/sessionStorage
+
+  |方法|说明|
+  |:--|:--|
+  |set(key, data)|key:存储键名，会自动加默认前缀, data:需要存储的数据|
+  |get(key)|key:存储键名，返回null或data|
+  |remove(key)|删除key对应的本地数据|
+
+  ```javascript
+  zxEditor.storage.set('这是alert提示框', function () {
+    // do something ...
+  })
+  ```
 
 ## 方法 methods
 
@@ -143,6 +180,18 @@ import { ZxEditor } from 'zx-editor'
 
   向正文焦点处添加一张图片，支持图片url地址或base64数据
 
+* addMedia(url, type)
+
+  向正文焦点处添加图片/音频/视频
+
+  图片url地址或base64数据
+
+  音频/视频只支持url地址
+
+  url: `String` url地址
+
+  type: `String`, img|audio|video
+
 * getBase64Images()
 
   获取正文中所有base64数据的图片，返回一个数组
@@ -158,6 +207,14 @@ import { ZxEditor } from 'zx-editor'
       }
     ]
   ```
+
+* insertElm($el, tag)
+
+  向正文焦点处添加任意dom元素$el
+
+  $el: `HTMLElement`
+
+  tag: `String`, 可选参数，dom元素标签，如img/div/h2等
 
 * toBlobData(base64)
 
@@ -211,7 +268,7 @@ import { ZxEditor } from 'zx-editor'
   [
     {
       // 处理完成的dom节点对象
-      element: '$canvas',
+      element: 'canvasElement|imageElement',
       // 文件类型
       type: 'image/png',
       // 处理完成的图片宽度，根据传入的参数定

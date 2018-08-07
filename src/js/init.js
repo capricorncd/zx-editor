@@ -24,14 +24,16 @@ const DEFAULT_OPTIONS = {
   // 内边距
   padding: 15,
   // 显示工具栏
-  showToolbar: true
+  showToolbar: true,
+  // 图片文件大小最大值，单位MB
+  imageMaxSize: 20
 }
 
 /**
  * 初始化
  * @param _this
  * @param selector
- * @param options
+ * @param params
  */
 export function initMixin (_this, selector, params) {
   // check selector

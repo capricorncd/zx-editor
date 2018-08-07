@@ -14,7 +14,7 @@ import { initEmoji } from './emoji/index'
 import { initTextStyle } from './text-style/index'
 import { initLink } from './link'
 import { initToolbar, handlerToolbarOptions } from './toolbar'
-import { toBlobData, filesToBase64, createImgElm } from './image'
+import { toBlobData, filesToBase64, MEDIA_TYPES, createMedia } from './image'
 
 /**
  * Note:
@@ -63,29 +63,64 @@ class ZxEditor {
   }
 
   /**
+   * 插入dom元素
+   * @param $el
+   * @param type
+   */
+  insertElm ($el, type) {
+    if (!$el) {
+      this.emit('error', {
+        msg: `insertElm($el), $el is ${$el}`
+      })
+      return
+    }
+    // 元素类型
+    type = type || $el.nodeName.toLowerCase()
+    console.log($el, type)
+    // 将图片插入至合适位置
+    this.$cursorElm = dom.insertToRangeElm($el, this.$cursorElm, 'child-node-is-' + type)
+    this.emit('debug', 'insertElm ended')
+    // 重置光标位置
+    this.cursor.setRange(this.$cursorElm, 0)
+    // 延时执行光标所在元素位置计算
+    let timer = setTimeout(_ => {
+      this.checkCursorPosition()
+      clearTimeout(timer)
+      timer = null
+    }, 300)
+  }
+
+  /**
+   * 添加媒体元素
+   * @param url
+   * @param tag 媒体类型，img、audio、video
+   */
+  addMedia (url, tag) {
+    this.emit('debug', 'addMedia start', url)
+    // check media type
+    if (!tag) {
+      this.emit('error', {
+        msg: `Unknown media type`
+      })
+      return
+    }
+    if (MEDIA_TYPES.indexOf(tag) === -1) {
+      this.emit('error', {
+        msg: `Media type "${tag}" is not valid!`
+      })
+      return
+    }
+    const $media = createMedia(tag, url)
+    this.insertElm($media, tag)
+  }
+
+  /**
    * 向文档中添加图片
    * @param src
    */
   addImage (src) {
-    this.emit('debug', 'addImage is start', src)
-    createImgElm(src, (err, $img) => {
-      if (err) {
-        this.emit('error', 'from addImage', err)
-        return
-      }
-      // console.log('this.$cursorElm++++++++++', this.$cursorElm)
-      // 将图片插入至合适位置
-      this.$cursorElm = dom.insertToRangeElm($img, this.$cursorElm, 'child-node-is-img')
-      this.emit('debug', 'addImage is ended')
-      // 重置光标位置
-      this.cursor.setRange(this.$cursorElm, 0)
-      // 延时执行光标所在元素位置计算
-      let timer = setTimeout(_ => {
-        this.checkCursorPosition()
-        clearTimeout(timer)
-        timer = null
-      }, 300)
-    })
+    this.emit('debug', 'addImage start', src)
+    this.addMedia(src, 'img')
   }
 
   /**
@@ -119,11 +154,7 @@ class ZxEditor {
     }
     // 创建$a元素
     const $a = dom.createVdom(avnode)
-    this.$cursorElm = dom.insertToRangeElm($a, this.$cursorElm, 'child-node-is-a')
-    this.emit('debug', 'addLink() is ended')
-    // 重置光标位置
-    this.cursor.setRange(this.$cursorElm, 0)
-    this.checkCursorPosition()
+    this.insertElm($a)
   }
 
   /**

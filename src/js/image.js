@@ -1,25 +1,33 @@
 import dom from './util/dom-core'
 import util from './util/index'
 
+// Media types
+export const MEDIA_TYPES = ['img', 'audio', 'video']
+
 /**
- * 创建img元素
- * @param src 图片地址
- * @param callback
+ * 创建媒体元素
+ * @param tag 媒体标签
+ * @param url
+ * @returns {*|Element}
  */
-export function createImgElm (src, callback) {
-  const id = util.randStr('zxeditor_img_')
-  const $img = dom.createElm('img', {
-    src: src,
+export function createMedia (tag, url) {
+  const id = util.randStr(`zxeditor_${tag}_`)
+  const params = {
+    src: url,
     width: '100%',
     height: 'auto',
     id: id
-  })
-  $img.onload = function () {
-    callback(null, $img)
   }
-  $img.onerror = function (e) {
-    callback(e)
+  if (tag !== 'img') {
+    params.controls = true
   }
+  return dom.createElm(tag, params)
+  // $el.onload = function () {
+  //   callback(null, $el)
+  // }
+  // $el.onerror = function (e) {
+  //   callback(e)
+  // }
 }
 
 /**
@@ -66,17 +74,29 @@ export function toBlobData (base64Data) {
 /**
  * 图片文件数据转为base64/blob
  * @param files原始文件数据数组
+ * @param opts 处理参数
  * @param callback(errArray, sucArray)
  */
 export function filesToBase64 (files, opts, callback) {
   if (!files || !files.length) {
-    callback([{code: 2, msg: `files is not valid`}])
+    callback([{code: 1, msg: `files is not valid`}])
     return
   }
   if (typeof callback === 'undefined' && typeof opts === 'function') {
     callback = opts
     opts = {}
   }
+
+  // 文件最大限制
+  let imageMaxSize = 10
+  try {
+    // this 指向ZxEditor实例
+    imageMaxSize = util.int(this.options.imageMaxSize)
+  } catch (e) {}
+  // 转换为 B(byte)
+  imageMaxSize *= 1048576
+
+  // 文件数量
   let len = files.length
   let count = 0
   let errArray = []
@@ -86,7 +106,14 @@ export function filesToBase64 (files, opts, callback) {
     file = files[i]
     // 非图片文件
     if (!isImage(file.name)) {
-      errArray.push({code: 3, msg: `files[${i}]: ${file.name} is not Image File!`})
+      errArray.push({code: 2, msg: `files[${i}]: ${file.name} is not Image File!`})
+      _checkCount()
+      continue
+    }
+
+    // 文件大小判断
+    if (file.size > imageMaxSize) {
+      errArray.push({code: 2, msg: `files[${i}]: '${file.name}' size is beyond the ${this.options.imageMaxSize}MB!`})
       _checkCount()
       continue
     }
@@ -147,6 +174,11 @@ function imgFileToBase64 (file, opts, callback) {
         callback(e)
         return
       }
+      // gif文件, 不做任何处理
+      if (opts.type === 'image/gif') {
+        callback(err, res)
+        return
+      }
       _handleImageData(res, opts, callback)
     })
   }
@@ -170,6 +202,26 @@ function _getImageInfo (fileBase64Data, opts, callback) {
   $img.setAttribute('alt', opts.name)
   // 加载图片
   $img.onload = function (e) {
+    // gif文件, 不做任何处理
+    if (opts.type === 'image/gif') {
+      let blob = toBlobData(fileBase64Data)
+      let callbackData = {
+
+      }
+      callback(null, {
+        element: $img,
+        type: opts.type,
+        width: $img.width,
+        height: $img.height,
+        data: blob,
+        base64: fileBase64Data,
+        size: opts.size,
+        url: blobToUrl(blob),
+        // 原始图片数据
+        rawdata: {}
+      })
+      return
+    }
     // 旋转图片，并转为base64
     let result = rotateAndToBase64($img, opts)
     callback(null, result)
@@ -191,9 +243,6 @@ function _getImageInfo (fileBase64Data, opts, callback) {
 function _handleImageData (imageInfo, opts, callback) {
   // 文件类型
   let dataType = imageInfo.type
-
-  // 不做任何处理，如gif文件
-  // ...
 
   // 计算图片缩放或裁剪位置、尺寸
   let res = calculateCropInfo(imageInfo.width, imageInfo.height, opts)
