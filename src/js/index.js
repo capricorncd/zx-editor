@@ -13,7 +13,7 @@ import {initEvent, checkContentInnerNull, removeContentClass} from './event'
 import { initEmoji } from './emoji/index'
 import { initTextStyle } from './text-style/index'
 import { initLink } from './link'
-import { initToolbar, handlerToolbarOptions } from './toolbar'
+import { initToolbar } from './toolbar'
 import { toBlobData, filesToBase64, MEDIA_TYPES, createMedia } from './image'
 
 /**
@@ -175,19 +175,38 @@ class ZxEditor {
   }
 
   _addToolbarChild (arr) {
-    const vnodeArray = handlerToolbarOptions(arr)
     const $dl = dom.query('dl', this.$toolbar)
-    let $item, onEvent
-    vnodeArray.forEach(item => {
-      $item = dom.createVdom(item)
-      onEvent = dom.data($item, 'on')
+    const _this = this
+    let $item, onEvent, vnode
+    arr.forEach(item => {
+      vnode = {
+        tag: 'dd',
+        attrs: {
+          class: `${item.class}`,
+          'data-name': item.name,
+          'data-on': item.on
+        },
+        child: [
+          {
+            tag: 'i',
+            attrs: {
+              class: item.icon
+            }
+          }
+        ]
+      }
+      $item = dom.createVdom(vnode)
+      _addEvent($item, item)
+    })
+
+    // 添加事件
+    function _addEvent ($item, item) {
       // 添加事件
       dom.addEvent($item, 'click', _ => {
-        this.emit('debug', 'toolbarClick:', onEvent)
-        this.emit(onEvent)
+        _this.emit(item.on, item)
       })
       $dl.appendChild($item)
-    })
+    }
     this.emit('debug', 'addFooterButton ended')
   }
 
@@ -196,7 +215,7 @@ class ZxEditor {
    * @param pos
    * @param offset 偏移量，使文章内容更容易查看
    */
-  resetContentPostion (pos, offset = 10) {
+  resetContentPostion (pos, offset = 0) {
     let isFixed = this.options.fixed
     let styleName = isFixed ? 'bottom' : 'marginBottom'
     this.$content.style[styleName] = pos + util.int(offset) + 'px'

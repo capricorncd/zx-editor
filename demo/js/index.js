@@ -14,7 +14,7 @@ var zxEditor = new ZxEditor('#editorContainer', {
 
 // 底部工具栏添加一个“导语”按钮
 zxEditor.addFooterButton({
-  title: '导语',
+  name: 'summary',
   // 按钮外容器样式
   class: 'demo-summary-button',
   // 按钮内i元素样式名
@@ -224,7 +224,7 @@ function initHeight () {
   // 编辑器
   var $editorContent = zxEditor.$content;
   var contentTop = $editorContent.getBoundingClientRect().top;
-  $editorContent.style.minHeight = winHeight - contentTop - (zxEditor.toolbarHeight + 10) + 'px';
+  $editorContent.style.minHeight = winHeight - contentTop - zxEditor.toolbarHeight + 'px';
   // $previewWrapper
   $('.preview-wrapper').style.height = winHeight - headerHeight + 'px';
 }
@@ -240,7 +240,8 @@ zxEditor.on('add-link', function (next) {
 })
 
 // 点击导语按钮
-zxEditor.on('summary-button', function () {
+zxEditor.on('summary-button', function (prams) {
+  zxDebug.log('click summary-button', prams)
   summaryShow = !summaryShow;
   $('.summary-wrapper').style.display = summaryShow ? '' : 'none';
 })

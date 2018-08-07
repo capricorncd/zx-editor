@@ -7,7 +7,7 @@ import util from './util/index'
 
 
 // 编辑器默认图标
-const TOOL_BAR_ICONS = ['pic', 'emoji', 'text', 'link', 'split']
+const TOOL_BAR_ICONS = ['pic', 'emoji', 'text', 'link']
 // toolbar配置
 const TOOL_BAR_OPTIONS = Object.create(null)
 
@@ -39,12 +39,12 @@ TOOL_BAR_OPTIONS.link = {
   on: 'add-link'
 }
 
-TOOL_BAR_OPTIONS.split = {
-  name: 'split',
-  class: '__split',
-  icon: '',
-  on: 'add-split-line'
-}
+// TOOL_BAR_OPTIONS.split = {
+//   name: 'split',
+//   class: '__split',
+//   icon: '',
+//   on: 'add-split-line'
+// }
 
 /**
  * 初始化toolbar
@@ -207,7 +207,7 @@ export function initToolbar (_this) {
  * @param options 配置参数
  * @returns {[null]}
  */
-export function handlerToolbarOptions (toolbarArray) {
+function handlerToolbarOptions (toolbarArray) {
   const arr = []
   // const _DEFAULT = {
   //   title: '',

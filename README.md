@@ -71,7 +71,7 @@ import { ZxEditor } from 'zx-editor'
 
   默认为`true`，显示全部图标。
 
-  Array可选值：`['pic', 'emoji', 'text', 'link', 'split']`，数组中元素顺序，决定按钮的显示顺序。
+  Array可选值：`['pic', 'emoji', 'text', 'link']`，数组中元素顺序，决定按钮的显示顺序。
 
 * top: `Number`，顶部距离，绝对定位时，相对于WebView顶部的距离。
 
@@ -155,8 +155,8 @@ import { ZxEditor } from 'zx-editor'
   ```
   // 底部工具栏添加一个“导语”按钮
   zxEditor.addFooterButton({
-    title: '导语',
-    // 按钮外容器样式
+    name: 'summary',
+    // 按钮外容器样式名称
     class: 'demo-summary-button',
     // 按钮内i元素样式名
     icon: '',
@@ -168,12 +168,9 @@ import { ZxEditor } from 'zx-editor'
   zxEditor.addFooterButton(
     [
       {
-        title: '导语',
-        // 按钮外容器样式
+        name: 'summary',
         class: 'demo-summary-button',
-        // 按钮内i元素样式名
         icon: '',
-        // 需要注册的监听事件名
         on: 'summary-button'
       }
     ]

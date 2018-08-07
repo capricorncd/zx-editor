@@ -46,7 +46,7 @@ class BottomModal {
       tag: 'div',
       attrs: {
         class: 'zxeditor-modal-wrapper ' + opts.classHook,
-        style: 'display: ' + (opts.visible ? '' : 'none') + `;height:${modalHeight}px`
+        style: `transform:translateY(${opts.visible ? 0 : '100%'});height:${modalHeight}px`
       },
       child: [
         {
@@ -120,14 +120,14 @@ class BottomModal {
 
   show () {
     if (this.visible) return
-    this.$modal.style.display = ''
+    this.$modal.style.transform = 'translateY(0)'
     this.visible = true
     this.opts.onShow()
   }
 
   hide () {
     if (this.visible) {
-      this.$modal.style.display = 'none'
+      this.$modal.style.transform = 'translateY(100%)'
       this.visible = false
       this.opts.onHide()
     }

@@ -91,22 +91,20 @@ export function initMixin (_this, selector, params) {
    * Vnode
    * ***************************************************
    */
-  let editorStyle = ''
   let contentStyle = ''
   let padding = util.int(options.padding)
+  let paddingStyle = `padding-left:${padding}px;padding-right:${padding}px`
   if (options.fixed) {
-    editorStyle = ``
-    contentStyle = `top:${util.int(options.top)}px;bottom:${util.int(options.bottom)}px;padding:0 ${padding}px`
+    contentStyle = `top:${util.int(options.top)}px;bottom:${util.int(options.bottom)}px;${paddingStyle}`
   } else {
-    contentStyle = `padding: 0 ${padding}px`
+    contentStyle = paddingStyle
   }
 
   // dom结构
   const editorVnode = {
     tag: 'div',
     attrs: {
-      class: 'zxeditor-container' + (options.fixed ? ' fixed' : ''),
-      style: editorStyle
+      class: 'zxeditor-container' + (options.fixed ? ' fixed' : '')
     },
     child: [
       // 内容容器
