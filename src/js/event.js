@@ -115,39 +115,51 @@ export function initEvent (_this) {
     _this.checkCursorPosition()
   }, false)
 
-
-  // 链接：输入容器按钮
-  const $submitBtn = dom.query('.submit-hook', _this.$link)
-  const $cancelBtn = dom.query('.cancel-hook', _this.$link)
-  const $linkInputs = dom.queryAll('input', _this.$link)
-  // 确定
-  dom.addEvent($submitBtn, 'click', e => {
-    const el = e.target
-    // const className = el.className
-    if (dom.hasClass('disabled', el)) return
-    // 创建url，并添加至焦点出
-    let url = $linkInputs[0].value
-    let title = $linkInputs[1].value
-    if (url) {
-      _this.addLink(url, title)
-      _this.$link.style.display = 'none'
-    }
-  }, false)
-
-  // 取消
-  dom.addEvent($cancelBtn, 'click', e => {
-    _this.$link.style.display = 'none'
-  }, false)
-
-  // 链接输入框
-  dom.addEvent($linkInputs[0], 'keyup', e => {
-    let val = e.target.value
-    if (util.isHttpUrl(val)) {
-      if (dom.hasClass('disabled', $submitBtn)) {
-        dom.removeClass('disabled', $submitBtn)
+  // 粘贴
+  dom.addEvent($content, 'paste', e => {
+    e.preventDefault()
+    let clipboardData = e.clipboardData
+    if (!clipboardData) return
+    let items = clipboardData.items
+    // console.log(e)
+    // console.log(clipboardData)
+    // console.log(items)
+    if (items) {
+      let len = items.length
+      let count = 0
+      let pasteStr = ''
+      let i, item
+      for (i = 0; i < len; i++) {
+        item = items[i]
+        // 获取文本内容
+        item.getAsString(str => {
+          count++
+          pasteStr += util.trim(str)
+          if (count === len) {
+            _insertToContent(pasteStr)
+          }
+        })
       }
     }
-  }, false)
+  })
+
+  /**
+   * 将粘贴内容插入至content中
+   * @param pasteStr 粘贴内容文本
+   * @private
+   */
+  function _insertToContent (pasteStr) {
+    if (!pasteStr) {
+      _this.dialog.alert('剪贴板无有效的文本内容')
+      return
+    }
+    // 去除html标签
+    pasteStr = pasteStr.replace(/<\w+.*?>|<\/\w+.*?>|<!.*?>/g, '')
+    // 创建文本节点
+    let $paste = document.createTextNode(pasteStr)
+    _this.insertElm($paste, 'text')
+    _this.checkCursorPosition()
+  }
 
   /**
    * 检查$content子元素的合法性
