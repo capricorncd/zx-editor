@@ -217,6 +217,15 @@ import { ZxEditor } from 'zx-editor'
 
   tag: `String`, 可选参数，dom元素标签，如img/div/h2等
 
+  ```javascipt
+  // 需要插入的文本内容
+  let text = '这是通过insertElm()方法插入的文本节点!'
+  // 创建文本节点
+  let $textNode = document.createTextNode(text)
+  // 将文本节点插入至编辑器正文中
+  zxEditor.insertElm($textNode, 'text')
+  ```
+
 * toBlobData(base64)
 
   将图片base64转换为原始数据类型Blob()，该数据和表单中提交上传的数据同类型，故可以直接上传
