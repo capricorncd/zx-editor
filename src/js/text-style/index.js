@@ -250,13 +250,7 @@ export function initTextStyle (_this) {
   const $colorWrapper = dom.query('.__color-wrapper', $modalBody)
   const $colorChildren = util.slice($colorWrapper.children)
   if ($colorWrapper) {
-    handleColorItemClick()
-  }
-
-  function handleColorItemClick () {
-    for (let i = 0; i < $colorChildren.length; i++) {
-      dom.addEvent($colorChildren[i], 'click', _colorClickHandler)
-    }
+    dom.addEvent($colorChildren, 'click', _colorClickHandler)
   }
 
   function _colorClickHandler (e) {
@@ -279,13 +273,7 @@ export function initTextStyle (_this) {
   const $tagWrapper = dom.query('.__tag-wrapper', $modalBody)
   const $tagChildren = util.slice($tagWrapper.children)
   if ($tagWrapper) {
-    handleTagItemClick()
-  }
-
-  function handleTagItemClick () {
-    for (let i = 0; i < $tagChildren.length; i++) {
-      dom.addEvent($tagChildren[i], 'click', _tagClickHandler)
-    }
+    dom.addEvent($tagChildren, 'click', _tagClickHandler)
   }
 
   /**
@@ -296,7 +284,7 @@ export function initTextStyle (_this) {
   function _tagClickHandler (e) {
     const $current = e.currentTarget
     // 已被选中
-    if (dom.query('checked', $current)) return
+    if (dom.query('.checked', $current)) return
     // 显示选中图标
     _showCheckedIcon($current)
     // 去掉兄弟节点上的选中图标
@@ -362,7 +350,7 @@ export function initTextStyle (_this) {
 
   /**
    * 添加一个checked图标
-   * @param el
+   * @param $el
    * @private
    */
   function _showCheckedIcon ($el) {
@@ -373,7 +361,7 @@ export function initTextStyle (_this) {
 
   /**
    * 移除checked图标
-   * @param el
+   * @param $el
    * @private
    */
   function _hideCheckedIcon ($el) {

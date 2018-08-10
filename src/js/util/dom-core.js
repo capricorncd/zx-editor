@@ -5,6 +5,8 @@
  */
 import util from './index'
 
+const d = document
+
 const dom = {
   /**
    * 添加样式
@@ -12,13 +14,44 @@ const dom = {
    * @param $el 元素节点
    */
   addClass (className, $el) {
-    $el.classList.add(className)
+    if ($el.classList) {
+      $el.classList.add(className)
+    } else {
+      $el.className += ' ' + className
+    }
   },
   removeClass (className, $el) {
-    $el.classList.remove(className)
+    if (!className || !$el) return
+    if ($el.classList) {
+      $el.classList.remove(className)
+      return
+    }
+    let classArray = dom.getClass($el, true)
+    if (classArray.length === 0) return
+    for (let i = 0; i < classArray.length; i++) {
+      if (className === classArray[i]) {
+        classArray.splice(i, 1)
+      }
+    }
+    $el.className = classArray.join(' ')
   },
   hasClass (className, $el) {
-    return $el.classList.contains(className)
+    if ($el.classList) {
+      return $el.classList.contains(className)
+    }
+    const clses = dom.getClass($el, true)
+    return clses.indexOf(className) > -1
+  },
+  /**
+   * 获取class
+   * @param $el dom元素
+   * @param needArray 是否返回数组格式
+   * @returns {*|Array}
+   */
+  getClass ($el, needArray) {
+    if (!$el) return
+    let className = util.trim($el.className)
+    return needArray ? (className ? className.split(' ') : []) : className
   },
   /**
    * 事件绑定
@@ -31,20 +64,20 @@ const dom = {
     if (!$el || !eventName || !handler) return
     if ($el.length) {
       for (let i = 0; i < $el.length; i++) {
-        $el[i].addEventListener(eventName, handler, useCapture)
+        addEventListener($el[i], eventName, handler, useCapture)
       }
     } else {
-      $el.addEventListener(eventName, handler, useCapture)
+      addEventListener($el, eventName, handler, useCapture)
     }
   },
   removeEvent ($el, eventName, handler, useCapture = false) {
     if (!$el || !eventName || !handler) return
     if ($el.length) {
       for (let i = 0; i < $el.length; i++) {
-        $el[i].removeEventListener(eventName, handler, useCapture)
+        removeEventListener($el[i], eventName, handler, useCapture)
       }
     } else {
-      $el.removeEventListener(eventName, handler, useCapture)
+      removeEventListener($el, eventName, handler, useCapture)
     }
   },
   /**
@@ -54,7 +87,7 @@ const dom = {
    * @returns {Element}
    */
   createElm (tag = 'div', opts) {
-    let elm = document.createElement(tag)
+    let elm = d.createElement(tag)
     if (opts && opts instanceof Object) {
       for (let key in opts) {
         if (opts.hasOwnProperty(key)) {
@@ -73,7 +106,7 @@ const dom = {
   createVdom (vnode) {
     if (!vnode) return null
     if (typeof vnode === 'string') {
-      return document.createTextNode(vnode)
+      return d.createTextNode(vnode)
     }
     let tag = vnode.tag
     let attrs = vnode.attrs
@@ -88,7 +121,7 @@ const dom = {
         if ($itemNode) $el.appendChild($itemNode)
       })
     } else if (child && typeof child === 'string') {
-      $el.appendChild(document.createTextNode(child))
+      $el.appendChild(d.createTextNode(child))
     }
     return $el
   },
@@ -191,12 +224,55 @@ const dom = {
    * @param context 作用域，默认为documet
    * @returns {*}
    */
-  query (selector, context = document) {
-    return context.querySelector(selector)
+  query (selector, context = d) {
+    if (typeof d.querySelector === 'function') {
+      return context.querySelector(selector)
+    }
+    const result = dom.queryAll(selector, context)
+    return result.length > 0 ? result[0] : null
   },
 
-  queryAll (selector, context = document) {
-    return context.querySelectorAll(selector)
+  queryAll (selector, context = d) {
+    if (typeof d.querySelectorAll === 'function') {
+      return util.slice(context.querySelectorAll(selector))
+    }
+    // 查询结果
+    let result = []
+    // 被查找到的元素
+    let $item
+    // id选择器
+    if (/^#\w+$/.test(selector)) {
+      $item = context.getElementById(selector)
+      if ($item) {
+        result.push($item)
+      }
+    }
+    // className, tag
+    else {
+      const nodes = context.getElementsByTagName('*')
+      const len = nodes.length
+      // className
+      if (/^\.(\w+)$/.test(selector)) {
+        let word = RegExp.$1
+        for (let i = 0; i < len; i++) {
+          $item = nodes[i]
+          if ($item.nodeType === 1 && xmq.hasClass(word, $item)) {
+            result.push($item)
+          }
+        }
+      }
+      // tag
+      else {
+        let tag = selector.toUpperCase()
+        for (let j = 0; j < len; j++) {
+          $item = nodes[j]
+          if ($item.nodeName === tag) {
+            result.push($item)
+          }
+        }
+      }
+    }
+    return result
   },
 
   /**
@@ -224,7 +300,7 @@ const dom = {
    * @returns {Number}
    */
   maxZIndex () {
-    const $els = document.getElementsByTagName('*')
+    const $els = d.getElementsByTagName('*')
     let $el, css, zindex
     let arr = []
     for (let i = 0; i < $els.length; i++) {
@@ -297,13 +373,13 @@ const dom = {
    * @param 可选参数，className兄弟节点包含的样式名
    * @returns {*}
    */
-  siblings (el, className) {
+  siblings ($el, className) {
     let arr = []
     let elmNodes = []
-    const siblings = el.parentNode.childNodes
+    const siblings = util.slice($el.parentNode.children)
     // 只取元素节点
     siblings.forEach((item) => {
-      if (item.nodeType === 1 && item !== el) {
+      if (item !== $el) {
         elmNodes.push(item)
       }
     })
@@ -329,9 +405,10 @@ const dom = {
    */
   createLinkStr (url, name) {
     if (!url) return ''
+    let alt = name || ''
     url = url + ''
     name = name || (url.length > 20 ? url.substr(0, 20) + '...' : url)
-    return `<a href="${url}" target="_blank" alt="${name}">${name}</a>`
+    return `<a href="${url}" target="_blank" alt="${alt}">${name}</a>`
   },
 
   /**
@@ -444,6 +521,26 @@ const dom = {
     if (dom.isHTMLElement($el)) {
       $el.style.overflow = ''
     }
+  }
+}
+
+function addEventListener ($el, eventType, fn, useCapture) {
+  if ($el.addEventListener) {
+    $el.addEventListener(eventType, fn, useCapture)
+  } else if ($el.attachEvent) {
+    $el.attachEvent(eventType, fn)
+  } else {
+    $el[`on${eventType}`] = fn
+  }
+}
+
+function removeEventListener ($el, eventType, fn, useCapture) {
+  if ($el.removeEventListener) {
+    $el.removeEventListener(eventType, fn, useCapture)
+  } else if ($el.detachEvent) {
+    $el.detachEvent(eventType, fn)
+  } else {
+    $el[`on${eventType}`] = null
   }
 }
 
