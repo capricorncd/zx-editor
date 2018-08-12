@@ -36,7 +36,7 @@ class BottomModal {
     // modal height
     const modalHeight = util.int(opts.height)
     if (!$parent || !dom.isHTMLElement($parent)) {
-      opts.onError(`class[BottomModal]: opts.$parent is not HTMLElement, is ${$parent}`)
+      opts.onError({msg: `class[BottomModal]: opts.$parent is not HTMLElement, is ${$parent}`})
       return
     }
 

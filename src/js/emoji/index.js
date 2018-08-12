@@ -22,8 +22,8 @@ export function initEmoji (_this) {
         child: bodyChildVnode
       }
     ],
-    onError (errMsg) {
-      _this.emit('error', errMsg)
+    onError (err) {
+      _this.emit('error', err)
     },
     onShow () {
       _this.emit('debug', 'emoji showed')
@@ -59,7 +59,9 @@ export function initEmoji (_this) {
       _this.cursor.setRange(_this.$cursorElm, offset + 2)
       _this.checkCursorPosition()
     } catch (e) {
-      _this.emit('error', 'addEmoji', e)
+      _this.emit('error', {
+        msg: 'addEmoji error',
+        data: e})
     }
   }
 

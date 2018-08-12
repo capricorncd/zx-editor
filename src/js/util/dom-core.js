@@ -168,6 +168,7 @@ const dom = {
     if (style) $new.setAttribute('style', style)
 
     $new.innerHTML = inner
+    $el = null
     return $new
   },
 
@@ -403,28 +404,28 @@ const dom = {
    * @param name 链接名称
    * @returns {string}
    */
-  createLinkStr (url, name) {
-    if (!url) return ''
-    let alt = name || ''
-    url = url + ''
-    name = name || (url.length > 20 ? url.substr(0, 20) + '...' : url)
-    return `<a href="${url}" target="_blank" alt="${alt}">${name}</a>`
-  },
+  // createLinkStr (url, name) {
+  //   if (!url) return ''
+  //   let alt = name || ''
+  //   url = url + ''
+  //   name = name || (url.length > 20 ? url.substr(0, 20) + '...' : url)
+  //   return `<a href="${url}" target="_blank" alt="${alt}">${name}</a>`
+  // },
 
   /**
    * 设置或获取$el data-属性
    * @param $el
-   * @param suffix data-后缀
+   * @param key data-key
    * @param value 值
    * @returns {*}
    */
-  data ($el, suffix, value) {
-    if (!$el || !suffix) return null
+  data ($el, key, value) {
+    if (!$el || !key) return null
     if (dom.isHTMLElement($el)) {
-      if (value) {
-        $el.setAttribute(`data-${suffix}`, value)
+      if (typeof value !== 'undefined') {
+        $el.setAttribute(`data-${key}`, value)
       } else {
-        return $el.getAttribute(`data-${suffix}`)
+        return $el.getAttribute(`data-${key}`)
       }
     }
     return null
@@ -443,7 +444,7 @@ const dom = {
 
   /**
    * 元素后面插入分割线
-   * @param el
+   * @param $el
    */
   insertHr ($el) {
     let $p = dom.isEmptyInner($el) ? $el : dom.createElm('p')

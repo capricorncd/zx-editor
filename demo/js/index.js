@@ -294,6 +294,7 @@ function handleCoverWrapper () {
   var imageParams = {
     width: 750,
     height: 422,
+    // 强制裁剪图片，包括gif
     clip: true
   }
   // 封面容器

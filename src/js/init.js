@@ -36,7 +36,24 @@ const DEFAULT_OPTIONS = {
  * @param params
  */
 export function initMixin (_this, selector, params) {
-  // check selector
+  /**
+   * ***************************************************
+   * check h5 Object
+   * ***************************************************
+   */
+  if (typeof FileReader === 'undefined') {
+    _this.emit('error', {msg: 'FileReader is undefined!'})
+  }
+
+  if (typeof localStorage === 'undefined') {
+    _this.emit('error', {msg: 'localStorage is undefined!'})
+  }
+
+  /**
+   * ***************************************************
+   * dialcheck selectorog
+   * ***************************************************
+   */
   if (!selector || typeof selector !== 'string') {
     util.err(`selector is '${selector}', is not valid`)
   }
@@ -45,6 +62,11 @@ export function initMixin (_this, selector, params) {
   if (_this.$wrapper === null) {
     util.err(`Cann't found '${selector}' Node in document!`)
   }
+  /**
+   * ***************************************************
+   * options
+   * ***************************************************
+   */
 
   // 初始化参数
   const options = Object.assign({}, DEFAULT_OPTIONS, params)

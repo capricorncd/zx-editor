@@ -104,7 +104,7 @@ import { ZxEditor } from 'zx-editor'
   |get(key, isSessionStorage)|key:存储键名，返回null或data|
   |remove(key, isSessionStorage)|删除key对应的本地数据|
 
-  `isSessionStorage`，可选参数。默认值为false。
+  `isSessionStorage`，可选参数。是否存储至sessionStorage，默认值为false。
 
   ```javascript
   zxEditor.storage.set('content', {title: '标题', content: '内容'})
@@ -270,6 +270,22 @@ import { ZxEditor } from 'zx-editor'
   |opts|`Object`|图片压缩或裁剪参数`{width:100,height:100,clip:true}`|
   |callback(errorArray, dataArray)|errorArray:`null|Array`, dataArray:`null|Array`|文件处理完成回调函数|
 
+  opts
+
+  ```
+  // 图片压缩、裁剪参数
+  {
+    // 可选，调整图片宽度为100px
+    width: 100,
+    // 可选，调整图片高度为100px，
+    // 该参数不设置，则宽度调整为100px，高度等比缩放
+    height: 100,
+    // 强制裁剪，包括gif图像
+    // 如果为false，将不处理gif图片
+    clip: true
+  }
+  ```
+
   dataArray
 
   ```
@@ -299,6 +315,17 @@ import { ZxEditor } from 'zx-editor'
   ]
   ```
 
+  errorArray
+
+  ```
+  null
+  // 或者
+  [
+    {
+      msg: 'message ....'
+    }
+  ]
+  ```
 
 ## Copyright and license
 

@@ -192,8 +192,8 @@ export function initTextStyle (_this) {
     headSwitch: '完成',
     $parent: _this.$editor,
     bodyChildVnode: textStyleVnode,
-    onError (errMsg) {
-      _this.emit('error', errMsg)
+    onError (err) {
+      _this.emit('error', err)
     },
     onShow () {
       _this.emit('debug', 'textstyle showed')

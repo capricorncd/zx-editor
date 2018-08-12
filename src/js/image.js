@@ -79,7 +79,7 @@ export function toBlobData (base64Data) {
  */
 export function filesToBase64 (files, opts, callback) {
   if (!files || !files.length) {
-    callback([{code: 1, msg: `files is not valid`}])
+    callback([{msg: `files is not valid`}])
     return
   }
   if (typeof callback === 'undefined' && typeof opts === 'function') {
@@ -106,14 +106,14 @@ export function filesToBase64 (files, opts, callback) {
     file = files[i]
     // 非图片文件
     if (!isImage(file.name)) {
-      errArray.push({code: 2, msg: `files[${i}]: "${file.name}" is not Image File!`})
+      errArray.push({msg: `files[${i}]: "${file.name}" is not Image File!`})
       _checkCount()
       continue
     }
 
     // 文件大小判断
     if (file.size > imageMaxSize) {
-      errArray.push({code: 2, msg: `files[${i}]: "${file.name}" size is beyond the ${this.options.imageMaxSize}MB!`})
+      errArray.push({msg: `files[${i}]: "${file.name}" size is beyond the ${this.options.imageMaxSize}MB!`})
       _checkCount()
       continue
     }
@@ -154,6 +154,7 @@ export function filesToBase64 (files, opts, callback) {
       sucArray.length ? sucArray : null
     )
   }
+  files = null
 }
 
 // 图片文件数据转为base64
@@ -171,7 +172,7 @@ function imgFileToBase64 (file, opts, callback) {
     // 获取图片信息
     _getImageInfo(this.result, opts, (err, res) => {
       if (err) {
-        callback(e)
+        callback(err)
         return
       }
       // gif文件, 不做任何处理
@@ -181,10 +182,12 @@ function imgFileToBase64 (file, opts, callback) {
       }
       _handleImageData(res, opts, callback)
     })
+    file = null
   }
 
   reader.onerror = function (e) {
     callback(e)
+    file = null
   }
 }
 
@@ -203,11 +206,9 @@ function _getImageInfo (fileBase64Data, opts, callback) {
   // 加载图片
   $img.onload = function (e) {
     // gif文件, 不做任何处理
-    if (opts.type === 'image/gif') {
+    // 强制裁剪除外
+    if (opts.type === 'image/gif' && opts.clip !== true) {
       let blob = toBlobData(fileBase64Data)
-      let callbackData = {
-
-      }
       callback(null, {
         element: $img,
         type: opts.type,
