@@ -18,7 +18,7 @@ const NODENAME_ARRAY = [
 // 内容附件
 const CONTENT_ATTACH = {
   img: '图片',
-  a: '连接',
+  a: '链接',
   video: '视频',
   audio: '音频'
 }
