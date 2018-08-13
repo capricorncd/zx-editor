@@ -15,6 +15,14 @@ const NODENAME_ARRAY = [
   'blockquote'
 ]
 
+// 内容附件
+const CONTENT_ATTACH = {
+  img: '图片',
+  a: '连接',
+  video: '视频',
+  audio: '音频'
+}
+
 export function initEvent (_this) {
   const cursor = _this.cursor
   const $content = _this.$content
@@ -50,23 +58,14 @@ export function initEvent (_this) {
     if (nodeName === 'A') {
       e.preventDefault()
     }
-    // 删除链接
+    // 删除链接、图片
     if (nodeName === 'I' && $target.className === '__remove') {
+      // 阻止冒泡，触发a标签默认事件
+      // e.stopPropagation()
       // 阻止触发a标签默认事件
       e.preventDefault()
-      _this.emit('debug', 'Delete A tag')
-      _this.dialog.confirm(`您确定要删除该链接吗？`, result => {
-        if (result) {
-          const $parent = dom.closest('p', $target)
-          if ($parent) {
-            // 获取相邻元素
-            let $sibling = $parent.nextElementSibling || $parent.previousElementSibling
-            $parent.parentNode.removeChild($parent)
-            // 移动光标
-            cursor.setRange($sibling, 0)
-          }
-        }
-      })
+      // 处理附件删除
+      handleDeleteAttach($target)
       return
     }
     // 当前$content元素
@@ -79,9 +78,14 @@ export function initEvent (_this) {
 
   // 阻止$content内容被删空
   dom.addEvent($content, 'keydown', e => {
-    // 判断容器内容是否被删空
-    if (e.keyCode === 8 && checkContentInnerNull($content)) {
-      e.preventDefault()
+    if (e.keyCode === 8) {
+      if (_this.options.disableBackspaceDelete) {
+        disableBackspaceDelete(e)
+      }
+      // 判断容器内容是否被删空
+      if (checkContentInnerNull($content)) {
+        e.preventDefault()
+      }
     }
   })
 
@@ -112,6 +116,8 @@ export function initEvent (_this) {
 
   // 文本编辑框内容输入
   dom.addEvent($content, 'keyup', _ => {
+    // 存储$curor element
+    _this.$cursorElm = cursor.getRange()
     _this.checkCursorPosition()
   }, false)
 
@@ -186,6 +192,55 @@ export function initEvent (_this) {
         $content.replaceChild($newNode, $rootNode)
       }
     }
+  }
+
+  /**
+   * disableBackspaceDelete
+   * 禁用Backspace键删除a/img/video/audio
+   * @param e
+   */
+  function disableBackspaceDelete (e) {
+    let $rootParent, $prevNode
+    try {
+      // $content子节点
+      $rootParent = findRootNode(_this.$cursorElm, $content)
+      // 上一个节点
+      $prevNode = $rootParent.previousElementSibling
+    } catch (e) {}
+    if (!$prevNode) return
+    // 上一个兄弟节点含义附件（非文本、emoji类型）
+    // 并且光标在当前节点首位
+    if ((dom.query('a', $prevNode)
+        || dom.query('img', $prevNode)
+        || dom.query('video', $prevNode)
+        || dom.query('audio', $prevNode))
+      && _this.cursor.offset === 0) {
+      e.preventDefault()
+    }
+  }
+
+  /**
+   * 处理正文附件删除
+   * @param $el
+   */
+  function handleDeleteAttach ($el) {
+    let $parent = findRootNode($el, $content)
+    let className = $parent ? $parent.className : ''
+    let type = className.replace(/child-node-is-(\w+)/, '$1')
+    let attachName = CONTENT_ATTACH[type]
+    _this.emit('debug', `Delete ${attachName}`)
+    _this.dialog.confirm(`您确定要删除${attachName}吗？`, result => {
+      if (result) {
+        if ($parent) {
+          // 获取相邻元素
+          let $sibling = $parent.nextElementSibling || $parent.previousElementSibling
+          $parent.parentNode.removeChild($parent)
+          // 移动光标
+          cursor.setRange($sibling, 0)
+        }
+      }
+      $parent = null
+    })
   }
 }
 

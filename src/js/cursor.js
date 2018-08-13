@@ -83,16 +83,17 @@ class Cursor {
  * @returns {*}
  */
 export function findRootNode (currentNode, $context) {
+  if (currentNode === $context) return null
   let $node = currentNode
-  let $parentNode
-  do {
-    $parentNode = $node.parentNode
+  let $parentNode = $node.parentNode
+  while ($parentNode) {
     if ($parentNode === $context) {
       return $node
     } else {
       $node = $parentNode
     }
-  } while ($parentNode)
+    $parentNode = $node.parentNode
+  }
   return null
 }
 

@@ -66,8 +66,9 @@ class ZxEditor {
    * 插入dom元素
    * @param $el
    * @param type
+   * @param addRemoveIcon 添加remove icon
    */
-  insertElm ($el, type) {
+  insertElm ($el, type, addRemoveIcon = false) {
     if (!$el) {
       this.emit('error', {
         msg: `insertElm($el), $el is ${$el}`
@@ -78,7 +79,7 @@ class ZxEditor {
     type = type || $el.nodeName.toLowerCase()
     // console.log($el, type)
     // 将图片插入至合适位置
-    this.$cursorElm = dom.insertToRangeElm($el, this.$cursorElm, 'child-node-is-' + type)
+    this.$cursorElm = dom.insertToRangeElm($el, this.$cursorElm, 'child-node-is-' + type, addRemoveIcon)
     this.emit('debug', 'insertElm ended')
     // 重置光标位置
     this.cursor.setRange(this.$cursorElm, 0)
@@ -111,7 +112,7 @@ class ZxEditor {
       return
     }
     const $media = createMedia(tag, url)
-    this.insertElm($media, tag)
+    this.insertElm($media, tag, true)
   }
 
   /**

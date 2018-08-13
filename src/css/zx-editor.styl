@@ -42,6 +42,7 @@
         content: '输入正文';
         color: #ccc;
     p, h1, h2, h3, h4, li
+      position: relative;
       line-height: 1.5em;
       padding: 10px 0 0;
     h2
@@ -65,7 +66,6 @@
     // 子节点为a标签
     .child-node-is-a
       a
-        position relative
         display: block;
         padding: 0 21px 0 35px;
         height: 40px;
@@ -83,15 +83,16 @@
         -webkit-background-size: 14px 14px;
         background-size: 14px 14px;
         //box-shadow 0 2px 5px rgba(0, 0, 0, .2);
-        i
-          position absolute;
-          z-index: 1;
-          right: 0;
-          top: 0;
-          width: 18px;
-          height: 18px;
-          bgImage('../img/link-remove');
-          background-size: cover;
+    i.__remove
+      display: inline-block;
+      position absolute;
+      z-index: 1;
+      right: 0;
+      top: 10px;
+      width: 18px;
+      height: 18px;
+      bgImage('../img/link-remove');
+      background-size: cover;
 
 
 //fixed

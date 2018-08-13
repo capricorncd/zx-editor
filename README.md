@@ -61,13 +61,15 @@ import { ZxEditor } from 'zx-editor'
 
 * bottom: `Number`，底部距离。
 
+* disableBackspaceDelete: `Boolean`，禁用键盘删除图片、链接等非文本、emoji内容。默认为true。
+
 * fixed: `Boolean`，编辑器是否绝对定位，默认为false。
 
 * imageMaxSize: `Number`，图片文件最大尺寸限制，单位MB，默认20
 
 * padding: `Number`，编辑器左右内边距，默认15像素,
 
-* showToolbar: `Array|Boolean`，是否显示底部工具栏（图片、标签、连接添加等图标）。
+* showToolbar: `Array|Boolean`，是否显示底部工具栏（图片、标签、链接添加等图标）。
 
   默认为`true`，显示全部图标。
 
@@ -118,7 +120,7 @@ import { ZxEditor } from 'zx-editor'
 
   |notifyName|callback(参数)|说明|
   |:--|:--|:--|
-  |add-link|`next()`|点击底部`添加连接`图标时触发。监听此通知，将阻止编辑器默认处理逻辑执行|
+  |add-link|`next()`|点击底部`添加链接`图标时触发。监听此通知，将阻止编辑器默认处理逻辑执行|
   |debug|messge|消息通知|
   |error|{code: 1, msg: 'message'}|错误异常通知|
   |select-picture|-|点击底部`选择图片`图标时触发。监听此通知，将阻止编辑器默认处理逻辑执行|

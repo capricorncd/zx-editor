@@ -87,15 +87,15 @@ const dom = {
    * @returns {Element}
    */
   createElm (tag = 'div', opts) {
-    let elm = d.createElement(tag)
+    let $el = d.createElement(tag)
     if (opts && opts instanceof Object) {
       for (let key in opts) {
         if (opts.hasOwnProperty(key)) {
-          elm.setAttribute(key, opts[key])
+          $el.setAttribute(key, opts[key])
         }
       }
     }
-    return elm
+    return $el
   },
 
   /**
@@ -336,9 +336,10 @@ const dom = {
    * @param $el
    * @param $rangeElm
    * @param className $p元素class样式
+   * @param addRemoveIcon 添加删除icon
    * @returns {*} 返回新的$rangeElm
    */
-  insertToRangeElm ($el, $rangeElm, className) {
+  insertToRangeElm ($el, $rangeElm, className, addRemoveIcon) {
     // if (typeof editDisabled === 'undefined' && typeof className === 'boolean') {
     //   editDisabled = className
     //   className = null
@@ -358,6 +359,14 @@ const dom = {
     // 添加样式名
     if (className) {
       $p.className = className
+    }
+    if (addRemoveIcon) {
+      let $i = dom.createElm('i', {
+        class: '__remove'
+      })
+      $p.setAttribute('contenteditable', false)
+      $p.appendChild($i)
+      $i = null
     }
     // 如果是在$content结尾插入的话，新增一占位段落
     const $content = $p.parentNode

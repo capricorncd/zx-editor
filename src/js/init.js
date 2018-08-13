@@ -26,7 +26,9 @@ const DEFAULT_OPTIONS = {
   // 显示工具栏
   showToolbar: true,
   // 图片文件大小最大值，单位MB
-  imageMaxSize: 20
+  imageMaxSize: 20,
+  // 禁用键盘删除图片、链接等附件
+  disableBackspaceDelete: true
 }
 
 /**
