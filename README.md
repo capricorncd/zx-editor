@@ -326,11 +326,17 @@ zxEditor.on('add-link', next => {
 
 去除html标签
 
-#### # toBlobData(base64)
+#### # removeSave()
 
-将图片base64转换为原始数据类型Blob()，该数据和表单中提交上传的数据同类型，故可以直接上传
+移除本地存储的content内容
 
-@return new Blob() 返回Blob()数据
+#### # save()
+
+保存编辑器内容
+
+#### # setContent(innerHTML)
+
+设置编辑器内容，可用于初始化编辑器数据。
 
 #### # setImageSrc(imgId, imgUrl)
 
@@ -338,21 +344,15 @@ zxEditor.on('add-link', next => {
 
 @return boolean
 
-#### # setContent(innerHTML)
-
-设置编辑器内容，可用于初始化编辑器数据。
-
 #### # stopAutoSave()
 
 开启自动保存时有效。停止自动保存编辑数据。
 
-#### # save()
+#### # toBlobData(base64)
 
-保存编辑器内容
+将图片base64转换为原始数据类型Blob()，该数据和表单中提交上传的数据同类型，故可以直接上传
 
-#### # removeSave()
-
-移除本地存储的content内容
+@return new Blob() 返回Blob()数据
 
 ## Copyright and license
 
