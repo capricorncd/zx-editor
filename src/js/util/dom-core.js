@@ -219,6 +219,10 @@ const dom = {
     return $el && $el instanceof HTMLElement
   },
 
+  isWindow (obj) {
+    return obj != null && obj === obj.window
+  },
+
   /**
    * dom节点选择器
    * @param selector 元素id、class、属性等
@@ -478,6 +482,10 @@ const dom = {
     return $el
   },
 
+  getWindow ($el) {
+    return dom.isWindow($el) ? $el : $el.nodeType === 9 && $el.defaultView
+  },
+
   /**
    * 获取$item在$list中的索引
    * @param $item
@@ -530,6 +538,25 @@ const dom = {
     }
     if (dom.isHTMLElement($el)) {
       $el.style.overflow = ''
+    }
+  },
+
+  /**
+   * 设置或获取垂直滚动位置
+   * @param $el
+   * @param offset
+   * @returns {Number}
+   */
+  scrollTop ($el, offset) {
+    const $win = dom.getWindow($el)
+    // 获取scrollTop
+    if (offset === undefined) {
+      return $win ? $win.pageYOffset : $el.scrollTop
+    }
+    if ($win) {
+      $win.scrollTo(0, offset)
+    } else {
+      $el.scrollTop = offset
     }
   }
 }

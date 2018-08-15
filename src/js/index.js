@@ -21,6 +21,8 @@ import { toBlobData, filesToBase64, MEDIA_TYPES, createMedia } from './image'
  * 1. 非特殊说明，带$符号的属性为Element对象
  */
 
+const d = document
+
 class ZxEditor {
   /**
    * constructor
@@ -304,29 +306,42 @@ class ZxEditor {
    */
   checkCursorPosition () {
     const vpos = this._visiblePostion()
+    // 编辑器绝对定位时，光标位置交给系统处理
+    if (vpos.fixed) return
+    // 编辑器失去焦点时的焦点元素
     const $el = this.$cursorElm
     if (!$el) return
     // 垂直偏移量，使内容滚动位置不要太贴边
     const offsetY = 10
     const pos = $el.getBoundingClientRect()
+    this.emit('message', '编辑器光标元素位置参数', pos)
+    // documentElement scrollTop
+    let docScrollTop = d.documentElement.scrollTop
+    // body scrollTop
+    let bodyScrollTop = d.body.scrollTop
+    // 取最大值
+    let scrollTop = Math.max(docScrollTop, bodyScrollTop)
     // 获取滚动容器
-    let $body = vpos.fixed ? this.$content : dom.query('html')
-    // let bodyScrollHeight = $body.scrollHeight
-    let bodyScrollTop = $body.scrollTop
-    // console.log(bodyScrollTop, document.body.scrollTop)
-    // 不能获取html scrollTop
-    // if (bodyScrollHeight === 0) {
-    //   $body = dom.query('body')
-    //   console.warn($body.scrollHeight, $body.scrollTop, document.body.scrollTop)
-    // }
-    // console.error(pos.top)
-
+    let $body = docScrollTop >= bodyScrollTop ? d.documentElement : d.body
+    let top = 0
+    // 焦点元素顶部在可视开始区域以上位置
     if (pos.top < vpos.startY) {
-      $body.scrollTop = bodyScrollTop - (vpos.startY - pos.top) - offsetY
+      top = scrollTop - (vpos.startY - pos.top) - offsetY
+      dom.scrollTop($body, top)
     }
+    // 焦点元素底部在可视结束区域以下位置
     if (pos.bottom > vpos.endY) {
-      $body.scrollTop = bodyScrollTop + vpos.endY + offsetY
+      top = scrollTop + vpos.endY + offsetY
+      dom.scrollTop($body, top)
     }
+    this.emit('message', {
+      wrapper: $body.toString(),
+      scrollTop: [
+        'doc: ' + docScrollTop,
+        'body: ' + bodyScrollTop
+      ],
+      top
+    })
   }
 
   /**
