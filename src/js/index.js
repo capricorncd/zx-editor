@@ -367,7 +367,27 @@ class ZxEditor {
    * 默认为false，获取html代码
    */
   getContent (isText = false) {
-    return this.$content[isText ? 'innerText' : 'innerHTML']
+    // 获取文本内容
+    if (isText) {
+      return this.$content.innerText
+    }
+    // 获取html内容
+    // 处理文本节点
+    let childNodes = this.$content.childNodes
+    let i, node
+    for (i = 0; i < childNodes.length; i++) {
+      node = childNodes[i]
+      // 将非空文本节点，转换为p元素节点
+      if (node.nodeType === 3) {
+        let text = util.trim(node.nodeValue)
+        if (text) {
+          let $p = dom.createElm('p')
+          $p.innerText = text
+          this.$content.replaceChild($p, node)
+        }
+      }
+    }
+    return this.$content.innerHTML
   }
 
   /**

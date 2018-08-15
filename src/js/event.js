@@ -183,6 +183,7 @@ export function initEvent (_this) {
         let type = className.replace(/child-node-is-(\w+)/ig, '$1')
         if (type && !dom.query(type, $rootNode)) {
           $rootNode.removeAttribute('class')
+          $rootNode.removeAttribute('contenteditable')
           // dom.removeClass('child-node-is-a', $rootNode)
         }
       }
