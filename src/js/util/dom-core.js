@@ -558,6 +558,16 @@ const dom = {
     } else {
       $el.scrollTop = offset
     }
+  },
+
+  /**
+   * 去除html标签
+   * @param htmlStr
+   * @returns {string}
+   */
+  removeHtmlTags (htmlStr) {
+    htmlStr = htmlStr.toString().replace(/<\w.*?>|<\/\w.*?>|<!.*?>/g, '')
+    return util.trim(htmlStr)
   }
 }
 

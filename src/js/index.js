@@ -86,11 +86,11 @@ class ZxEditor {
     // 重置光标位置
     this.cursor.setRange(this.$cursorElm, 0)
     // 延时执行光标所在元素位置计算
-    let timer = setTimeout(_ => {
-      this.checkCursorPosition()
-      clearTimeout(timer)
-      timer = null
-    }, 300)
+    let tmr = setTimeout(_ => {
+      _this.checkCursorPosition()
+      clearTimeout(tmr)
+      tmr = null
+    }, 350)
   }
 
   /**

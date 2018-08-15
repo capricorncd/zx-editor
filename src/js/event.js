@@ -111,7 +111,7 @@ export function initEvent (_this) {
     checkChildName()
 
     // 校验光标所在元素位置
-    _this.checkCursorPosition()
+    // _this.checkCursorPosition()
   })
 
   // 文本编辑框内容输入
@@ -160,16 +160,19 @@ export function initEvent (_this) {
       return
     }
     // 去除html标签
-    pasteStr = pasteStr.replace(/<\w+.*?>|<\/\w+.*?>|<!.*?>/g, '')
+    pasteStr = dom.removeHtmlTags(pasteStr)
     // 创建文本节点
     let $paste = document.createTextNode(pasteStr)
     _this.insertElm($paste, 'text')
-    _this.checkCursorPosition()
+    let tmr = setTimeout(_ => {
+      _this.checkCursorPosition()
+      clearTimeout(tmr)
+      tmr = null
+    }, 350)
   }
 
   /**
    * 检查$content子元素的合法性
-   * @param _this
    */
   function checkChildName () {
     const $rootNode = findRootNode(_this.$cursorElm, $content)

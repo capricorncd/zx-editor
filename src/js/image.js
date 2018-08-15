@@ -78,8 +78,15 @@ export function toBlobData (base64Data) {
  * @param callback(errArray, sucArray)
  */
 export function filesToBase64 (files, opts, callback) {
-  if (!files || !files.length) {
-    callback([{msg: `files is not valid`}])
+  // check files
+  if (!files) {
+    callback([{msg: `files is not valid. is ${files}`}])
+    return
+  }
+  let len = files.length
+  // check files type
+  if (!len) {
+    callback([{msg: `files's length is ${len}`}])
     return
   }
   if (typeof callback === 'undefined' && typeof opts === 'function') {
@@ -97,7 +104,6 @@ export function filesToBase64 (files, opts, callback) {
   imageMaxSize *= 1048576
 
   // 文件数量
-  let len = files.length
   let count = 0
   let errArray = []
   let sucArray = []
@@ -105,11 +111,11 @@ export function filesToBase64 (files, opts, callback) {
   for (i = 0; i < len; i++) {
     file = files[i]
     // 非图片文件
-    if (!isImage(file.name)) {
-      errArray.push({msg: `files[${i}]: "${file.name}" is not Image File!`})
-      _checkCount()
-      continue
-    }
+    // if (!isImage(file.name)) {
+    //   errArray.push({msg: `files[${i}]: "${file.name}" is not Image File!`})
+    //   _checkCount()
+    //   continue
+    // }
 
     // 文件大小判断
     if (file.size > imageMaxSize) {
@@ -166,11 +172,17 @@ function imgFileToBase64 (file, opts, callback) {
   // 此时result属性包含数据：URL以base64编码的字符串表示文件的数据。
   reader.readAsDataURL(file)
   reader.onload = function () {
+    const base64 = this.result
+    // 文件类型判断
+    if (!/^data:image\//i.test(base64)) {
+      callback({msg: `"${file.name}" is not Image File!`})
+      return
+    }
     opts.type = file.type
     opts.size = file.size
     opts.name = file.name
     // 获取图片信息
-    _getImageInfo(this.result, opts, (err, res) => {
+    _getImageInfo(base64, opts, (err, res) => {
       if (err) {
         callback(err)
         return
@@ -186,7 +198,7 @@ function imgFileToBase64 (file, opts, callback) {
   }
 
   reader.onerror = function (e) {
-    callback(e)
+    callback({msg: `Error, FileReader "${file.name}"!`, data: e})
     file = null
   }
 }
