@@ -566,8 +566,17 @@ const dom = {
    * @returns {string}
    */
   removeHtmlTags (htmlStr) {
-    htmlStr = htmlStr.toString().replace(/<\w.*?>|<\/\w.*?>|<!.*?>/g, '')
+    htmlStr = htmlStr.toString().replace(/<\/?.*?>/g, '')
     return util.trim(htmlStr)
+  },
+
+  /**
+   * 移除多余的html代码
+   * @param content
+   * @returns {string}
+   */
+  removeRedundantCode (content) {
+    return (content + '').replace(/<p><br><\/p>|\scontenteditable="false"|<i class="__remove"><\/i>/ig, '')
   }
 }
 

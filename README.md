@@ -326,6 +326,12 @@ zxEditor.on('add-link', next => {
 
 去除html标签
 
+#### # removeRedundantCode(content)
+
+移除多余的html代码
+
+`<p><br></p>`, `contenteditable="false"`, `<i class="__remove"></i>` ...
+
 #### # removeSave()
 
 移除本地存储的content内容
