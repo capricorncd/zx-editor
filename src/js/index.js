@@ -87,7 +87,7 @@ class ZxEditor {
     this.cursor.setRange(this.$cursorElm, 0)
     // 延时执行光标所在元素位置计算
     let tmr = setTimeout(_ => {
-      _this.checkCursorPosition()
+      this.checkCursorPosition()
       clearTimeout(tmr)
       tmr = null
     }, 350)
