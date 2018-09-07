@@ -113,7 +113,7 @@ const dom = {
     let child = vnode.child
     if (!tag && !attrs && !child) return null
     // 创建dom
-    const $el = dom.createElm(vnode.tag || 'div', vnode.attrs)
+    const $el = dom.createElm(tag || 'div', attrs)
     if (Array.isArray(child) && child.length) {
       let $itemNode
       child.forEach(item => {
