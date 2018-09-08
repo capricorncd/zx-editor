@@ -168,6 +168,10 @@ export function initToolbar (_this) {
     _this.$wrapper.appendChild($input)
     // 绑定change事件
     dom.addEvent($input, 'change', fileInputChangeHandler)
+    // 清除value，防止选中同一文件不触发change事件
+    dom.addEvent($input, 'click', e => {
+      e.target.value = ''
+    })
     // 返回$input，模拟click[type=file]时使用
     return $input
   }
