@@ -196,13 +196,21 @@ export function initTextStyle (_this) {
       _this.emit('error', err)
     },
     onShow () {
-      _this.emit('debug', 'textstyle showed')
+      _this.emit('bottom-modal', {
+        type: 'text-style',
+        show: true,
+        height: textstyleModal.height
+      })
       _initTextStyleCheck()
       _this.resetContentPostion(textstyleModal.height)
       _this.checkCursorPosition()
     },
     onHide () {
-      _this.emit('debug', 'textstyle hidden')
+      _this.emit('bottom-modal', {
+        type: 'text-style',
+        show: false,
+        height: 0
+      })
       _this.resetContentPostion(_this.toolbarHeight)
       _this.checkCursorPosition()
     }

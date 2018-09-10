@@ -26,12 +26,20 @@ export function initEmoji (_this) {
       _this.emit('error', err)
     },
     onShow () {
-      _this.emit('debug', 'emoji showed')
+      _this.emit('bottom-modal', {
+        type: 'emoji',
+        show: true,
+        height: emojiModal.height
+      })
       _this.resetContentPostion(emojiModal.height)
       _this.checkCursorPosition()
     },
     onHide () {
-      _this.emit('debug', 'emoji hidden')
+      _this.emit('bottom-modal', {
+        type: 'emoji',
+        show: false,
+        height: 0
+      })
       _this.resetContentPostion(_this.toolbarHeight)
       _this.checkCursorPosition()
     }
