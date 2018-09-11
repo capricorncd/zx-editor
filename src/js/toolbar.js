@@ -91,6 +91,11 @@ export function initToolbar (_this) {
     dom.addEvent($toolbarBtns, 'click', toolbarChildClickHandler)
   }
 
+  // 阻止冒泡
+  dom.addEvent(_this.$toolbar, 'click', e => {
+    e.stopPropagation()
+  })
+
   // 创建fileInput
   const $fileInput = initFileInput()
 

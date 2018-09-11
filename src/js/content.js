@@ -4,6 +4,7 @@
  */
 import dom from './util/dom-core'
 import util from './util/index'
+import broadcast from './broadcast/index'
 import { findRootNode } from './cursor'
 
 // 可使用标签范围数组
@@ -23,7 +24,7 @@ const CONTENT_ATTACH = {
   audio: '音频'
 }
 
-export function initEvent (_this) {
+export function handleContent (_this) {
   const cursor = _this.cursor
   const $content = _this.$content
 
@@ -48,6 +49,7 @@ export function initEvent (_this) {
   // 删除附件等操作
   dom.addEvent($content, 'click', e => {
     e.stopPropagation()
+    broadcast.emit('click', $content, e)
     // 隐藏emojiModal
     _this.emojiModal.hide()
     _this.textstyleModal.hide()
@@ -59,7 +61,7 @@ export function initEvent (_this) {
       e.preventDefault()
     }
     // 删除链接、图片
-    if (nodeName === 'I' && $target.className === '__remove') {
+    if (nodeName === 'I' && $target.className.indexOf('__remove') >= 0) {
       // 阻止冒泡，触发a标签默认事件
       // e.stopPropagation()
       // 阻止触发a标签默认事件
@@ -91,12 +93,14 @@ export function initEvent (_this) {
 
   // focus移除$content placeholder
   dom.addEvent($content, 'focus', _ => {
+    broadcast.emit('focus', $content)
     removeContentClass($content)
   })
 
   // 离开编辑输入框时，内容是否为空
   // 为空则添加<br>
   dom.addEvent($content, 'blur', e => {
+    broadcast.emit('blur', $content)
     // 存储$curor element
     _this.$cursorElm = cursor.getRange()
     // 检查$content是否为空
@@ -116,6 +120,7 @@ export function initEvent (_this) {
 
   // 文本编辑框内容输入
   dom.addEvent($content, 'keyup', _ => {
+    broadcast.emit('keyup', $content)
     // 存储$curor element
     _this.$cursorElm = cursor.getRange()
     _this.checkCursorPosition()
@@ -157,18 +162,21 @@ export function initEvent (_this) {
   function _insertToContent (pasteStr) {
     if (!pasteStr) {
       _this.dialog.alert('剪贴板无有效的文本内容')
-      return
+    } else {
+      // 去除html标签
+      pasteStr = dom.removeHtmlTags(pasteStr)
+      // 创建文本节点
+      let $paste = document.createTextNode(pasteStr)
+      _this.insertElm($paste, 'text')
+      let tmr = setTimeout(_ => {
+        _this.checkCursorPosition()
+        clearTimeout(tmr)
+        tmr = null
+      }, 350)
     }
-    // 去除html标签
-    pasteStr = dom.removeHtmlTags(pasteStr)
-    // 创建文本节点
-    let $paste = document.createTextNode(pasteStr)
-    _this.insertElm($paste, 'text')
-    let tmr = setTimeout(_ => {
-      _this.checkCursorPosition()
-      clearTimeout(tmr)
-      tmr = null
-    }, 350)
+    broadcast.emit('paste', $content, {
+      content: pasteStr
+    })
   }
 
   /**

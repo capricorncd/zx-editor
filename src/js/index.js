@@ -9,7 +9,7 @@ import dom from './util/dom-core'
 import util from './util/index'
 import broadcast from './broadcast/index'
 import { initMixin } from './init'
-import {initEvent, checkContentInnerNull, removeContentClass} from './event'
+import {handleContent, checkContentInnerNull, removeContentClass} from './content'
 import { initEmoji } from './emoji/index'
 import { initTextStyle } from './text-style/index'
 import { initLink } from './link'
@@ -59,8 +59,8 @@ class ZxEditor {
     initTextStyle(this)
     // 初始化link
     initLink(this)
-    // 初始化事件
-    initEvent(this)
+    // 处理content容器相关的
+    handleContent(this)
     this.checkCursorPosition()
   }
 

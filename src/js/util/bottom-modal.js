@@ -97,6 +97,11 @@ class BottomModal {
     // 是否以touch
     let isTouched = false
 
+    // 阻止冒泡
+    dom.addEvent(this.$modal, 'click', e => {
+      e.stopPropagation()
+    })
+
     // 阻止document跟随上下滚动
     dom.addEvent($modalBody, 'touchstart', e => {
       isTouched = true

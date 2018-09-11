@@ -128,6 +128,53 @@ zxEditor.dialog.alert('这是alert提示框', function () {
 zxEditor.storage.set('content', {title: '标题', content: '内容'})
 ```
 
+## 通知 notify
+
+```
+zxEditor.on('notifyName', function (callback) {
+  // ...
+})
+```
+
+* add-link 点击底部`添加链接`图标时触发。监听此通知，将阻止编辑器默认处理逻辑执行
+
+  callback: `next()`
+
+
+```javascript
+// 自定义添加链接
+zxEditor.on('add-link', next => {
+  // hybrid模式开发时，此处可以调用原生App提供的接口，访问剪贴板是否有url地址数据
+  // 获取到url地址、及其文档title
+  // 将链接添加至编辑器中
+  next(url, title)
+})
+```
+
+* bottom-modal 底部emoji、text-style模态框显示状态及高度
+
+  callback: `{type, show, height}`
+
+  type: `emoji|text-style`
+
+  show: `true|false` true代表显示，false代表隐藏
+
+  height: `number|0`
+
+* debug 消息通知
+
+  callback: `message`
+
+* error, 错误异常通知
+
+  callback:  `{code: 1, msg: 'message'}`
+
+* paste 编辑器中粘贴内容完成通知
+
+  callback: `{ content: '粘贴的文本内容' }`
+
+* select-picture 点击底部`选择图片`图标时触发。监听此通知，将阻止编辑器默认处理逻辑执行
+
 ## 方法 methods
 
 ```javascript
@@ -288,16 +335,7 @@ zxEditor.insertElm($textNode, 'text')
 
 #### # on(notifyName, callback)
 
-监听编辑器部分通知
-
-|notifyName|callback(参数)|说明|
-|:--|:--|:--|
-|add-link|`next()`|点击底部`添加链接`图标时触发。监听此通知，将阻止编辑器默认处理逻辑执行|
-|debug|messge|消息通知|
-|error|{code: 1, msg: 'message'}|错误异常通知|
-|select-picture|-|点击底部`选择图片`图标时触发。监听此通知，将阻止编辑器默认处理逻辑执行|
-|show-emoji|-|点击底部`emoji`图标时触发|
-|show-textstyle|-|点击底部`文字样式`图标时触发|
+监听编辑器内部通知。详见"通知Notify"！
 
 例子：
 
@@ -309,16 +347,6 @@ zxEditor.on('select-picture', _ => {
   // 或者获取由原生App处理并上传完成的图片url
   zxEditor.addImage('图片url地址或base64图片数据')
   // 其他操作...
-})
-```
-
-```javascript
-// 自定义添加链接
-zxEditor.on('add-link', next => {
-  // hybrid模式开发时，此处可以调用原生App提供的接口，访问剪贴板是否有url地址数据
-  // 获取到url地址、及其文档title
-  // 将链接添加至编辑器中
-  next(url, title)
 })
 ```
 
