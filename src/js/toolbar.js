@@ -1,6 +1,6 @@
 /**
- * Created by zx1984 8/1/2018
- * https://github.com/zx1984
+ * Created by capricorncd 8/1/2018
+ * https://github.com/capricorncd
  */
 import dom from './util/dom-core'
 import util from './util/index'

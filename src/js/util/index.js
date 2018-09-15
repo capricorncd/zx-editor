@@ -1,7 +1,7 @@
 /**
- * Create by zx1984
+ * Create by capricorncd
  * 2018/1/24 0024.
- * https://github.com/zx1984
+ * https://github.com/capricorncd
  */
 // 十六进制
 export default {

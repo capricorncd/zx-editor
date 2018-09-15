@@ -1,7 +1,7 @@
 /**
- * Create by zx1984
+ * Create by capricorncd
  * 2018/1/22 0022.
- * https://github.com/zx1984
+ * https://github.com/capricorncd
  */
 // const path = require('path')
 const webpack = require('webpack')

@@ -1,9 +1,9 @@
 {
   "name": "zx-editor",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "description": "ZxEditor is a HTML5 rich text editor",
-  "author": "zx1984",
-  "github": "https://github.com/zx1984",
+  "author": "capricorncd",
+  "github": "https://github.com/capricorncd",
   "scripts": {
     "dev": "webpack-dev-server --inline --color --config build/webpack.dev.js",
     "build": "webpack --color --config build/webpack.prod.js"
@@ -35,7 +35,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zx1984/zx-editor.git"
+    "url": "git+https://github.com/capricorncd/zx-editor.git"
   },
   "keywords": [
     "editor",
@@ -45,9 +45,9 @@
     "mobile"
   ],
   "bugs": {
-    "url": "https://github.com/zx1984/zx-editor/issues"
+    "url": "https://github.com/capricorncd/zx-editor/issues"
   },
-  "homepage": "https://github.com/zx1984/zx-editor",
+  "homepage": "https://github.com/capricorncd/zx-editor",
   "main": "dist/js/zx-editor.min.js",
   "license": "MIT"
 }

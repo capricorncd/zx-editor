@@ -1,7 +1,7 @@
 /**
- * Create by zx1984
+ * Create by capricorncd
  * 2018/1/23 0023.
- * https://github.com/zx1984
+ * https://github.com/capricorncd
  */
 import '../css/index.styl'
 import './util/polyfill'

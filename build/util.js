@@ -1,6 +1,6 @@
 /**
- * Created by zx1984 7/21/2018
- * https://github.com/zx1984
+ * Created by capricorncd 7/21/2018
+ * https://github.com/capricorncd
  */
 function formatDate (date, formatString) {
   if (typeof formatString === 'undefined' && typeof date === 'string') {

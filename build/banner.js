@@ -1,6 +1,6 @@
 /**
- * Created by zx1984 7/21/2018
- * https://github.com/zx1984
+ * Created by capricorncd 7/21/2018
+ * https://github.com/capricorncd
  */
 const util = require('./util')
 const pkg = require('../package.json');
