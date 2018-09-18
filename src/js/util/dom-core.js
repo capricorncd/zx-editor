@@ -542,6 +542,38 @@ const dom = {
   },
 
   /**
+   * 获取文档scroll位置
+   * @param pos
+   * @returns {{}}
+   */
+  getScroll (pos) {
+    let data = {}
+    // ie9+ 高版本浏览器
+    if(window.pageYOffset !== null) {
+      // 因为 window.pageYOffset 默认的是0, 所以这里需要判断
+      data = {
+        left: window.pageXOffset,
+        top: window.pageYOffset
+      }
+    }
+    // 标准浏览器,判断有没有声明DTD
+    else if(document.compatMode === "CSS1Compat") {
+      data = {
+        left: document.documentElement.scrollLeft,
+        top: document.documentElement.scrollTop
+      }
+    }
+    // 未声明 DTD
+    else {
+      data = {
+        left: document.body.scrollLeft,
+        top: document.body.scrollTop
+      }
+    }
+    return (pos === 'left' || pos === 'top') ? data[pos] : data
+  },
+
+  /**
    * 设置或获取垂直滚动位置
    * @param $el
    * @param offset

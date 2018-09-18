@@ -15,6 +15,7 @@ import { initTextStyle } from './text-style/index'
 import { initLink } from './link'
 import { initToolbar } from './toolbar'
 import { toBlobData, filesToBase64, MEDIA_TYPES, createMedia } from './image'
+import { initKeyboard } from './keyboard'
 
 /**
  * Note:
@@ -61,6 +62,9 @@ class ZxEditor {
     initLink(this)
     // 处理content容器相关的
     handleContent(this)
+    // 移动端键盘
+    initKeyboard(this)
+    // 检查光标位置
     this.checkCursorPosition()
   }
 
@@ -295,7 +299,7 @@ class ZxEditor {
       // startX: 0,
       // endX: winW,
       startY: top,
-      endY: winH - bottom - top
+      endY: winH - bottom - top - util.int(this.keyboard.height)
     }
     this.emit('message', visiblePosition)
     return visiblePosition
@@ -316,32 +320,35 @@ class ZxEditor {
     const pos = $el.getBoundingClientRect()
     this.emit('message', '编辑器光标元素位置参数', pos)
     // documentElement scrollTop
-    let docScrollTop = d.documentElement.scrollTop
+    // let docScrollTop = d.documentElement.scrollTop
     // body scrollTop
-    let bodyScrollTop = d.body.scrollTop
+    // let bodyScrollTop = d.body.scrollTop
     // 取最大值
-    let scrollTop = Math.max(docScrollTop, bodyScrollTop)
+    // let scrollTop = Math.max(docScrollTop, bodyScrollTop)
+    let scrollTop = dom.getScroll('top')
     // 获取滚动容器
-    let $body = docScrollTop >= bodyScrollTop ? d.documentElement : d.body
+    // let $body = docScrollTop >= bodyScrollTop ? d.documentElement : d.body
     let top = 0
     // 焦点元素顶部在可视开始区域以上位置
     if (pos.top < vpos.startY) {
       top = scrollTop - (vpos.startY - pos.top) - offsetY
-      dom.scrollTop($body, top)
+      // dom.scrollTop($body, top)
+      dom.scrollTop(window, top)
     }
     // 焦点元素底部在可视结束区域以下位置
     if (pos.bottom > vpos.endY) {
       top = scrollTop + vpos.endY + offsetY
-      dom.scrollTop($body, top)
+      // dom.scrollTop($body, top)
+      dom.scrollTop(window, top)
     }
-    this.emit('message', {
-      wrapper: $body.toString(),
-      scrollTop: [
-        'doc: ' + docScrollTop,
-        'body: ' + bodyScrollTop
-      ],
-      top
-    })
+    // this.emit('message', {
+    //   wrapper: $body.toString(),
+    //   scrollTop: [
+    //     'doc: ' + docScrollTop,
+    //     'body: ' + bodyScrollTop
+    //   ],
+    //   top
+    // })
   }
 
   /**

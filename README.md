@@ -378,6 +378,10 @@ zxEditor.on('select-picture', _ => {
 
 @return boolean
 
+#### # setKeyboard({ height: 266 })
+
+如果能获取到键盘弹起高度，可以通过该方法设置键盘的高度。
+
 #### # stopAutoSave()
 
 开启自动保存时有效。停止自动保存编辑数据。
