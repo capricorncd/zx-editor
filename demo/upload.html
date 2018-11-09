@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>图片文件上传demo</title>
+  <style>body {margin: 0;}</style>
+</head>
+<body>
+
+<div id="editorContainer"></div>
+<input type="file" id="inputFile" style="display: none;">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-polyfills/0.1.42/polyfill.min.js"></script>
+<!--exif获取照片参数插件-->
+<script src="./libs/exif.min.js"></script>
+<!--编辑器-->
+<script src="../dist/js/zx-editor.min.js"></script>
+<script>
+  // 实例化编辑器
+  var zxEditor = new ZxEditor('#editorContainer', {})
+
+  // 获取input[type="file"]
+  var $inputFile = document.querySelector('#inputFile')
+  // 监听选择图片按钮点击事件
+  zxEditor.on('select-picture', function () {
+    // 触发input点击事件
+    $inputFile.click();
+  })
+
+  // 监听input[type="file"] change事件
+  $inputFile.addEventListener('change', function (e) {
+    var files = e.target.files; // 或者 $inputFile.files
+    var file = files[0]
+    // 上传文件至服务器
+    upload({
+      // 接收上传文件的服务器url
+      url: 'http://127.0.0.1:8080/index.php',
+      file: file,
+      success: function (res) {
+        try {
+          // 服务器返回的json字符串
+          res = JSON.parse(res)
+          if (res.code === 0) {
+            // 添加图片至编辑器内
+            zxEditor.addImage('http://127.0.0.1:8080/' + res.url)
+          } else {
+            alert(res.message)
+          }
+        } catch (e) {}
+        log(res)
+      },
+      error: function (err) {
+        alert('文件上传失败')
+        console.error(err)
+      }
+    })
+  })
+
+  // 监听点击事件，清除input value，防止连续选择同一文件，不触发change事件
+  $inputFile.addEventListener('click', function (e) {
+    e.target.value = ''; // 或者 $inputFile.value = ''
+  })
+
+  function log () {
+    console.log.apply(console, arguments)
+  }
+
+  /**
+   * 文件上传
+   * @param params
+   */
+  function upload (params) {
+    // FormData 对象
+    var formData = new FormData()
+    // 文件对象
+    formData.append('file', params.file)
+    // 实例化XMLHttpRequest
+    var xhr = new XMLHttpRequest()
+    // post方式，url为服务器请求地址，true 该参数规定请求是否异步处理。
+    xhr.open('post', params.url, true)
+    // 请求完成
+    xhr.onload = function (e) {
+      // this = e.target
+      // this = xhr
+      if (this.readyState === 4 && this.status === 200) {
+        params.success(this.response)
+      } else {
+        params.error({
+          code: this.status,
+          message: this.statusText
+        })
+      }
+    }
+    xhr.onerror = function (e) {
+      params.error(e)
+    }
+    xhr.send(formData)
+  }
+</script>
+</body>
+</html>

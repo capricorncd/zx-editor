@@ -23,7 +23,7 @@
 <!--exif获取照片参数插件-->
 <script src="../demo/libs/exif.min.js"></script>
 <!--debug-->
-<script src="../demo/libs/zx-debug.min.js"></script>
+<script src="https://cdn.bootcss.com/vConsole/3.2.0/vconsole.min.js"></script>
 <!--编辑器-->
 <script src="<%= htmlWebpackPlugin.files.chunks['zx-editor'].entry %>"></script>
 <script>
@@ -32,30 +32,27 @@
     // 编辑器固定
     fixed: false,
     // 20秒自动保存一次编辑内容
-    autoSave: 20
+    autoSave: 20,
+    disableBackspaceDelete: false
   })
 
-  // 实例化 ZxDebug
-  var debug = new ZxDebug({
-    // 位置居top
-    position: 'top',
-    // 位置偏移100px
-    offset: 30
-  })
+  // 实例化 VConsole
+  var debug = new VConsole()
 
-  debug.log('实例化 ZxEditor', zxEditor);
+  console.log(debug)
+
+  console.log('实例化 ZxEditor', zxEditor);
 
   zxEditor.on('debug', function () {
-    debug.log.apply(debug, arguments)
+    console.log.apply(console, arguments)
   })
 
   zxEditor.on('error', function (err) {
-    zxEditor.dialog.alert(err.msg)
-    debug.error.apply(debug, arguments)
+    console.error.apply(console, arguments)
   })
 
   zxEditor.on('message', function () {
-    debug.log.apply(debug, arguments)
+    console.log.apply(console, arguments)
 //    console.log.apply(null, arguments)
   })
 </script>
