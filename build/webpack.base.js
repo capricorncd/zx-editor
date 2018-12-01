@@ -22,7 +22,9 @@ module.exports = {
         exclude: path.resolve(__dirname, 'node_modules'),
         // include: path.resolve(__dirname, 'src'),
         query: {
-          presets: ['env']
+          presets: [
+            ['env', { modules: false }]
+          ]
         }
       },
       {
