@@ -5,6 +5,7 @@
 import dom from './util/dom-core'
 import util from './util/index'
 import broadcast from './broadcast/index'
+import { document } from 'ssr-window'
 import { findRootNode } from './cursor'
 
 // 可使用标签范围数组
@@ -39,6 +40,7 @@ export function handleContent (_this) {
       p.innerHTML = '<br>'
       $content.appendChild(p)
       p.focus()
+      broadcast.emit('change', 'content', _this)
       _this.$cursorElm = p
     } else {
       _this.$cursorElm = cursor.getRange()
@@ -120,10 +122,10 @@ export function handleContent (_this) {
 
   // 文本编辑框内容输入
   dom.addEvent($content, 'keyup', _ => {
-    broadcast.emit('keyup', $content)
     // 存储$curor element
     _this.$cursorElm = cursor.getRange()
     _this.checkCursorPosition()
+    broadcast.emit('change', 'content', _this)
   }, false)
 
   // 粘贴
@@ -177,6 +179,7 @@ export function handleContent (_this) {
     broadcast.emit('paste', $content, {
       content: pasteStr
     })
+    broadcast.emit('change', 'content', _this)
   }
 
   /**
@@ -203,6 +206,7 @@ export function handleContent (_this) {
         const $newNode = dom.changeTagName($rootNode, 'p')
         $content.replaceChild($newNode, $rootNode)
       }
+      broadcast.emit('change', 'content', _this)
     }
   }
 
@@ -250,6 +254,7 @@ export function handleContent (_this) {
           // 移动光标
           cursor.setRange($sibling, 0)
         }
+        broadcast.emit('change', 'content', _this)
       }
       $parent = null
     })

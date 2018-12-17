@@ -8,8 +8,9 @@ import './util/polyfill'
 import dom from './util/dom-core'
 import util from './util/index'
 import broadcast from './broadcast/index'
+import { window } from 'ssr-window'
 import { initMixin } from './init'
-import {handleContent, checkContentInnerNull, removeContentClass} from './content'
+import { handleContent, checkContentInnerNull, removeContentClass } from './content'
 import { initEmoji } from './emoji/index'
 import { initTextStyle } from './text-style/index'
 import { initLink } from './link'
@@ -21,8 +22,6 @@ import { initKeyboard } from './keyboard'
  * Note:
  * 1. 非特殊说明，带$符号的属性为Element对象
  */
-
-const d = document
 
 class ZxEditor {
   /**
@@ -86,7 +85,6 @@ class ZxEditor {
     // console.log($el, type)
     // 将图片插入至合适位置
     this.$cursorElm = dom.insertToRangeElm($el, this.$cursorElm, 'child-node-is-' + type, addRemoveIcon)
-    this.emit('debug', 'insertElm ended')
     // 重置光标位置
     this.cursor.setRange(this.$cursorElm, 0)
     // 延时执行光标所在元素位置计算
@@ -95,6 +93,7 @@ class ZxEditor {
       clearTimeout(tmr)
       tmr = null
     }, 350)
+    broadcast.emit('change', 'content', this)
   }
 
   /**
@@ -187,7 +186,7 @@ class ZxEditor {
   _addToolbarChild (arr) {
     const $dl = dom.query('dl', this.$toolbar)
     const _this = this
-    let $item, onEvent, vnode
+    let $item, vnode
     arr.forEach(item => {
       vnode = {
         tag: 'dd',
@@ -264,6 +263,7 @@ class ZxEditor {
     if ($img) {
       $img.src = src
       $img.removeAttribute('id')
+      broadcast.emit('change', 'content', this)
       return true
     }
     return false
@@ -366,6 +366,7 @@ class ZxEditor {
       // 初始化完成后
       this.$cursorElm = this.cursor.getRange()
     }
+    broadcast.emit('change', 'content', this)
   }
 
   /**

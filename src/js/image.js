@@ -1,5 +1,6 @@
 import dom from './util/dom-core'
 import util from './util/index'
+import { document, window } from 'ssr-window'
 
 // Media types
 export const MEDIA_TYPES = ['img', 'audio', 'video']

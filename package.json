@@ -1,6 +1,6 @@
 {
   "name": "zx-editor",
-  "version": "2.4.5",
+  "version": "2.5.0",
   "description": "ZxEditor is a HTML5 rich text editor",
   "author": "capricorncd",
   "github": "https://github.com/capricorncd",
@@ -9,6 +9,7 @@
     "build": "webpack --color --config build/webpack.prod.js"
   },
   "dependencies": {
+    "ssr-window": "^1.0.1",
     "zx-dialog": "^1.0.2"
   },
   "devDependencies": {

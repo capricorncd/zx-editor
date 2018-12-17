@@ -44,7 +44,7 @@
   console.log('实例化 ZxEditor', zxEditor);
 
   zxEditor.on('debug', function () {
-    console.log.apply(console, arguments)
+    // console.log.apply(console, arguments)
   })
 
   zxEditor.on('error', function (err) {
@@ -52,7 +52,11 @@
   })
 
   zxEditor.on('message', function () {
-    console.log.apply(console, arguments)
+    // console.log.apply(console, arguments)
+  })
+
+  zxEditor.on('change', function (type, zxeditor) {
+    console.error(type + ' is change')
   })
 </script>
 </body>

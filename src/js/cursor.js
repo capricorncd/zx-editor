@@ -1,5 +1,6 @@
 import dom from './util/dom-core'
 import util from './util/index'
+import { window } from 'ssr-window'
 
 class Cursor {
   constructor ($content) {

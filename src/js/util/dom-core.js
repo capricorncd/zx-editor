@@ -4,7 +4,7 @@
  * https://github.com/capricorncd
  */
 import util from './index'
-
+import { document, window } from 'ssr-window'
 const d = document
 
 const dom = {
