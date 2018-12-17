@@ -161,6 +161,17 @@ zxEditor.on('add-link', next => {
 
   height: `number|0`
 
+* change
+
+```
+// 编辑器内容改变
+zxEditor.on('change', function (type, zxeditor) {
+  // type: 'content'
+ // zxeditor 编辑器实例
+  console.log(type, zxeditor)
+})
+```
+
 * debug 消息通知
 
   callback: `message`
