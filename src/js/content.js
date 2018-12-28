@@ -145,13 +145,21 @@ export function handleContent (_this) {
       for (i = 0; i < len; i++) {
         item = items[i]
         // 获取文本内容
-        item.getAsString(str => {
-          count++
-          pasteStr += util.trim(str)
-          if (count === len) {
-            _insertToContent(pasteStr)
-          }
-        })
+        if (/^text\/plain/.test(item.type)) {
+          item.getAsString(str => {
+            _handlePasteCount(str)
+          })
+        } else {
+          _handlePasteCount('')
+        }
+      }
+
+      function _handlePasteCount (str) {
+        count++
+        pasteStr += util.trim(str)
+        if (count === len) {
+          _insertToContent(pasteStr)
+        }
       }
     }
   })
