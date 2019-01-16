@@ -58,6 +58,10 @@
   zxEditor.on('change', function (type, zxeditor) {
     console.error(type + ' is change')
   })
+  // 删除元素
+  zxEditor.on('remove-attach', function ($el, type) {
+    console.log($el, type)
+  })
 </script>
 </body>
 </html>

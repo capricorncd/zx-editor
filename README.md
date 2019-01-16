@@ -184,6 +184,16 @@ zxEditor.on('change', function (type, zxeditor) {
 
   callback: `{ content: '粘贴的文本内容' }`
 
+* remove-attach 删除附件图片/链接前通知
+
+```
+zxEditor.on('remove-attach', ($el, type) => {
+  // $el 被删除元素
+  // type 类型，img或链接
+  // dosomething
+})
+```
+
 * select-picture 点击底部`选择图片`图标时触发。监听此通知，将阻止编辑器默认处理逻辑执行
 
 ## 方法 methods

@@ -256,6 +256,7 @@ export function handleContent (_this) {
     _this.dialog.confirm(`您确定要删除${attachName}吗？`, result => {
       if (result) {
         if ($parent) {
+          broadcast.emit('remove-attach', $parent, type)
           // 获取相邻元素
           let $sibling = $parent.nextElementSibling || $parent.previousElementSibling
           $parent.parentNode.removeChild($parent)
