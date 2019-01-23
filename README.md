@@ -248,6 +248,10 @@ url: `String` url地址
 
 type: `String`, img|audio|video
 
+#### # destroy()
+
+移除通过on方法监听的事件；移除编辑器dom元素。
+
 #### # filesToBase64(files, opts, callback)
 
 图片文件数据转为base64/blob
