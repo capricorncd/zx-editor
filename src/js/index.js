@@ -433,6 +433,19 @@ class ZxEditor {
   removeSave () {
     this.storage.remove('content')
   }
+
+  /**
+   * 移除自定义事件&销毁dom元素
+   */
+  destroy () {
+    // 移除自定义事件
+    let bc = Object.keys(this.broadcast)
+    bc.forEach(key => {
+      this.off(key)
+    })
+    // 移除dom元素
+    this.$wrapper.parentElement.removeChild(this.$wrapper)
+  }
 }
 
 // 扩展属性
