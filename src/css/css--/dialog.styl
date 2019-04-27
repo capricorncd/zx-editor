@@ -1,0 +1,73 @@
+$primaryColor = #1890ff;
+$borderColor = #eee;
+
+.zx-dialog-wrapper
+  position: fixed;
+  top: 0;
+  left:0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .zx-dialog-inner
+    width: 80%;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow 0 0 10px rgba(0, 0, 0, .2);
+    .zx-dialog-message
+      margin: 0 auto;
+      padding: 20px 0;
+      width: 80%;
+      min-height 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      word-break: break-all;
+    .zx-dialog-footer
+      position: relative;
+      display: flex;
+      &:after
+        position absolute;
+        top: 0;
+        left: 0;
+        width 100%;
+        transform: scaleY(.5);
+        border-top: 1px solid $borderColor;
+        content: '';
+      span
+        position: relative;
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 48px;
+        letter-spacing 2px;
+        cursor: pointer;
+        &.__confirm
+          color: $primaryColor;
+        &:nth-child(2)
+          &:after
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            border-left: 1px solid $borderColor;
+            transform: scaleX(.5);
+            content: '';
+
+@media screen and (max-width: 320px)
+  .zx-dialog-wrapper
+    .zx-dialog-inner
+      border-radius: 8px;
+      .zx-dialog-message
+        padding: 15px 0;
+      .zx-dialog-footer
+        span
+          height: 40px;
+
+@media screen and (min-width: 640px)
+  .zx-dialog-wrapper
+    .zx-dialog-inner
+      width: 512px;

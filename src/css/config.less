@@ -1,0 +1,32 @@
+/**
+ * ******************************************
+ * config
+ * ******************************************
+ */
+@primaryColor: #00c1b7;
+
+@borderColor: #eee;
+@iconColor: #999;
+
+// Color
+@black: #555;
+@gray: #d0d0d0;
+@red: #ff583d;
+@yellow: #fdaa25;
+@green: #44c67b;
+@blue: #14b2e0;
+@purple: #b065e2;
+
+@listHeight: 50px;
+
+/**
+ * ******************************************
+ * function
+ * ******************************************
+ */
+.bgImage(@url, @extends) {
+  background: url('@{url}@2x.png') @extends;
+  @media (-webkit-min-device-pixel-ratio: 3), (min-device-pixel-ratio: 3) {
+    background: url('@{url}@3x.png') @extends;
+  }
+}

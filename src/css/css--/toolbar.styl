@@ -1,0 +1,47 @@
+@import "./config.styl"
+
+.zxeditor-container
+  .zxeditor-toolbar-wrapper
+    position: fixed;
+    z-index: $zIndex;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: $toolbarHeight px;
+    background-color: #fff;
+    dl
+      position relative
+      min-width 100%
+      &:after
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        content: '';
+        border-top: 1px solid $gray;
+        transform: scaleY(.5);
+      dd
+        float: left;
+        display: flex;
+        justify-content center;
+        align-items center;
+        width: $toolbarHeight px;
+        height: $toolbarHeight px;
+        line-height: $toolbarHeight px;
+        &.__pic
+          i
+            bgImage('../img/pic');
+        &.__emoji
+          i
+            bgImage('../img/emoji');
+        &.__text
+          i
+            bgImage('../img/text');
+        &.__link
+          i
+            bgImage('../img/link');
+        i
+          display: inline-block;
+          width: 25px;
+          height: 25px;
+          background-size: cover;

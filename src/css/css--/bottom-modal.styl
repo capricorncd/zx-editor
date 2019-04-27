@@ -1,0 +1,40 @@
+@import "config.styl";
+
+$height = 260px;
+$headHeight = 44px;
+
+.zxeditor-modal-wrapper
+  position: fixed;
+  z-index: 100;
+  left: 0;
+  bottom: 0;
+  width 100%
+  background-color: #fff;
+  height $height
+  transition transform .2s;
+  .zxeditor-modal-head
+    position relative
+    display: flex;
+    justify-content center
+    align-items center
+    height: $headHeight;
+    background-color: $borderColor;
+    border-top: 1px solid $gray;
+    border-bottom: 1px solid $gray;
+    box-sizing: border-box;
+    .__switch
+      position: absolute
+      z-index 1
+      top: 0;
+      right: 0;
+      padding: 0 15px;
+      height: $headHeight;
+      display: flex;
+      justify-content center
+      align-items center
+      font-size: .8em;
+      color: $primaryColor;
+  .zxeditor-modal-body
+    height: 216px;
+    overflow-y: auto
+
