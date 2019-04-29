@@ -22,8 +22,6 @@ import { initToolbar } from './init/toolbar'
 import { base64ToBlobData } from './image-handler/index'
 
 const DEF_OPTIONS = {
-  // 禁用键盘删除图片、链接等附件
-  disableBackspaceDelete: true,
   // 内容是否可以被编辑
   editable: true,
   // editor height
@@ -34,12 +32,13 @@ const DEF_OPTIONS = {
   placeholder: '',
   placeholderColor: '',
   lineHeight: 1.5,
-  // paragraph spacing
-  padding: '',
+  // paragraph tail spacing, default 10px
+  paragraphTailSpacing: '',
   cursorColor: '',
   // Has the toolbar been fixed?
   toolbarBeenFixed: true,
   toolbarHeight: 50,
+  // buttons name, and order
   toolbarBtns: ['select-picture', 'text-style'],
   // customize Picture Handler
   customizePictureHandler: false,
@@ -48,9 +47,9 @@ const DEF_OPTIONS = {
   // image max size, unit Kib
   imageMaxSize: 10240,
   // template
-  imageSectionTemp: `<section><img src="{url}"></section>`,
-  // text style
-  textStyleColors: {},
+  imageSectionTemp: `<section class="child-is-picture"><img src="{url}"></section>`,
+  // text style, value ['#333', '#f00', ...]
+  textStyleColors: [],
   // border color
   borderColor: ''
 }
@@ -65,14 +64,18 @@ function ZxEditor (selector, _options) {
    * ***************************************************
    */
   this.$wrapper = $(selector)
+
   if (!this.$wrapper[0]) {
     throw new Error(`Cann't found '${selector}' Node in document!`)
   }
+
   // version
   this.version = '__VERSION__'
+
   // ZxEditorQuery instance
   this.$ = $
   this.ExpansionPanel = ExpansionPanel
+
   // options
   this.options = Object.assign(DEF_OPTIONS, _options)
   this.init(this.options)
@@ -123,6 +126,8 @@ ZxEditor.prototype = {
      */
     this.cursor = new CursorClass(this.$content)
 
+    this.$cursorNode = null
+
     /**
      * ***************************************************
      * event: last
@@ -138,7 +143,7 @@ ZxEditor.prototype = {
     // string
     if (!el) return
     // 光标元素及偏移量
-    let $rangeNode = this.cursor.getCurrentNode()
+    let $cursorNode = this.$cursorNode
 
     let newRangeEl, newRangeOffset
     /**
@@ -146,23 +151,23 @@ ZxEditor.prototype = {
      */
     if (typeof el === 'string') {
       // 光标所在元素内容为空
-      if ($rangeNode.isEmpty()) {
-        $rangeNode.text(el)
-        newRangeEl = $rangeNode[0].childNodes[0]
+      if ($cursorNode.isEmpty()) {
+        $cursorNode.text(el)
+        newRangeEl = $cursorNode[0].childNodes[0]
         newRangeOffset = el.length
-      } else if ($rangeNode.children().every($item => $item.isTextNode())) {
+      } else if ($cursorNode.children().every($item => $item.isTextNode())) {
         let rangeOffset = this.cursor.offset
-        let rangeNodeStr = $rangeNode.text()
+        let rangeNodeStr = $cursorNode.text()
         let tmpStr = rangeNodeStr.substr(0, rangeOffset) + el + rangeNodeStr.substr(rangeOffset)
-        // $section = $rangeNode.closest('section')
-        $rangeNode.text(tmpStr)
-        newRangeEl = $rangeNode[0].childNodes[0]
+        // $section = $cursorNode.closest('section')
+        $cursorNode.text(tmpStr)
+        newRangeEl = $cursorNode[0].childNodes[0]
         newRangeOffset = el.length + rangeOffset
       } else {
         // 创建一个section
         let $newEl = $(`<section>${el}</section>`)
         // 插入到childIndex后
-        $newEl.insertAfter($rangeNode)
+        $newEl.insertAfter($cursorNode)
         newRangeEl = $newEl[0].childNodes[0]
         newRangeOffset = el.length
       }
@@ -185,15 +190,15 @@ ZxEditor.prototype = {
             $elm = $tmp.append($elm)
           }
         }
-        if ($rangeNode.isEmpty()) {
+        if ($cursorNode.isEmpty()) {
           // siblings is empty
-          if ($rangeNode.next()[0] && $rangeNode.next().isEmpty()) {
-            $rangeNode.replace($elm)
+          if ($cursorNode.next()[0] && $cursorNode.next().isEmpty()) {
+            $cursorNode.replace($elm)
           } else {
-            $elm.insertBefore($rangeNode)
+            $elm.insertBefore($cursorNode)
           }
         } else {
-          $elm.insertAfter($rangeNode)
+          $elm.insertAfter($cursorNode)
         }
         // 判断$el是否有下一个节点，有：光标指向el结束，无：则插入空行，并移动光标
         let next = $elm.next()[0]
@@ -252,7 +257,7 @@ ZxEditor.prototype = {
     for (let i = 0; i < childNodes.length; i++) {
       el = childNodes[i]
       if (el.nodeType === 1) {
-        if (el.nodeName !== 'SECTION') util.changeNodeName(el, 'section')
+        if (!/SECTION|h1|h2|h3|h4|BLOCKQUOTE|UL/.test(el.nodeName)) util.changeNodeName(el, 'section')
       } else {
         let $tmp = $(`<section></section>`)
         $tmp.append(el.cloneNode())

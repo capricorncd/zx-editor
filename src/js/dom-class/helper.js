@@ -4,8 +4,9 @@
  * Date: 2019/04/18 22:57
  */
 import util from '../util/index'
+import { document } from 'ssr-window'
 
-export function unique(arr) {
+export function unique (arr) {
   const uniqueArray = []
   for (let i = 0; i < arr.length; i += 1) {
     if (uniqueArray.indexOf(arr[i]) === -1) uniqueArray.push(arr[i])
@@ -45,6 +46,13 @@ export function changeNodeName (oldNode, tagName) {
   return el
 }
 
+/**
+ * addEventListener
+ * @param el
+ * @param eventType
+ * @param fn
+ * @param useCapture
+ */
 export function addEventListener (el, eventType, fn, useCapture) {
   if (el.addEventListener) {
     el.addEventListener(eventType, fn, useCapture)
@@ -55,6 +63,13 @@ export function addEventListener (el, eventType, fn, useCapture) {
   }
 }
 
+/**
+ * removeEventListener
+ * @param el
+ * @param eventType
+ * @param fn
+ * @param useCapture
+ */
 export function removeEventListener (el, eventType, fn, useCapture) {
   if (el.removeEventListener) {
     el.removeEventListener(eventType, fn, useCapture)
@@ -63,4 +78,46 @@ export function removeEventListener (el, eventType, fn, useCapture) {
   } else {
     el[`on${eventType}`] = null
   }
+}
+
+function createTextNode (str) {
+  return document.createTextNode(str)
+}
+
+export function createElement (tag, attrs) {
+  if (!tag && typeof tag !== 'string') {
+    throw new TypeError('Parameter error')
+  }
+  let el = document.createElement(tag)
+  if (attrs && typeof attrs === 'object') {
+    for (let key in attrs) {
+      if (attrs.hasOwnProperty(key)) {
+        el.setAttribute(key, attrs[key])
+      }
+    }
+  }
+  return el
+}
+
+export function createVdom (vnode) {
+  if (!vnode) return null
+  if (typeof vnode === 'string') {
+    return createTextNode(vnode)
+  }
+  let tag = vnode.tag
+  let attrs = vnode.attrs
+  let child = vnode.child
+  if (!tag && !attrs && !child) return null
+  // 创建dom
+  let el = createElement(tag || 'div', attrs)
+  if (Array.isArray(child) && child.length) {
+    let itemNode
+    child.forEach(item => {
+      itemNode = createVdom(item)
+      if (itemNode) el.appendChild(itemNode)
+    })
+  } else if (child && typeof child === 'string') {
+    el.appendChild(createTextNode(child))
+  }
+  return el
 }

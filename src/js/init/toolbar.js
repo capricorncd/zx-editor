@@ -5,10 +5,9 @@
  */
 import Toolbar from '../toolbar/index'
 import { selectPictureBtn } from './select-picture-btn'
-import { styleExpansionPanel } from './style-expansion-panel'
+import { styleExpansionPanel } from '../text-style/style-expansion-panel'
 
 export function initToolbar (options) {
-  const _this = this
   // toolbar
   this.toolbar = new Toolbar(options, this)
 

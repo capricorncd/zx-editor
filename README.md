@@ -45,23 +45,24 @@ npm install zx-editor --save-dev
     placeholder: '',
     placeholderColor: '',
     lineHeight: 1.5,
-    // paragraph spacing
-    padding: '',
+    // paragraph tail spacing, default 10px
+    paragraphTailSpacing: '',
     cursorColor: '',
     // Has the toolbar been fixed?
     toolbarBeenFixed: true,
     toolbarHeight: 50,
+    // buttons name, and order
     toolbarBtns: ['select-picture', 'text-style'],
     // customize Picture Handler
     customizePictureHandler: false,
-    // image max width piexl
+    // image max width
     imageMaxWidth: 720,
     // image max size, unit Kib
     imageMaxSize: 10240,
     // template
-    imageSectionTemp: `<section><img src="{url}"></section>`,
-    // text style
-    textStyleColors: {},
+    imageSectionTemp: `<section class="child-is-picture"><img src="{url}"></section>`,
+    // text style, value ['#333', '#f00', ...]
+    textStyleColors: [],
     // border color
     borderColor: ''
   })

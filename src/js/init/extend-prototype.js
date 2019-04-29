@@ -7,6 +7,7 @@ import { emit, off, on } from '../custom-events'
 import { getPasteText } from '../events/paste'
 import { base64ToBlobData, blobToUrl, fileToBase64 } from '../image-handler/index'
 import util from '../util/index'
+import { createElement, createVdom } from '../dom-class/helper'
 
 export function extendPrototypes (ZxEditor) {
   // custom events
@@ -24,4 +25,7 @@ export function extendPrototypes (ZxEditor) {
   ZxEditor.prototype.blobToUrl = blobToUrl
   ZxEditor.prototype.base64ToBlobData = base64ToBlobData
   ZxEditor.prototype.fileToBase64 = fileToBase64
+  // dom
+  ZxEditor.prototype.createElement = createElement
+  ZxEditor.prototype.createVdom = createVdom
 }

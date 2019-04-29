@@ -86,10 +86,11 @@ CursorClass.prototype = {
   },
 
   /**
-   * 获取光标及当前光标所在的DOM元素节点
-   * @returns {*} $rangeElm
+   * get cursor node in $parent
+   * @param needElement Want to get element node, not ZxEditorQuery object
+   * @return {*}
    */
-  getCurrentNode () {
+  getCurrentNode (needElement) {
     // 获取选定对象
     this.selection = window.getSelection()
     // 设置最后光标对象
@@ -101,7 +102,9 @@ CursorClass.prototype = {
     this.currentNode = this.range.endContainer
     this.offset = this.range.startOffset
     // Check whether currentNode is in the this.$parent
-    return $(this.currentNode).isInChild(this.$parent) ? $(this.currentNode) : this.$parent.lastChild()
+    let $currentNode = $(this.currentNode).findParentFrom(this.$parent)
+    let $current = $currentNode || this.$parent.lastChild()
+    return needElement ? $current[0] : $current
   }
 }
 

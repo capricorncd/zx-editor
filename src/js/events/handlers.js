@@ -53,6 +53,9 @@ export function contentFocus () {
  * content on blur
  */
 export function contentBlur () {
+  // save $cursorNode
+  this.$cursorNode = this.cursor.getCurrentNode()
+  console.warn(this.$cursorNode[0])
   // toolbar
   if (!this.options.toolbarBeenFixed) {
     this.toolbar.hide()

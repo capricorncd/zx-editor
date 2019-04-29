@@ -142,6 +142,25 @@ ZxEditorQuery.prototype = {
   },
 
   /**
+   *
+   * @param parent
+   * @return {*}
+   */
+  findParentFrom (parent) {
+    if (parent instanceof ZxEditorQuery) parent = parent[0]
+    let current = this[0]
+    // if (!current || !current.nodeType || !parent || !parent.nodeType) return null
+    if (current === parent) return null
+    let tmpParent
+    while (current.parentNode) {
+      tmpParent = current.parentNode
+      if (tmpParent === parent) return $(current)
+      current = tmpParent
+    }
+    return null
+  },
+
+  /**
    * get first child
    * @return {*|jQuery|HTMLElement}
    */
@@ -550,21 +569,17 @@ ZxEditorQuery.prototype = {
    * @param $parent
    * @return {boolean}
    */
-  isInChild ($parent) {
-    let el = this[0]
-    let $child = $parent.children()
-    let $item
-    for (let i = 0; i < $child.length; i++) {
-      $item = $($child[i])
-      if ($item.is(el)) {
-        return true
-      }
-      if ($item.children().length && this.isInChild($item)) {
-        return true
-      }
-    }
-    return false
-  },
+  // isInChild ($parent) {
+  //   let el = this[0]
+  //   let childNodes = $parent[0].childNodes
+  //   let tmp
+  //   for (let i = 0; i < childNodes.length; i++) {
+  //     tmp = childNodes[i]
+  //     if (tmp === el) return true
+  //     if (tmp.nodeType === 1 && this.isInChild($(tmp))) return true
+  //   }
+  //   return false
+  // },
 
   /**
    * every

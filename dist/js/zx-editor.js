@@ -3,7 +3,7 @@
  * https://github.com/capricorncd/zx-editor
  * Copyright © 2018-present, capricorncd
  * Released under the MIT License
- * Released on: 2019-04-27 23:22:13
+ * Released on: 2019-04-29 20:21:15
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -60,10 +60,80 @@
   }
 
   /**
-   * Created by Capricorncd.
-   * User: https://github.com/capricorncd
-   * Date: 2019/04/18 22:57
+   * SSR Window 1.0.1
+   * Better handling for window object in SSR environment
+   * https://github.com/nolimits4web/ssr-window
+   *
+   * Copyright 2018, Vladimir Kharlampidi
+   *
+   * Licensed under MIT
+   *
+   * Released on: July 18, 2018
    */
+  var doc = typeof document === 'undefined' ? {
+    body: {},
+    addEventListener: function addEventListener() {},
+    removeEventListener: function removeEventListener() {},
+    activeElement: {
+      blur: function blur() {},
+      nodeName: ''
+    },
+    querySelector: function querySelector() {
+      return null;
+    },
+    querySelectorAll: function querySelectorAll() {
+      return [];
+    },
+    getElementById: function getElementById() {
+      return null;
+    },
+    createEvent: function createEvent() {
+      return {
+        initEvent: function initEvent() {}
+      };
+    },
+    createElement: function createElement() {
+      return {
+        children: [],
+        childNodes: [],
+        style: {},
+        setAttribute: function setAttribute() {},
+        getElementsByTagName: function getElementsByTagName() {
+          return [];
+        }
+      };
+    },
+    location: {
+      hash: ''
+    }
+  } : document; // eslint-disable-line
+
+  var win = typeof window === 'undefined' ? {
+    document: doc,
+    navigator: {
+      userAgent: ''
+    },
+    location: {},
+    history: {},
+    CustomEvent: function CustomEvent() {
+      return this;
+    },
+    addEventListener: function addEventListener() {},
+    removeEventListener: function removeEventListener() {},
+    getComputedStyle: function getComputedStyle() {
+      return {
+        getPropertyValue: function getPropertyValue() {
+          return '';
+        }
+      };
+    },
+    Image: function Image() {},
+    Date: function Date() {},
+    screen: {},
+    setTimeout: function setTimeout() {},
+    clearTimeout: function clearTimeout() {}
+  } : window; // eslint-disable-line
+
   function unique(arr) {
     var uniqueArray = [];
 
@@ -88,7 +158,7 @@
     }
 
     if (oldNodeName === tagName.toLowerCase()) return oldNode;
-    var el = document.createElement(tagName); // 非Element节点，当字符串节点处理
+    var el = doc.createElement(tagName); // 非Element节点，当字符串节点处理
 
     if (oldNode.nodeType !== 1) {
       el.appendChild(oldNode);
@@ -108,6 +178,14 @@
 
     return el;
   }
+  /**
+   * addEventListener
+   * @param el
+   * @param eventType
+   * @param fn
+   * @param useCapture
+   */
+
   function addEventListener(el, eventType, fn, useCapture) {
     if (el.addEventListener) {
       el.addEventListener(eventType, fn, useCapture);
@@ -117,6 +195,14 @@
       el["on".concat(eventType)] = fn;
     }
   }
+  /**
+   * removeEventListener
+   * @param el
+   * @param eventType
+   * @param fn
+   * @param useCapture
+   */
+
   function removeEventListener(el, eventType, fn, useCapture) {
     if (el.removeEventListener) {
       el.removeEventListener(eventType, fn, useCapture);
@@ -125,6 +211,54 @@
     } else {
       el["on".concat(eventType)] = null;
     }
+  }
+
+  function createTextNode(str) {
+    return doc.createTextNode(str);
+  }
+
+  function createElement(tag, attrs) {
+    if (!tag && typeof tag !== 'string') {
+      throw new TypeError('Parameter error');
+    }
+
+    var el = doc.createElement(tag);
+
+    if (attrs && _typeof(attrs) === 'object') {
+      for (var key in attrs) {
+        if (attrs.hasOwnProperty(key)) {
+          el.setAttribute(key, attrs[key]);
+        }
+      }
+    }
+
+    return el;
+  }
+  function createVdom(vnode) {
+    if (!vnode) return null;
+
+    if (typeof vnode === 'string') {
+      return createTextNode(vnode);
+    }
+
+    var tag = vnode.tag;
+    var attrs = vnode.attrs;
+    var child = vnode.child;
+    if (!tag && !attrs && !child) return null; // 创建dom
+
+    var el = createElement(tag || 'div', attrs);
+
+    if (Array.isArray(child) && child.length) {
+      var itemNode;
+      child.forEach(function (item) {
+        itemNode = createVdom(item);
+        if (itemNode) el.appendChild(itemNode);
+      });
+    } else if (child && typeof child === 'string') {
+      el.appendChild(createTextNode(child));
+    }
+
+    return el;
   }
 
   var arr = []; // Support: Android <=4.0 only
@@ -232,81 +366,6 @@
     toHump: toHump,
     unique: unique
   };
-
-  /**
-   * SSR Window 1.0.1
-   * Better handling for window object in SSR environment
-   * https://github.com/nolimits4web/ssr-window
-   *
-   * Copyright 2018, Vladimir Kharlampidi
-   *
-   * Licensed under MIT
-   *
-   * Released on: July 18, 2018
-   */
-  var doc = typeof document === 'undefined' ? {
-    body: {},
-    addEventListener: function addEventListener() {},
-    removeEventListener: function removeEventListener() {},
-    activeElement: {
-      blur: function blur() {},
-      nodeName: ''
-    },
-    querySelector: function querySelector() {
-      return null;
-    },
-    querySelectorAll: function querySelectorAll() {
-      return [];
-    },
-    getElementById: function getElementById() {
-      return null;
-    },
-    createEvent: function createEvent() {
-      return {
-        initEvent: function initEvent() {}
-      };
-    },
-    createElement: function createElement() {
-      return {
-        children: [],
-        childNodes: [],
-        style: {},
-        setAttribute: function setAttribute() {},
-        getElementsByTagName: function getElementsByTagName() {
-          return [];
-        }
-      };
-    },
-    location: {
-      hash: ''
-    }
-  } : document; // eslint-disable-line
-
-  var win = typeof window === 'undefined' ? {
-    document: doc,
-    navigator: {
-      userAgent: ''
-    },
-    location: {},
-    history: {},
-    CustomEvent: function CustomEvent() {
-      return this;
-    },
-    addEventListener: function addEventListener() {},
-    removeEventListener: function removeEventListener() {},
-    getComputedStyle: function getComputedStyle() {
-      return {
-        getPropertyValue: function getPropertyValue() {
-          return '';
-        }
-      };
-    },
-    Image: function Image() {},
-    Date: function Date() {},
-    screen: {},
-    setTimeout: function setTimeout() {},
-    clearTimeout: function clearTimeout() {}
-  } : window; // eslint-disable-line
 
   /**
    * Created by Capricorncd.
@@ -453,6 +512,27 @@
       }
 
       return $(foundElements);
+    },
+
+    /**
+     *
+     * @param parent
+     * @return {*}
+     */
+    findParentFrom: function findParentFrom(parent) {
+      if (parent instanceof ZxEditorQuery) parent = parent[0];
+      var current = this[0]; // if (!current || !current.nodeType || !parent || !parent.nodeType) return null
+
+      if (current === parent) return null;
+      var tmpParent;
+
+      while (current.parentNode) {
+        tmpParent = current.parentNode;
+        if (tmpParent === parent) return $(current);
+        current = tmpParent;
+      }
+
+      return null;
     },
 
     /**
@@ -902,25 +982,17 @@
      * @param $parent
      * @return {boolean}
      */
-    isInChild: function isInChild($parent) {
-      var el = this[0];
-      var $child = $parent.children();
-      var $item;
-
-      for (var i = 0; i < $child.length; i++) {
-        $item = $($child[i]);
-
-        if ($item.is(el)) {
-          return true;
-        }
-
-        if ($item.children().length && this.isInChild($item)) {
-          return true;
-        }
-      }
-
-      return false;
-    },
+    // isInChild ($parent) {
+    //   let el = this[0]
+    //   let childNodes = $parent[0].childNodes
+    //   let tmp
+    //   for (let i = 0; i < childNodes.length; i++) {
+    //     tmp = childNodes[i]
+    //     if (tmp === el) return true
+    //     if (tmp.nodeType === 1 && this.isInChild($(tmp))) return true
+    //   }
+    //   return false
+    // },
 
     /**
      * every
@@ -1294,10 +1366,11 @@
     },
 
     /**
-     * 获取光标及当前光标所在的DOM元素节点
-     * @returns {*} $rangeElm
+     * get cursor node in $parent
+     * @param needElement Want to get element node, not ZxEditorQuery object
+     * @return {*}
      */
-    getCurrentNode: function getCurrentNode() {
+    getCurrentNode: function getCurrentNode(needElement) {
       // 获取选定对象
       this.selection = window.getSelection(); // 设置最后光标对象
 
@@ -1310,7 +1383,9 @@
       this.currentNode = this.range.endContainer;
       this.offset = this.range.startOffset; // Check whether currentNode is in the this.$parent
 
-      return $(this.currentNode).isInChild(this.$parent) ? $(this.currentNode) : this.$parent.lastChild();
+      var $currentNode = $(this.currentNode).findParentFrom(this.$parent);
+      var $current = $currentNode || this.$parent.lastChild();
+      return needElement ? $current[0] : $current;
     }
   };
 
@@ -1499,8 +1574,8 @@
       style += ".zx-editor .zx-editor-content-wrapper{".concat(lineHeight + caretColor, "}");
     }
 
-    if (options.padding) {
-      style += ".zx-editor .zx-editor-content-wrapper > section{padding:".concat(options.padding, ";}");
+    if (options.paragraphTailSpacing) {
+      style += ".zx-editor .zx-editor-content-wrapper > *{margin-bottom:".concat(options.paragraphTailSpacing, ";}");
     } // placeholder
 
 
@@ -1648,7 +1723,10 @@
    */
 
   function contentBlur() {
-    // toolbar
+    // save $cursorNode
+    this.$cursorNode = this.cursor.getCurrentNode();
+    console.warn(this.$cursorNode[0]); // toolbar
+
     if (!this.options.toolbarBeenFixed) {
       this.toolbar.hide();
     }
@@ -2159,7 +2237,10 @@
 
     ZxEditor.prototype.blobToUrl = blobToUrl;
     ZxEditor.prototype.base64ToBlobData = base64ToBlobData;
-    ZxEditor.prototype.fileToBase64 = fileToBase64;
+    ZxEditor.prototype.fileToBase64 = fileToBase64; // dom
+
+    ZxEditor.prototype.createElement = createElement;
+    ZxEditor.prototype.createVdom = createVdom;
   }
 
   /**
@@ -2389,33 +2470,255 @@
   /**
    * Created by Capricorncd.
    * User: https://github.com/capricorncd
+   * Date: 2019/04/29 21:08
+   */
+  function changeTag(tag) {
+    // same tag
+    if (this.$cursorNode.nodeName() === tag) return;
+    var cursorNode = this.$cursorNode[0];
+    var childNodes = cursorNode.childNodes;
+    var len = childNodes.length; // to ul
+
+    if (tag === 'ul') {
+      var ul = doc.createElement('ul');
+      cloneAttrs(ul, cursorNode);
+
+      for (var i = 0; i < len; i++) {
+        ul.appendChild(createLi(childNodes[i].cloneNode(true)));
+      }
+
+      cursorNode.parentNode.replaceChild(ul, cursorNode); // save current node
+
+      this.$cursorNode = $(ul);
+      return;
+    } // change ul
+
+
+    if (cursorNode.nodeName === 'UL') {
+      var li, el;
+
+      for (var _i = 0; _i < len; _i++) {
+        li = childNodes[_i].cloneNode(true);
+        cloneAttrs(li, cursorNode);
+        el = this.changeNodeName(li, tag);
+        $(el).insertBefore(this.$cursorNode);
+      } // remove old ul
+
+
+      this.$cursorNode.remove();
+      this.$cursorNode = $(el);
+      return;
+    }
+
+    this.$cursorNode.changeNodeName(tag);
+  }
+
+  function createLi(child) {
+    var li = doc.createElement('li');
+    li.appendChild(child);
+    return li;
+  }
+
+  function cloneAttrs(target, source) {
+    var style, id, className;
+    style = source.getAttribute('style');
+    id = source.id;
+    className = source.className;
+    if (style) target.setAttribute('style', style);
+    if (id) target.id = id;
+    if (className) target.className = className;
+  }
+
+  /**
+   * Created by Capricorncd.
+   * User: https://github.com/capricorncd
    * Date: 2019/04/27 21:11
    */
 
-  var DEF_COLORS = {
-    black: '#333',
-    gray: '#d0d0d0',
-    red: '#ff583d',
-    yellow: '#fdaa25',
-    green: '#44c67b',
-    blue: '#14b2e0',
-    purple: '#b065e2'
-  };
+  var DEF_COLORS = ['#333', '#d0d0d0', '#ff583d', '#fdaa25', '#44c67b', '#14b2e0', '#b065e2'];
+  /**
+   * create color vnode
+   * @param colors
+   * @return Object
+   */
+
+  function createColorVNode(colors) {
+    return colors.map(function (color, i) {
+      return {
+        tag: 'dd',
+        attrs: {
+          "class": i === 0 ? 'active' : '',
+          'data-color': color
+        },
+        child: [{
+          tag: 'i',
+          attrs: {
+            style: "background:".concat(color)
+          }
+        }]
+      };
+    });
+  }
+  /**
+   * text style panel
+   * @param options
+   * @return {{name: string, className: string, events: {type: string, handler: events.handler}}}
+   */
+
+
   function styleExpansionPanel(options) {
     var _this = this;
 
-    var COLORS = Object.assign({}, DEF_COLORS, options.textStyleColors);
-    var styleWrapper = "<dl class=\"__style-wrapper border-bottom\"><dd class=\"text-bold\" data-style=\"fontWeight:800\">B</dd><dd class=\"text-italic\" data-style=\"fontStyle:italic\">I</dd><dd class=\"through-line\" data-style=\"textDecoration:line-through\">abc</dd></dl>";
-    var colorWrapper = "<dl class=\"__color-wrapper border-bottom\"><dd class=\"active __black\" data-color=\"\"></dd><dd class=\"__gray\" data-color=\"".concat(COLORS.gray, "\"></dd><dd class=\"__red\" data-color=\"").concat(COLORS.red, "\"></dd><dd class=\"__yellow\" data-color=\"").concat(COLORS.yellow, "\"></dd><dd class=\"__green\" data-color=\"").concat(COLORS.green, "\"></dd><dd class=\"__blue\" data-color=\"").concat(COLORS.blue, "\"></dd><dd class=\"__purple\" data-color=\"").concat(COLORS.purple, "\"></dd></dl>");
-    var tagWrapper = "<dl class=\"__tag-wrapper\"><dd class=\"__h2\" data-tag=\"h2\">\u5927\u6807\u9898<i></i></dd><dd class=\"__h4\" data-tag=\"h4\">\u5C0F\u6807\u9898<i></i></dd><dd class=\"__p\" data-tag=\"p\">\u6B63\u6587<i class=\"checked\"></i></dd><dd class=\"__blockquote\" data-tag=\"blockquote\"><b></b>\u5F15\u7528<i></i></dd><dd class=\"__ul\" data-tag=\"ul\"><b></b>\u65E0\u5E8F\u5217\u8868<i></i></dd></dl>";
-    var panelBody = "<div class=\"text-style-outer-wrapper\">".concat(styleWrapper + colorWrapper + tagWrapper, "</div>"); // text style
+    var zxEditor = this;
+    var COLORS = options.textStyleColors.length ? options.textStyleColors : DEF_COLORS; // dom structure
+
+    var panelBodyChild = [// style
+    {
+      tag: 'dl',
+      attrs: {
+        "class": '__style-wrapper border-bottom'
+      },
+      child: [{
+        tag: 'dd',
+        attrs: {
+          style: 'font-weight: 800;',
+          'data-style': 'fontWeight:800'
+        },
+        child: ['B']
+      }, {
+        tag: 'dd',
+        attrs: {
+          style: 'font-style: italic;',
+          'data-style': 'fontStyle:italic'
+        },
+        child: ['I']
+      }, {
+        tag: 'dd',
+        attrs: {
+          style: 'text-decoration: line-through;',
+          'data-style': 'textDecoration:line-through'
+        },
+        child: ['abc']
+      }]
+    }, // color
+    {
+      tag: 'dl',
+      attrs: {
+        "class": '__color-wrapper border-bottom'
+      },
+      child: createColorVNode(COLORS)
+    }, // tag
+    {
+      tag: 'dl',
+      attrs: {
+        "class": '__tag-wrapper'
+      },
+      child: [{
+        tag: 'dd',
+        attrs: {
+          "class": '__h2',
+          'data-tag': 'h2'
+        },
+        child: ['大标题', {
+          tag: 'i'
+        }]
+      }, {
+        tag: 'dd',
+        attrs: {
+          "class": '__h4',
+          'data-tag': 'h4'
+        },
+        child: ['小标题', {
+          tag: 'i'
+        }]
+      }, {
+        tag: 'dd',
+        attrs: {
+          "class": '__p active',
+          'data-tag': 'p'
+        },
+        child: ['正文', {
+          tag: 'i'
+        }]
+      }, {
+        tag: 'dd',
+        attrs: {
+          "class": '__blockquote',
+          'data-tag': 'blockquote'
+        },
+        child: ['引用', {
+          tag: 'i'
+        }]
+      }, {
+        tag: 'dd',
+        attrs: {
+          "class": '__ul',
+          'data-tag': 'ul'
+        },
+        child: ['无序列表', {
+          tag: 'i'
+        }]
+      }]
+    }];
+    var panelBody = createVdom({
+      tag: 'div',
+      attrs: {
+        "class": 'text-style-outer-wrapper'
+      },
+      child: panelBodyChild
+    });
+    var $panelBody = $(panelBody); // text style
 
     var textStylePanelParams = {
       headTitle: 'Text Style',
-      body: $(panelBody)
+      body: $panelBody
     };
     this.textStylePanel = new ExpansionPanel(textStylePanelParams, this); // handle events
-    // ...
+    // style
+
+    var $styles = $panelBody.find('.__style-wrapper').children();
+    $styles.on('click', function () {
+      var style = $(this).data('style').split(':');
+      var key = style[0];
+      var cursorNode = zxEditor.$cursorNode[0];
+      cursorNode.style[key] = cursorNode.style[key] === style[1] ? '' : style[1];
+    }); // color
+
+    var $colors = $panelBody.find('.__color-wrapper').children();
+    $colors.on('click', function () {
+      var $el;
+
+      for (var i = 0; i < $colors.length; i++) {
+        $el = $($colors[i]);
+
+        if ($el[0] === this && !$el.hasClass('active')) {
+          $el.addClass('active');
+          zxEditor.$cursorNode.css('color', $el.data('color'));
+        } else if ($el.hasClass('active')) {
+          $el.removeClass('active');
+        }
+      }
+    }); // tag
+
+    var $tags = $panelBody.find('.__tag-wrapper').children();
+    $tags.on('click', function () {
+      if ($(this).hasClass('active')) return;
+      var tag = $(this).data('tag');
+      var $el;
+
+      for (var i = 0; i < $tags.length; i++) {
+        $el = $($tags[i]);
+
+        if ($el[0] === this) {
+          // add active class name
+          $el.addClass('active'); // change tag
+
+          changeTag.call(zxEditor, tag);
+        } else if ($el.hasClass('active')) {
+          $el.removeClass('active');
+        }
+      }
+    }); // review
 
     return {
       name: 'text-style',
@@ -2435,16 +2738,16 @@
    * Date: 2019/04/23 22:44
    */
   function initToolbar(options) {
-    var _this2 = this;
+    var _this = this;
 
-
+    // toolbar
     this.toolbar = new Toolbar(options, this); // Add buttons sequentially
 
     options.toolbarBtns.forEach(function (name) {
       if (name === 'select-picture') {
-        _this2.toolbar.addButton(selectPictureBtn.call(_this2, options));
+        _this.toolbar.addButton(selectPictureBtn.call(_this, options));
       } else if (name === 'text-style') {
-        _this2.toolbar.addButton(styleExpansionPanel.call(_this2, options));
+        _this.toolbar.addButton(styleExpansionPanel.call(_this, options));
       }
     });
   }
@@ -2455,8 +2758,6 @@
    * Copyright © 2017-present, https://github.com/capricorncd
    */
   var DEF_OPTIONS$1 = {
-    // 禁用键盘删除图片、链接等附件
-    disableBackspaceDelete: true,
     // 内容是否可以被编辑
     editable: true,
     // editor height
@@ -2467,12 +2768,13 @@
     placeholder: '',
     placeholderColor: '',
     lineHeight: 1.5,
-    // paragraph spacing
-    padding: '',
+    // paragraph tail spacing, default 10px
+    paragraphTailSpacing: '',
     cursorColor: '',
     // Has the toolbar been fixed?
     toolbarBeenFixed: true,
     toolbarHeight: 50,
+    // buttons name, and order
     toolbarBtns: ['select-picture', 'text-style'],
     // customize Picture Handler
     customizePictureHandler: false,
@@ -2481,9 +2783,9 @@
     // image max size, unit Kib
     imageMaxSize: 10240,
     // template
-    imageSectionTemp: "<section><img src=\"{url}\"></section>",
-    // text style
-    textStyleColors: {},
+    imageSectionTemp: "<section class=\"child-is-picture\"><img src=\"{url}\"></section>",
+    // text style, value ['#333', '#f00', ...]
+    textStyleColors: [],
     // border color
     borderColor: ''
   };
@@ -2558,6 +2860,7 @@
        */
 
       this.cursor = new CursorClass(this.$content);
+      this.$cursorNode = null;
       /**
        * ***************************************************
        * event: last
@@ -2575,7 +2878,7 @@
       // string
       if (!el) return; // 光标元素及偏移量
 
-      var $rangeNode = this.cursor.getCurrentNode();
+      var $cursorNode = this.$cursorNode;
       var newRangeEl, newRangeOffset;
       /**
        * string
@@ -2583,25 +2886,25 @@
 
       if (typeof el === 'string') {
         // 光标所在元素内容为空
-        if ($rangeNode.isEmpty()) {
-          $rangeNode.text(el);
-          newRangeEl = $rangeNode[0].childNodes[0];
+        if ($cursorNode.isEmpty()) {
+          $cursorNode.text(el);
+          newRangeEl = $cursorNode[0].childNodes[0];
           newRangeOffset = el.length;
-        } else if ($rangeNode.children().every(function ($item) {
+        } else if ($cursorNode.children().every(function ($item) {
           return $item.isTextNode();
         })) {
           var rangeOffset = this.cursor.offset;
-          var rangeNodeStr = $rangeNode.text();
-          var tmpStr = rangeNodeStr.substr(0, rangeOffset) + el + rangeNodeStr.substr(rangeOffset); // $section = $rangeNode.closest('section')
+          var rangeNodeStr = $cursorNode.text();
+          var tmpStr = rangeNodeStr.substr(0, rangeOffset) + el + rangeNodeStr.substr(rangeOffset); // $section = $cursorNode.closest('section')
 
-          $rangeNode.text(tmpStr);
-          newRangeEl = $rangeNode[0].childNodes[0];
+          $cursorNode.text(tmpStr);
+          newRangeEl = $cursorNode[0].childNodes[0];
           newRangeOffset = el.length + rangeOffset;
         } else {
           // 创建一个section
           var $newEl = $("<section>".concat(el, "</section>")); // 插入到childIndex后
 
-          $newEl.insertAfter($rangeNode);
+          $newEl.insertAfter($cursorNode);
           newRangeEl = $newEl[0].childNodes[0];
           newRangeOffset = el.length;
         }
@@ -2626,15 +2929,15 @@
               }
             }
 
-            if ($rangeNode.isEmpty()) {
+            if ($cursorNode.isEmpty()) {
               // siblings is empty
-              if ($rangeNode.next()[0] && $rangeNode.next().isEmpty()) {
-                $rangeNode.replace($elm);
+              if ($cursorNode.next()[0] && $cursorNode.next().isEmpty()) {
+                $cursorNode.replace($elm);
               } else {
-                $elm.insertBefore($rangeNode);
+                $elm.insertBefore($cursorNode);
               }
             } else {
-              $elm.insertAfter($rangeNode);
+              $elm.insertAfter($cursorNode);
             } // 判断$el是否有下一个节点，有：光标指向el结束，无：则插入空行，并移动光标
 
 
@@ -2700,7 +3003,7 @@
         el = childNodes[i];
 
         if (el.nodeType === 1) {
-          if (el.nodeName !== 'SECTION') util.changeNodeName(el, 'section');
+          if (!/SECTION|h1|h2|h3|h4|BLOCKQUOTE|UL/.test(el.nodeName)) util.changeNodeName(el, 'section');
         } else {
           var $tmp = $("<section></section>");
           $tmp.append(el.cloneNode());

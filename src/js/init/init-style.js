@@ -18,8 +18,8 @@ export function initStyle (options) {
     let caretColor = options.cursorColor ? `caret-color:${options.cursorColor}` : ''
     style += `.zx-editor .zx-editor-content-wrapper{${lineHeight + caretColor}}`
   }
-  if (options.padding) {
-    style += `.zx-editor .zx-editor-content-wrapper > section{padding:${options.padding};}`
+  if (options.paragraphTailSpacing) {
+    style += `.zx-editor .zx-editor-content-wrapper > *{margin-bottom:${options.paragraphTailSpacing};}`
   }
   // placeholder
   if (options.placeholder || options.placeholderColor) {
