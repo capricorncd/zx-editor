@@ -1,4 +1,4 @@
-# ZxEditor
+# ZxEditor v3.0.0-Alpha
 
 移动端HTML文档（富文本）编辑器，支持图文混排、引用、大标题、无序列表，字体颜色、加粗、斜体。
 
@@ -18,12 +18,6 @@ npm run build
 ```
 
 ## 使用 Use
-
-#### # npm
-
-```bash
-npm install zx-editor --save-dev
-```
 
 #### # browser
 
@@ -110,7 +104,7 @@ zxEditor.methodName(options)
 
 #### toolbar.addButton(option)
 
-底部工具栏添加按钮，`option`: `Object|Array`
+底部工具栏添加按钮，`option`: `Object`
 
 ```javascript
 zxEditor.toolbar.addButton({
@@ -164,7 +158,7 @@ zxEditor.toolbar.addButton({
 
 #### getText()
 
-#### # insertElm($el)
+#### insertElm($el)
 
 向正文焦点处添加任意dom元素$el
 
@@ -175,21 +169,21 @@ $el: `HTMLElement` or string
 
 监听编辑器内部通知。详见"通知Notify"！
 
-#### # removeHtmlTags(htmlStr)
+#### removeHtmlTags(htmlStr)
 
 去除html标签
 
-#### # setHtml(innerHTML)
+#### setHtml(innerHTML)
 
 设置编辑器内容，可用于初始化编辑器数据。
 
-#### # setImageSrc(imgId, imgUrl)
+#### setImageSrc(imgId, imgUrl)
 
 将ID为imgId的图片base64地址，替换为新的imgUrl。需配合`getBase64Images()`方法使用。
 
 @return boolean
 
-#### # base64ToBlobData(base64)
+#### base64ToBlobData(base64)
 
 将图片base64转换为原始数据类型Blob()，该数据和表单中提交上传的数据同类型，故可以直接上传
 
