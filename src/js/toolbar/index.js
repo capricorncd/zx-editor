@@ -35,7 +35,7 @@ function Toolbar (options, zxEditor) {
 
   // create element
   this.height = options.toolbarHeight
-  this.$el = $(`<div class="zx-editor-toolbar-wrapper border-top ${this.visible ? 'in' : 'out'}" style="height:${this.height + IPHONEX_BOTTOM_OFFSET_HEIGHT}px;"><dl class="inner-wrapper" style="height:${this.height}px;"></dl></div>`)
+  this.$el = $(`<div class="zx-editor-toolbar-wrapper border-top ${this.visible ? 'in' : 'out'}" style="height:${this.height + (util.isIPhoneX() ? IPHONEX_BOTTOM_OFFSET_HEIGHT : 0)}px;"><dl class="inner-wrapper" style="height:${this.height}px;"></dl></div>`)
 
   // append to $editor
   zxEditor.$editor.append(this.$el)
@@ -58,7 +58,7 @@ Toolbar.prototype = {
     options = options || this.options
     let winHeight = window.innerHeight
     this.$el.css({
-      top: winHeight - options.toolbarHeight + 'px'
+      top: winHeight + 'px'
     })
     if (this.visible) this.editorInstance.emit('toolbarShow', this, this.editorInstance)
   },

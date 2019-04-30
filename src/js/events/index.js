@@ -9,15 +9,18 @@ import {
   contentPaste,
   contentInput,
   contentFocus,
-  contentBlur
+  contentBlur,
+  contentClick,
+  contentKeyup
 } from '../events/handlers'
 
 export function handleEvents () {
+  let $content = this.$content
   /**
    * content paste
    */
   this.$eventHandlers.contentPaste = {
-    $target: this.$content,
+    $target: $content,
     type: 'paste',
     handler: contentPaste.bind(this)
   }
@@ -35,21 +38,33 @@ export function handleEvents () {
    * content input
    */
   this.$eventHandlers.contentInput = {
-    $target: this.$content,
+    $target: $content,
     type: 'input',
     handler: contentInput.bind(this)
   }
 
   this.$eventHandlers.contentFocus = {
-    $target: this.$content,
+    $target: $content,
     type: 'focus',
     handler: contentFocus.bind(this)
   }
 
   this.$eventHandlers.contentBlur = {
-    $target: this.$content,
+    $target: $content,
     type: 'blur',
     handler: contentBlur.bind(this)
+  }
+
+  this.$eventHandlers.contentClick = {
+    $target: $content,
+    type: 'click',
+    handler: contentClick.bind(this)
+  }
+
+  this.$eventHandlers.contentKeyup = {
+    $target: $content,
+    type: 'keyup',
+    handler: contentKeyup.bind(this)
   }
 
   /**

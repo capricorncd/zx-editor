@@ -53,7 +53,7 @@ function ExpansionPanel (options, zxEditor) {
   this.$body = $(`<div class="body-wrapper" style="height:${opts.height - opts.headHeight}px;"></div>`)
 
   // node
-  this.$el = $(`<div class="zx-editor-expansion-panel border-top out"></div>`)
+  this.$el = $(`<div class="zx-editor-expansion-panel border-top"></div>`)
 
   if (opts.headHeight > 0) {
     // custom head
@@ -108,7 +108,7 @@ ExpansionPanel.prototype = {
     let winHeight = window.innerHeight
     this.$el.css({
       height: `${options.height}px`,
-      top: winHeight - options.height + 'px'
+      top: winHeight + 'px'
     })
   },
 

@@ -7,6 +7,7 @@ import ExpansionPanel from '../expansion-panel/index'
 import $ from '../dom-class'
 import { createVdom } from '../dom-class/helper'
 import { changeTag } from './helper'
+import { IPHONEX_BOTTOM_OFFSET_HEIGHT } from '../config'
 
 // COLOR
 const DEF_COLORS = [
@@ -25,23 +26,32 @@ const DEF_COLORS = [
  * @return Object
  */
 function createColorVNode (colors) {
-  return colors.map((color, i) => {
-    return {
-      tag: 'dd',
-      attrs: {
-        class: i === 0 ? 'active' : '',
-        'data-color': color
-      },
-      child: [
-        {
-          tag: 'i',
-          attrs: {
-            style: `background:${color}`
+  let arr = []
+  colors.forEach((color, i) => {
+    if (/^#\w{3,6}$/.test(color)) {
+      arr.push({
+        tag: 'dd',
+        attrs: {
+          class: i === 0 ? 'active' : '',
+          'data-color': formatColorHexadecimal(color.toLowerCase())
+        },
+        child: [
+          {
+            tag: 'i',
+            attrs: {
+              style: `background:${color}`
+            }
           }
-        }
-      ]
+        ]
+      })
     }
   })
+  return arr
+}
+
+function formatColorHexadecimal (hex) {
+  let len = hex.length
+  return len === 7 ? hex : `#${hex[1]}${hex[1]}${hex[2]}${hex[2]}${hex[3]}${hex[3]}`
 }
 
 /**
@@ -124,8 +134,8 @@ export function styleExpansionPanel (options) {
         {
           tag: 'dd',
           attrs: {
-            class: '__p active',
-            'data-tag': 'p'
+            class: '__section active',
+            'data-tag': 'section'
           },
           child: ['正文', { tag: 'i' }]
         },
@@ -160,12 +170,11 @@ export function styleExpansionPanel (options) {
 
   let $panelBody = $(panelBody)
 
-  // text style
-  let textStylePanelParams = {
-    headTitle: 'Text Style',
+  // instance text style
+  this.textStylePanel = new ExpansionPanel({
+    headTitle: options.textStyleTitle,
     body: $panelBody
-  }
-  this.textStylePanel = new ExpansionPanel(textStylePanelParams, this)
+  }, this)
 
   // handle events
   // style
@@ -178,7 +187,8 @@ export function styleExpansionPanel (options) {
   })
 
   // color
-  const $colors = $panelBody.find('.__color-wrapper').children()
+  const $colorsParent = $panelBody.find('.__color-wrapper')
+  const $colors = $colorsParent.children()
   $colors.on('click', function () {
     let $el
     for (let i = 0; i < $colors.length; i++) {
@@ -193,7 +203,8 @@ export function styleExpansionPanel (options) {
   })
 
   // tag
-  const $tags = $panelBody.find('.__tag-wrapper').children()
+  const $tagsParent = $panelBody.find('.__tag-wrapper')
+  const $tags = $tagsParent.children()
   $tags.on('click', function () {
     if ($(this).hasClass('active')) return
     let tag = $(this).data('tag')
@@ -211,8 +222,43 @@ export function styleExpansionPanel (options) {
     }
   })
 
-  // review
+  if (this.isIPhoneX()) {
+    $tagsParent.css('margin-bottom', IPHONEX_BOTTOM_OFFSET_HEIGHT + 'px')
+  }
 
+  // extend method
+  /**
+   * reset active state
+   * when content onClick and onKeyup code === 13
+   */
+  this.textStylePanel.resetActiveState = () => {
+    let $cursorNode = this.cursor.getCurrentNode()
+
+    // check tag
+    let tag = $cursorNode.nodeName()
+    let $activeTag = $tagsParent.find('.active')
+    if ($activeTag.data('tag') !== tag) {
+      $activeTag.removeClass('active')
+      $tagsParent.find(`.__${tag}`).addClass('active')
+    }
+
+    // check color
+    let color = this.rgbToHex($cursorNode.css('color'))
+    let $activeColor = $colorsParent.find('.active')
+    if ($activeColor.data('color') !== color) {
+
+      $activeColor.removeClass('active')
+
+      let $tmp
+      for (let i = 0; i < $colors.length; i++) {
+        $tmp = $($colors[i])
+        if ($tmp.data('color') === color) {
+          $tmp.addClass('active')
+          break
+        }
+      }
+    }
+  }
 
   return {
     name: 'text-style',

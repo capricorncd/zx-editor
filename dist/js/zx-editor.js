@@ -3,7 +3,7 @@
  * https://github.com/capricorncd/zx-editor
  * Copyright © 2018-present, capricorncd
  * Released under the MIT License
- * Released on: 2019-04-29 20:21:15
+ * Released on: 2019-04-30 20:38:24
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -264,7 +264,10 @@
   var arr = []; // Support: Android <=4.0 only
   // Make sure we trim BOM and NBSP
 
-  var regTrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g;
+  var regTrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g; // navigator
+
+  var USER_AGENT = win.navigator.userAgent;
+  var PLATFORM = win.navigator.platform;
   /**
    * 转换为整数
    * @param n
@@ -329,6 +332,14 @@
     var isObj = obj && _typeof(obj) === 'object';
     return isAbsolute ? isObj && obj.toString() === '[object Object]' : isObj;
   }
+
+  function isIPhone() {
+    return /iphone/i.test(USER_AGENT) && /iphone/.test(PLATFORM);
+  }
+
+  function isIPhoneX() {
+    return win.screen.height === 812 && win.screen.width === 375;
+  }
   /**
    * 移除html标签
    * @param str
@@ -339,6 +350,24 @@
   function removeHtmlTags(str) {
     str = (str + '').replace(/<\/?.+?>/g, '');
     return strip(str);
+  }
+
+  function toHex(num) {
+    var n = typeof num === 'number' ? num : _int(num);
+    var hex = n.toString(16);
+    return hex[1] ? hex : '0' + hex;
+  }
+
+  function rgbToHex(rgb) {
+    var hex = '';
+
+    if (/rgb.*?\((\d+)\D+?(\d+)\D+?(\d+)/.test(rgb)) {
+      hex += toHex(RegExp.$1);
+      hex += toHex(RegExp.$2);
+      hex += toHex(RegExp.$3);
+    }
+
+    return hex ? '#' + hex : rgb;
   }
   /**
    * string to hump format
@@ -358,8 +387,11 @@
     changeNodeName: changeNodeName,
     "int": _int,
     isElement: isElement,
+    isIPhone: isIPhone,
+    isIPhoneX: isIPhoneX,
     isObject: isObject,
     removeHtmlTags: removeHtmlTags,
+    rgbToHex: rgbToHex,
     slice: slice,
     strip: strip,
     trim: trim,
@@ -1436,7 +1468,7 @@
     this.$head = $("<div class=\"head-wrapper border-bottom\" style=\"height:".concat(opts.headHeight, "px;line-height:").concat(opts.headHeight, "px;\">").concat(opts.headTitle || '', "</div>"));
     this.$body = $("<div class=\"body-wrapper\" style=\"height:".concat(opts.height - opts.headHeight, "px;\"></div>")); // node
 
-    this.$el = $("<div class=\"zx-editor-expansion-panel border-top out\"></div>");
+    this.$el = $("<div class=\"zx-editor-expansion-panel border-top\"></div>");
 
     if (opts.headHeight > 0) {
       // custom head
@@ -1489,7 +1521,7 @@
       var winHeight = window.innerHeight;
       this.$el.css({
         height: "".concat(options.height, "px"),
-        top: winHeight - options.height + 'px'
+        top: winHeight + 'px'
       });
     },
 
@@ -1725,11 +1757,27 @@
   function contentBlur() {
     // save $cursorNode
     this.$cursorNode = this.cursor.getCurrentNode();
-    console.warn(this.$cursorNode[0]); // toolbar
+
+    this._checkChildSection(); // console.warn(this.$cursorNode[0])
+    // toolbar
+
 
     if (!this.options.toolbarBeenFixed) {
       this.toolbar.hide();
     }
+  }
+  function contentKeyup(e) {
+    // handle enter keyup
+    if (e.key === 'Enter' || e.keyCode === 13) {
+      this._checkChildSection();
+
+      contentClick.call(this);
+    }
+  }
+  function contentClick() {
+    // textStylePanel is undefined, or is hide
+    if (!this.textStylePanel || !this.textStylePanel.visible) return;
+    this.textStylePanel.resetActiveState();
   }
 
   /**
@@ -1738,11 +1786,13 @@
    * Date: 2019/04/15 21:53
    */
   function handleEvents() {
+    var $content = this.$content;
     /**
      * content paste
      */
+
     this.$eventHandlers.contentPaste = {
-      $target: this.$content,
+      $target: $content,
       type: 'paste',
       handler: contentPaste.bind(this)
       /**
@@ -1760,19 +1810,29 @@
 
     };
     this.$eventHandlers.contentInput = {
-      $target: this.$content,
+      $target: $content,
       type: 'input',
       handler: contentInput.bind(this)
     };
     this.$eventHandlers.contentFocus = {
-      $target: this.$content,
+      $target: $content,
       type: 'focus',
       handler: contentFocus.bind(this)
     };
     this.$eventHandlers.contentBlur = {
-      $target: this.$content,
+      $target: $content,
       type: 'blur',
       handler: contentBlur.bind(this)
+    };
+    this.$eventHandlers.contentClick = {
+      $target: $content,
+      type: 'click',
+      handler: contentClick.bind(this)
+    };
+    this.$eventHandlers.contentKeyup = {
+      $target: $content,
+      type: 'keyup',
+      handler: contentKeyup.bind(this)
       /**
        * register events
        */
@@ -2248,7 +2308,7 @@
    * User: https://github.com/capricorncd
    * Date: 2019/04/21 10:33
    */
-  var IPHONEX_BOTTOM_OFFSET_HEIGHT = 200;
+  var IPHONEX_BOTTOM_OFFSET_HEIGHT = 34;
 
   var DEF_BTN_OPTS = {
     name: '',
@@ -2273,7 +2333,7 @@
     this.visible = options.toolbarBeenFixed; // create element
 
     this.height = options.toolbarHeight;
-    this.$el = $("<div class=\"zx-editor-toolbar-wrapper border-top ".concat(this.visible ? 'in' : 'out', "\" style=\"height:").concat(this.height + IPHONEX_BOTTOM_OFFSET_HEIGHT, "px;\"><dl class=\"inner-wrapper\" style=\"height:").concat(this.height, "px;\"></dl></div>")); // append to $editor
+    this.$el = $("<div class=\"zx-editor-toolbar-wrapper border-top ".concat(this.visible ? 'in' : 'out', "\" style=\"height:").concat(this.height + (util.isIPhoneX() ? IPHONEX_BOTTOM_OFFSET_HEIGHT : 0), "px;\"><dl class=\"inner-wrapper\" style=\"height:").concat(this.height, "px;\"></dl></div>")); // append to $editor
 
     zxEditor.$editor.append(this.$el); // init
 
@@ -2294,7 +2354,7 @@
       options = options || this.options;
       var winHeight = win.innerHeight;
       this.$el.css({
-        top: winHeight - options.toolbarHeight + 'px'
+        top: winHeight + 'px'
       });
       if (this.visible) this.editorInstance.emit('toolbarShow', this, this.editorInstance);
     },
@@ -2543,21 +2603,30 @@
    */
 
   function createColorVNode(colors) {
-    return colors.map(function (color, i) {
-      return {
-        tag: 'dd',
-        attrs: {
-          "class": i === 0 ? 'active' : '',
-          'data-color': color
-        },
-        child: [{
-          tag: 'i',
+    var arr = [];
+    colors.forEach(function (color, i) {
+      if (/^#\w{3,6}$/.test(color)) {
+        arr.push({
+          tag: 'dd',
           attrs: {
-            style: "background:".concat(color)
-          }
-        }]
-      };
+            "class": i === 0 ? 'active' : '',
+            'data-color': formatColorHexadecimal(color.toLowerCase())
+          },
+          child: [{
+            tag: 'i',
+            attrs: {
+              style: "background:".concat(color)
+            }
+          }]
+        });
+      }
     });
+    return arr;
+  }
+
+  function formatColorHexadecimal(hex) {
+    var len = hex.length;
+    return len === 7 ? hex : "#".concat(hex[1]).concat(hex[1]).concat(hex[2]).concat(hex[2]).concat(hex[3]).concat(hex[3]);
   }
   /**
    * text style panel
@@ -2634,8 +2703,8 @@
       }, {
         tag: 'dd',
         attrs: {
-          "class": '__p active',
-          'data-tag': 'p'
+          "class": '__section active',
+          'data-tag': 'section'
         },
         child: ['正文', {
           tag: 'i'
@@ -2667,13 +2736,12 @@
       },
       child: panelBodyChild
     });
-    var $panelBody = $(panelBody); // text style
+    var $panelBody = $(panelBody); // instance text style
 
-    var textStylePanelParams = {
-      headTitle: 'Text Style',
+    this.textStylePanel = new ExpansionPanel({
+      headTitle: options.textStyleTitle,
       body: $panelBody
-    };
-    this.textStylePanel = new ExpansionPanel(textStylePanelParams, this); // handle events
+    }, this); // handle events
     // style
 
     var $styles = $panelBody.find('.__style-wrapper').children();
@@ -2684,7 +2752,8 @@
       cursorNode.style[key] = cursorNode.style[key] === style[1] ? '' : style[1];
     }); // color
 
-    var $colors = $panelBody.find('.__color-wrapper').children();
+    var $colorsParent = $panelBody.find('.__color-wrapper');
+    var $colors = $colorsParent.children();
     $colors.on('click', function () {
       var $el;
 
@@ -2700,7 +2769,8 @@
       }
     }); // tag
 
-    var $tags = $panelBody.find('.__tag-wrapper').children();
+    var $tagsParent = $panelBody.find('.__tag-wrapper');
+    var $tags = $tagsParent.children();
     $tags.on('click', function () {
       if ($(this).hasClass('active')) return;
       var tag = $(this).data('tag');
@@ -2718,7 +2788,49 @@
           $el.removeClass('active');
         }
       }
-    }); // review
+    });
+
+    if (this.isIPhoneX()) {
+      $tagsParent.css('margin-bottom', IPHONEX_BOTTOM_OFFSET_HEIGHT + 'px');
+    } // extend method
+
+    /**
+     * reset active state
+     * when content onClick and onKeyup code === 13
+     */
+
+
+    this.textStylePanel.resetActiveState = function () {
+      var $cursorNode = _this.cursor.getCurrentNode(); // check tag
+
+
+      var tag = $cursorNode.nodeName();
+      var $activeTag = $tagsParent.find('.active');
+
+      if ($activeTag.data('tag') !== tag) {
+        $activeTag.removeClass('active');
+        $tagsParent.find(".__".concat(tag)).addClass('active');
+      } // check color
+
+
+      var color = _this.rgbToHex($cursorNode.css('color'));
+
+      var $activeColor = $colorsParent.find('.active');
+
+      if ($activeColor.data('color') !== color) {
+        $activeColor.removeClass('active');
+        var $tmp;
+
+        for (var i = 0; i < $colors.length; i++) {
+          $tmp = $($colors[i]);
+
+          if ($tmp.data('color') === color) {
+            $tmp.addClass('active');
+            break;
+          }
+        }
+      }
+    };
 
     return {
       name: 'text-style',
@@ -2786,6 +2898,7 @@
     imageSectionTemp: "<section class=\"child-is-picture\"><img src=\"{url}\"></section>",
     // text style, value ['#333', '#f00', ...]
     textStyleColors: [],
+    textStyleTitle: 'Set Style',
     // border color
     borderColor: ''
   };
@@ -2990,11 +3103,14 @@
     },
 
     /**
-     * 检查一级子元素，nodeName是否为section
-     * 否：则替换为setcion标签
+     * 检查一级子元素，nodeName是否为(SECTION|H1|H2|H3|H4|BLOCKQUOTE|UL)
+     * 否：则替换为section标签，或者放入section标签内
      * @private
      */
     _checkChildSection: function _checkChildSection() {
+      if (!this.$cursorNode) this.$cursorNode = this.cursor.getCurrentNode();
+      var cursorNode = this.$cursorNode[0];
+      var isCursorNode = false;
       var parent = this.$content[0];
       var childNodes = parent.childNodes;
       var el;
@@ -3003,11 +3119,21 @@
         el = childNodes[i];
 
         if (el.nodeType === 1) {
-          if (!/SECTION|h1|h2|h3|h4|BLOCKQUOTE|UL/.test(el.nodeName)) util.changeNodeName(el, 'section');
+          if (!/SECTION|H1|H2|H3|H4|BLOCKQUOTE|UL/.test(el.nodeName)) {
+            isCursorNode = el === cursorNode;
+            el = util.changeNodeName(el, 'section');
+
+            if (isCursorNode) {
+              this.$cursorNode = $(el);
+              this.cursor.setRange(el);
+            }
+          }
         } else {
           var $tmp = $("<section></section>");
           $tmp.append(el.cloneNode());
           parent.replaceChild($tmp[0], el);
+          this.$cursorNode = $tmp;
+          this.cursor.setRange($tmp);
         }
       }
     },
@@ -3070,7 +3196,8 @@
 
 
       this.cursor = null;
-      this.toolbar = null; // ExpansionPanel
+      this.toolbar = null;
+      this.textStylePanel = null; // other ExpansionPanel
 
       for (var _key2 in this) {
         if (this[_key2] instanceof ExpansionPanel) {

@@ -12,10 +12,12 @@
   position: fixed;
   z-index: 9999;
   left: 0;
-  bottom: 0;
   width: 100%;
   background-color: #fff;
   height: @headHeight + @bodyHeight;
+  transform: translateY(0);
+  opacity: 0;
+  overflow: hidden;
   .head-wrapper {
     position: absolute;
     top: 0;
@@ -23,6 +25,7 @@
     width: 100%;
     height: @headHeight;
     text-align: center;
+    box-shadow: 0 0 3px rgba(0, 0, 0, .05);
     .switch {
       position: absolute;
       top: 0;

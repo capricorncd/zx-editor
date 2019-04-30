@@ -55,9 +55,25 @@ export function contentFocus () {
 export function contentBlur () {
   // save $cursorNode
   this.$cursorNode = this.cursor.getCurrentNode()
-  console.warn(this.$cursorNode[0])
+
+  this._checkChildSection()
+  // console.warn(this.$cursorNode[0])
   // toolbar
   if (!this.options.toolbarBeenFixed) {
     this.toolbar.hide()
   }
+}
+
+export function contentKeyup (e) {
+  // handle enter keyup
+  if (e.key === 'Enter' || e.keyCode === 13) {
+    this._checkChildSection()
+    contentClick.call(this)
+  }
+}
+
+export function contentClick () {
+  // textStylePanel is undefined, or is hide
+  if (!this.textStylePanel || !this.textStylePanel.visible) return
+  this.textStylePanel.resetActiveState()
 }

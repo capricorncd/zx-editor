@@ -3,15 +3,22 @@
  * Date: 2019/04/15 13:16
  * Copyright © 2017-present, https://github.com/capricorncd
  */
+import { window } from 'ssr-window'
 import {
   changeNodeName,
   unique
 } from '../dom-class/helper'
 
 const arr = []
+
 // Support: Android <=4.0 only
 // Make sure we trim BOM and NBSP
-let regTrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g
+const regTrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g
+
+// navigator
+const USER_AGENT = window.navigator.userAgent
+const PLATFORM = window.navigator.platform
+
 /**
  * 转换为整数
  * @param n
@@ -71,6 +78,14 @@ function isObject (obj, isAbsolute) {
   return isAbsolute ? isObj && obj.toString() === '[object Object]' : isObj
 }
 
+function isIPhone () {
+  return /iphone/i.test(USER_AGENT) && /iphone/.test(PLATFORM)
+}
+
+function isIPhoneX () {
+  return window.screen.height === 812 && window.screen.width === 375
+}
+
 /**
  * 移除html标签
  * @param str
@@ -79,6 +94,22 @@ function isObject (obj, isAbsolute) {
 function removeHtmlTags (str) {
   str = (str + '').replace(/<\/?.+?>/g, '')
   return strip(str)
+}
+
+function toHex (num) {
+  let n = typeof num === 'number' ? num : int(num)
+  let hex = n.toString(16)
+  return hex[1] ? hex : '0' + hex
+}
+
+function rgbToHex (rgb) {
+  let hex = ''
+  if (/rgb.*?\((\d+)\D+?(\d+)\D+?(\d+)/.test(rgb)) {
+    hex += toHex(RegExp.$1)
+    hex += toHex(RegExp.$2)
+    hex += toHex(RegExp.$3)
+  }
+  return hex ? '#' + hex : rgb
 }
 
 /**
@@ -97,8 +128,11 @@ export default {
   changeNodeName,
   int,
   isElement,
+  isIPhone,
+  isIPhoneX,
   isObject,
   removeHtmlTags,
+  rgbToHex,
   slice,
   strip,
   trim,

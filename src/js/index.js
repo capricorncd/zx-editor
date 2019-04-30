@@ -50,6 +50,7 @@ const DEF_OPTIONS = {
   imageSectionTemp: `<section class="child-is-picture"><img src="{url}"></section>`,
   // text style, value ['#333', '#f00', ...]
   textStyleColors: [],
+  textStyleTitle: 'Set Style',
   // border color
   borderColor: ''
 }
@@ -246,22 +247,34 @@ ZxEditor.prototype = {
   },
 
   /**
-   * 检查一级子元素，nodeName是否为section
-   * 否：则替换为setcion标签
+   * 检查一级子元素，nodeName是否为(SECTION|H1|H2|H3|H4|BLOCKQUOTE|UL)
+   * 否：则替换为section标签，或者放入section标签内
    * @private
    */
   _checkChildSection () {
+    if (!this.$cursorNode) this.$cursorNode = this.cursor.getCurrentNode()
+    let cursorNode = this.$cursorNode[0]
+    let isCursorNode = false
     const parent = this.$content[0]
     let childNodes = parent.childNodes
     let el
     for (let i = 0; i < childNodes.length; i++) {
       el = childNodes[i]
       if (el.nodeType === 1) {
-        if (!/SECTION|h1|h2|h3|h4|BLOCKQUOTE|UL/.test(el.nodeName)) util.changeNodeName(el, 'section')
+        if (!/SECTION|H1|H2|H3|H4|BLOCKQUOTE|UL/.test(el.nodeName)) {
+          isCursorNode = el === cursorNode
+          el = util.changeNodeName(el, 'section')
+          if (isCursorNode) {
+            this.$cursorNode = $(el)
+            this.cursor.setRange(el)
+          }
+        }
       } else {
         let $tmp = $(`<section></section>`)
         $tmp.append(el.cloneNode())
         parent.replaceChild($tmp[0], el)
+        this.$cursorNode = $tmp
+        this.cursor.setRange($tmp)
       }
     }
   },
@@ -323,8 +336,9 @@ ZxEditor.prototype = {
     // other object
     this.cursor = null
     this.toolbar = null
+    this.textStylePanel = null
 
-    // ExpansionPanel
+    // other ExpansionPanel
     for (let key in this) {
       if (this[key] instanceof ExpansionPanel) {
         this[key] = null
