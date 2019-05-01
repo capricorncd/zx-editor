@@ -761,7 +761,9 @@ ZxEditorQuery.prototype = {
       let offsetWidth = this[0].offsetWidth
       if (includeMargins) {
         const styles = this.styles()
-        return offsetWidth + parseFloat(styles.getPropertyValue('margin-right')) + parseFloat(styles.getPropertyValue('margin-left'))
+        return offsetWidth
+          + parseFloat(styles.getPropertyValue('margin-right'))
+          + parseFloat(styles.getPropertyValue('margin-left'))
       }
       return offsetWidth
     }
@@ -776,7 +778,9 @@ ZxEditorQuery.prototype = {
       let offsetHeight = this[0].offsetHeight
       if (includeMargins) {
         let styles = this.styles()
-        return offsetHeight + parseFloat(styles.getPropertyValue('margin-top')) + parseFloat(styles.getPropertyValue('margin-bottom'))
+        return offsetHeight
+          + parseFloat(styles.getPropertyValue('margin-top'))
+          + parseFloat(styles.getPropertyValue('margin-bottom'))
       }
       return offsetHeight
     }

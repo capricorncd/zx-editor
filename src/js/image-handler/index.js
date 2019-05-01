@@ -7,6 +7,8 @@ import { window } from 'ssr-window'
 import { getImageInfo, computeCropInfo, createCanvas } from './helper'
 
 const DEF_OPTIONS = {
+  width: 0,
+  heigth: 0,
   imageMaxSize: null,
   ignoreGif: true,
   forceResize: false
@@ -48,26 +50,24 @@ function fileToBase64 (file, opts) {
       throw new TypeError(`file is not a File object`)
     }
 
-    if (this.options) {
-      opts = Object.assign({}, DEF_OPTIONS, opts)
-    }
+    let options = Object.assign({}, DEF_OPTIONS, opts)
 
     // check file type
-    if (!/image\/.*/.test(file.type)) {
+    if (!/image\/.*/i.test(file.type)) {
       reject(new TypeError(`"${file.name}" is not Image File!`))
       return
     }
 
     // roate image
     if (typeof window.EXIF === 'undefined') {
-      opts.orientation = 0
-      handleFile(file, opts).then(resolve).catch(reject)
+      options.orientation = 0
+      handleFile(file, options).then(resolve).catch(reject)
     } else {
       window.EXIF.getData(file, function () {
         let info = window.EXIF.getAllTags(this) || {}
         // Shooting direction
-        opts.orientation = info.Orientation
-        handleFile(file, opts).then(resolve).catch(reject)
+        options.orientation = info.Orientation
+        handleFile(file, options).then(resolve).catch(reject)
       })
     }
   })
@@ -88,22 +88,20 @@ function handleFile (file, opts) {
     reader.readAsDataURL(file)
     reader.onload = function () {
       // get image info
-      getImageInfo(this.result, file, opts.orientation, (e, res) => {
+      getImageInfo(this.result, file, opts, (e, raw) => {
         if (e) {
           reject(e)
           return
         }
         // check gif
         if (file.type === 'image/gif' && opts.ignoreGif) {
-          resolve({
-            ...res,
-            type: file.type,
-            size: file.size,
-            name: file.name
-          })
+          raw.data = file
+          raw.url = blobToUrl(file)
+          raw.raw = raw
+          resolve(raw)
           return
         }
-        let result = handleImageData(res, opts)
+        let result = handleImageData(raw, opts)
         // check file size
         if (opts.imageMaxSize > 0 && result.size / 1024 > opts.imageMaxSize) {
           reject(new RangeError(`File size "${result.size / 1024}" out of range, limit is ${opts.imageMaxSize}Kib`))
@@ -119,19 +117,19 @@ function handleFile (file, opts) {
 
 /**
  * Processing picture data, clipping and compression
- * @param imageInfo
+ * @param raw
  * @param opts
  * @private
  */
-function handleImageData (imageInfo, opts) {
+function handleImageData (raw, opts) {
   // file type
-  let dataType = imageInfo.file.type
+  let dataType = raw.type || raw.file.type
 
   // Calculate the position and size of zooming or clipping pictures
-  let res = computeCropInfo(imageInfo.width, imageInfo.height, opts)
+  let res = computeCropInfo(raw.width, raw.height, opts)
 
-  // image
-  let el = imageInfo.element
+  // image or canvas
+  let el = raw.element
 
   let scaling = 2
   let sw = res.sw
@@ -141,7 +139,7 @@ function handleImageData (imageInfo, opts) {
 
   if (res.scaling > scaling) {
     scaling = res.scaling
-    do {
+    while (scaling > 2) {
       el = createCanvas(el, {
         cw: res.cw * scaling,
         ch: res.ch * scaling,
@@ -154,7 +152,7 @@ function handleImageData (imageInfo, opts) {
       sh = el.height
       sx = sy = 0
       scaling -= 1
-    } while (scaling > 2)
+    }
   }
   el = createCanvas(el, {
     cw: res.cw,
@@ -174,11 +172,11 @@ function handleImageData (imageInfo, opts) {
     width: res.cw,
     height: res.ch,
     data: blob,
-    base64: base64,
+    base64,
     size: blob.size,
     url: blobToUrl(blob),
     // 原始图片数据
-    rawData: imageInfo
+    raw
   }
 }
 

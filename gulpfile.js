@@ -18,8 +18,9 @@ const isDev = process.env.NODE_ENV === 'development'
 task('connect', () => {
   connect.server({
     root: ['./'],
+    host: '0.0.0.0',
     livereload: true,
-    port: '9001',
+    port: 9001
   })
 })
 

@@ -38,7 +38,7 @@
   })
 
   // 实例化 VConsole
-  // var debug = new VConsole()
+  new VConsole()
 
   // console.log(debug)
 
@@ -49,11 +49,12 @@
   })
 
   zxEditor.on('selectPictureInputChange', function (file, ze, e) {
-    console.log(file, ze, e)
+    // console.log(file, ze, e)
   })
 
   zxEditor.on('error', function (e, type) {
-    console.error(e, type)
+    console.log(type)
+    console.error(e)
   })
 </script>
 </body>

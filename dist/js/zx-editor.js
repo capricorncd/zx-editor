@@ -3,7 +3,7 @@
  * https://github.com/capricorncd/zx-editor
  * Copyright © 2018-present, capricorncd
  * Released under the MIT License
- * Released on: 2019-04-30 20:38:24
+ * Released on: 2019-05-01 20:11:36
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -23,40 +23,6 @@
     }
 
     return _typeof(obj);
-  }
-
-  function _defineProperty(obj, key, value) {
-    if (key in obj) {
-      Object.defineProperty(obj, key, {
-        value: value,
-        enumerable: true,
-        configurable: true,
-        writable: true
-      });
-    } else {
-      obj[key] = value;
-    }
-
-    return obj;
-  }
-
-  function _objectSpread(target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i] != null ? arguments[i] : {};
-      var ownKeys = Object.keys(source);
-
-      if (typeof Object.getOwnPropertySymbols === 'function') {
-        ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
-          return Object.getOwnPropertyDescriptor(source, sym).enumerable;
-        }));
-      }
-
-      ownKeys.forEach(function (key) {
-        _defineProperty(target, key, source[key]);
-      });
-    }
-
-    return target;
   }
 
   /**
@@ -1909,37 +1875,40 @@
    * User: https://github.com/capricorncd
    * Date: 2019/04/24 21:37
    */
-  function getImageInfo(base64, file, orientation, callback) {
-    var img = new Image();
+  function getImageInfo(base64, file, opts, callback) {
+    var img = doc.createElement('img');
     img.src = base64;
     img.setAttribute('alt', file.name); // 加载图片
 
     img.onload = function () {
-      callback(null, orientation > 1 ? rotateAndToBase64(img, orientation, file.type) : {
+      var defaultData = {
         element: img,
         base64: base64,
-        width: img.width,
-        height: img.height,
+        width: img.naturalWidth || img.width,
+        height: img.naturalHeight || img.height,
+        type: file.type,
+        size: file.size,
+        name: file.name,
         file: file
-      });
+      };
+      callback(null, opts.orientation > 1 ? rotateAndToBase64(defaultData, opts.orientation) : defaultData);
     };
 
-    img.onerror = function (e) {
-      callback(e);
-    };
+    img.onerror = callback;
   }
   /**
    * Decide whether the picture is rotated or not according to 'opts.orientation' value
-   * @param img
+   * @param raw
    * @param type
    * @returns {Object}
    */
 
-  function rotateAndToBase64(img, orientation, type) {
+  function rotateAndToBase64(raw, orientation) {
     var canvas = doc.createElement('canvas');
     var ctx = canvas.getContext('2d');
-    var imgWidth = img.width;
-    var imgHeight = img.height;
+    var img = raw.element;
+    var imgWidth = raw.width;
+    var imgHeight = raw.height;
     canvas.width = imgWidth;
     canvas.height = imgHeight; // rotate image
 
@@ -1971,31 +1940,31 @@
         ctx.drawImage(img, 0, 0, imgWidth, imgHeight);
     }
 
-    var base64 = canvas.toDataURL(opts.type);
+    var base64 = canvas.toDataURL(raw.type);
     img.src = base64;
-    var result = {
-      element: img,
+    return Object.assign(raw, {
+      element: canvas,
       base64: base64,
       width: canvas.width,
       height: canvas.height
-    };
-    canvas = null;
-    return result;
+    });
   }
   /**
    * 创建Canvas
-   * @param $el Image object or Canvas element
+   * @param el Image object or Canvas element
    * @param p clip options
    * @returns {Element}
    */
 
 
-  function createCanvas($el, p) {
+  function createCanvas(el, p) {
     var canvas = doc.createElement('canvas');
     canvas.width = p.cw;
     canvas.height = p.ch;
-    var ctx = canvas.getContext('2d');
-    ctx.drawImage($el, p.sx, p.sy, p.sw, p.sh, 0, 0, canvas.width, canvas.height);
+    var ctx = canvas.getContext('2d'); // 操作过于频繁，iPhone部分手机会获取不到ctx，is null
+    // 下面代码会抛出异常
+
+    ctx.drawImage(el, p.sx, p.sy, p.sw, p.sh, 0, 0, canvas.width, canvas.height);
     return canvas;
   }
   /**
@@ -2021,7 +1990,7 @@
     var targetHeight = util["int"](opts.height); // image width or height, less than target width or height
     // don't resize
 
-    if (!opts.forceResize && targetWidth > 0 && iw < targetWidth && targetHeight > 0 && ih < targetHeight) {
+    if (!opts.forceImageResize && targetWidth > 0 && iw < targetWidth && targetHeight > 0 && ih < targetHeight) {
       return {
         sx: 0,
         sy: 0,
@@ -2089,7 +2058,14 @@
     };
   }
 
+  /**
+   * Created by Capricorncd.
+   * User: https://github.com/capricorncd
+   * Date: 2019/04/24 21:13
+   */
   var DEF_OPTIONS = {
+    width: 0,
+    heigth: 0,
     imageMaxSize: null,
     ignoreGif: true,
     forceResize: false
@@ -2133,33 +2109,28 @@
 
 
   function fileToBase64(file, opts) {
-    var _this = this;
-
     return new Promise(function (resolve, reject) {
       if (!file || !file instanceof File) {
         throw new TypeError("file is not a File object");
       }
 
-      if (_this.options) {
-        opts = Object.assign({}, DEF_OPTIONS, opts);
-      } // check file type
+      var options = Object.assign({}, DEF_OPTIONS, opts); // check file type
 
-
-      if (!/image\/.*/.test(file.type)) {
+      if (!/image\/.*/i.test(file.type)) {
         reject(new TypeError("\"".concat(file.name, "\" is not Image File!")));
         return;
       } // roate image
 
 
       if (typeof win.EXIF === 'undefined') {
-        opts.orientation = 0;
-        handleFile(file, opts).then(resolve)["catch"](reject);
+        options.orientation = 0;
+        handleFile(file, options).then(resolve)["catch"](reject);
       } else {
         win.EXIF.getData(file, function () {
           var info = win.EXIF.getAllTags(this) || {}; // Shooting direction
 
-          opts.orientation = info.Orientation;
-          handleFile(file, opts).then(resolve)["catch"](reject);
+          options.orientation = info.Orientation;
+          handleFile(file, options).then(resolve)["catch"](reject);
         });
       }
     });
@@ -2182,7 +2153,7 @@
 
       reader.onload = function () {
         // get image info
-        getImageInfo(this.result, file, opts.orientation, function (e, res) {
+        getImageInfo(this.result, file, opts, function (e, raw) {
           if (e) {
             reject(e);
             return;
@@ -2190,15 +2161,14 @@
 
 
           if (file.type === 'image/gif' && opts.ignoreGif) {
-            resolve(_objectSpread({}, res, {
-              type: file.type,
-              size: file.size,
-              name: file.name
-            }));
+            raw.data = file;
+            raw.url = blobToUrl(file);
+            raw.raw = raw;
+            resolve(raw);
             return;
           }
 
-          var result = handleImageData(res, opts); // check file size
+          var result = handleImageData(raw, opts); // check file size
 
           if (opts.imageMaxSize > 0 && result.size / 1024 > opts.imageMaxSize) {
             reject(new RangeError("File size \"".concat(result.size / 1024, "\" out of range, limit is ").concat(opts.imageMaxSize, "Kib")));
@@ -2214,19 +2184,19 @@
   }
   /**
    * Processing picture data, clipping and compression
-   * @param imageInfo
+   * @param raw
    * @param opts
    * @private
    */
 
 
-  function handleImageData(imageInfo, opts) {
+  function handleImageData(raw, opts) {
     // file type
-    var dataType = imageInfo.file.type; // Calculate the position and size of zooming or clipping pictures
+    var dataType = raw.type || raw.file.type; // Calculate the position and size of zooming or clipping pictures
 
-    var res = computeCropInfo(imageInfo.width, imageInfo.height, opts); // image
+    var res = computeCropInfo(raw.width, raw.height, opts); // image or canvas
 
-    var el = imageInfo.element;
+    var el = raw.element;
     var scaling = 2;
     var sw = res.sw;
     var sh = res.sh;
@@ -2236,7 +2206,7 @@
     if (res.scaling > scaling) {
       scaling = res.scaling;
 
-      do {
+      while (scaling > 2) {
         el = createCanvas(el, {
           cw: res.cw * scaling,
           ch: res.ch * scaling,
@@ -2249,7 +2219,7 @@
         sh = el.height;
         sx = sy = 0;
         scaling -= 1;
-      } while (scaling > 2);
+      }
     }
 
     el = createCanvas(el, {
@@ -2272,7 +2242,7 @@
       size: blob.size,
       url: blobToUrl(blob),
       // 原始图片数据
-      rawData: imageInfo
+      raw: raw
     };
   }
 
@@ -2491,10 +2461,9 @@
     };
     var imageSectionTemplate = /^<section\b.*<\/section>$/.test(options.imageSectionTemp) ? options.imageSectionTemp : "<section><img src=\"{url}\"></section>"; // register selectPictureInputChange
 
-    var imageOptions = {
-      imageMaxSize: options.imageMaxSize,
+    var imageOptions = Object.assign({}, _this.options, {
       width: options.imageMaxWidth
-    };
+    });
     this.$eventHandlers['selectPictureInputChange'] = {
       $target: $selectPictrueInput,
       type: 'change',
@@ -2507,6 +2476,7 @@
         if (options.customizePictureHandler) return; // handler picture
 
         _this.fileToBase64(file, imageOptions).then(function (res) {
+          console.log(res);
           var $el = $(imageSectionTemplate.replace('{url}', res.base64)); // set attribute
 
           $el.find('img').attr({
@@ -2883,19 +2853,42 @@
     // paragraph tail spacing, default 10px
     paragraphTailSpacing: '',
     cursorColor: '',
+
+    /**
+     * ******************************
+     * toolbar options
+     * ******************************
+     */
     // Has the toolbar been fixed?
     toolbarBeenFixed: true,
     toolbarHeight: 50,
     // buttons name, and order
     toolbarBtns: ['select-picture', 'text-style'],
+
+    /**
+     * ******************************
+     * image options
+     * ******************************
+     */
     // customize Picture Handler
     customizePictureHandler: false,
     // image max width
     imageMaxWidth: 720,
-    // image max size, unit Kib
-    imageMaxSize: 10240,
+    // image max size, unit Kib, default 20M
+    imageMaxSize: 20480,
     // template
     imageSectionTemp: "<section class=\"child-is-picture\"><img src=\"{url}\"></section>",
+    // GIF pictures are not processed
+    ignoreGif: true,
+    // Force the width/height of the picture, even if the width/height of the picture
+    // is smaller than the target width/height
+    forceImageResize: false,
+
+    /**
+     * ******************************
+     * text style options
+     * ******************************
+     */
     // text style, value ['#333', '#f00', ...]
     textStyleColors: [],
     textStyleTitle: 'Set Style',
@@ -2973,7 +2966,7 @@
        */
 
       this.cursor = new CursorClass(this.$content);
-      this.$cursorNode = null;
+      this.$cursorNode = this.cursor.getCurrentNode();
       /**
        * ***************************************************
        * event: last

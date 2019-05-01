@@ -33,10 +33,9 @@ export function selectPictureBtn (options) {
   let imageSectionTemplate = /^<section\b.*<\/section>$/.test(options.imageSectionTemp) ? options.imageSectionTemp : `<section><img src="{url}"></section>`
 
   // register selectPictureInputChange
-  let imageOptions = {
-    imageMaxSize: options.imageMaxSize,
+  let imageOptions = Object.assign({}, _this.options, {
     width: options.imageMaxWidth
-  }
+  })
   this.$eventHandlers['selectPictureInputChange'] = {
     $target: $selectPictrueInput,
     type: 'change',
@@ -49,6 +48,7 @@ export function selectPictureBtn (options) {
 
       // handler picture
       _this.fileToBase64(file, imageOptions).then(res => {
+        console.log(res)
         let $el = $(imageSectionTemplate.replace('{url}', res.base64))
         // set attribute
         $el.find('img').attr({

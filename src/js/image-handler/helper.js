@@ -6,37 +6,40 @@
 import { document } from 'ssr-window'
 import util from "../util";
 
-export function getImageInfo (base64, file, orientation, callback) {
-  let img = new Image()
+export function getImageInfo (base64, file, opts, callback) {
+  let img = document.createElement('img')
   img.src = base64
   img.setAttribute('alt', file.name)
   // 加载图片
   img.onload = function () {
-    callback(null, orientation > 1 ? rotateAndToBase64(img, orientation, file.type) : {
+    let defaultData = {
       element: img,
       base64,
-      width: img.width,
-      height: img.height,
+      width: img.naturalWidth || img.width,
+      height: img.naturalHeight || img.height,
+      type: file.type,
+      size: file.size,
+      name: file.name,
       file
-    })
+    }
+    callback(null, opts.orientation > 1 ? rotateAndToBase64(defaultData, opts.orientation) : defaultData)
   }
 
-  img.onerror = function (e) {
-    callback(e)
-  }
+  img.onerror = callback
 }
 
 /**
  * Decide whether the picture is rotated or not according to 'opts.orientation' value
- * @param img
+ * @param raw
  * @param type
  * @returns {Object}
  */
-function rotateAndToBase64 (img, orientation, type) {
+function rotateAndToBase64 (raw, orientation) {
   let canvas = document.createElement('canvas')
   let ctx = canvas.getContext('2d')
-  let imgWidth = img.width
-  let imgHeight = img.height
+  let img = raw.element
+  let imgWidth = raw.width
+  let imgHeight = raw.height
   canvas.width = imgWidth
   canvas.height = imgHeight
   // rotate image
@@ -64,30 +67,31 @@ function rotateAndToBase64 (img, orientation, type) {
     default:
       ctx.drawImage(img, 0, 0, imgWidth, imgHeight)
   }
-  let base64 = canvas.toDataURL(opts.type)
+  let base64 = canvas.toDataURL(raw.type)
   img.src = base64
-  let result = {
-    element: img,
+
+  return Object.assign(raw, {
+    element: canvas,
     base64,
     width: canvas.width,
     height: canvas.height
-  }
-  canvas = null
-  return result
+  })
 }
 
 /**
  * 创建Canvas
- * @param $el Image object or Canvas element
+ * @param el Image object or Canvas element
  * @param p clip options
  * @returns {Element}
  */
-export function createCanvas ($el, p) {
+export function createCanvas (el, p) {
   const canvas = document.createElement('canvas')
   canvas.width = p.cw
   canvas.height = p.ch
   const ctx = canvas.getContext('2d')
-  ctx.drawImage($el, p.sx, p.sy, p.sw, p.sh, 0, 0, canvas.width, canvas.height)
+  // 操作过于频繁，iPhone部分手机会获取不到ctx，is null
+  // 下面代码会抛出异常
+  ctx.drawImage(el, p.sx, p.sy, p.sw, p.sh, 0, 0, canvas.width, canvas.height)
   return canvas
 }
 
@@ -113,7 +117,7 @@ export function computeCropInfo (iw, ih, opts) {
 
   // image width or height, less than target width or height
   // don't resize
-  if (!opts.forceResize && (targetWidth > 0 && iw < targetWidth)
+  if (!opts.forceImageResize && (targetWidth > 0 && iw < targetWidth)
     && (targetHeight > 0 && ih < targetHeight)) {
     return {
       sx: 0,
