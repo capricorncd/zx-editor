@@ -13,13 +13,17 @@ const DEF_OPTS = {
   className: '',
   // head setup
   headHeight: 44,
+  headLeftBtnClassName: '',
+  headLeftBtnText: '',
   headTitle: 'Expansion Panel',
   // height
   height: 260,
   // body内容
   body: null,
   // Used to distinguish ExpansionPanel instance
-  name: 'expansion-panel'
+  name: 'expansion-panel',
+  onHeadClick: function () {},
+  onBodyClick: function () {}
 }
 
 /**
@@ -48,29 +52,52 @@ function ExpansionPanel (options, zxEditor) {
   // Used to distinguish ExpansionPanel instance
   this.name = util.toHump(opts.name)
 
-  this.$head = $(`<div class="head-wrapper border-bottom" style="height:${opts.headHeight}px;line-height:${opts.headHeight}px;">${opts.headTitle || ''}</div>`)
+  this.$head = $(`<div class="head-wrapper border-bottom ${opts.textStyleHeadAlign}" style="height:${opts.headHeight}px;line-height:${opts.headHeight}px;"><div class="l cur ${opts.headLeftBtnClassName}">${opts.headLeftBtnText}</div>${opts.headTitle || ''}</div>`)
 
   this.$body = $(`<div class="body-wrapper" style="height:${opts.height - opts.headHeight}px;"></div>`)
 
   // node
   this.$el = $(`<div class="zx-editor-expansion-panel border-top"></div>`)
 
+  // click
+  // stop propagation
+  zxEditor.$eventHandlers[this.name] = {
+    $target: this.$el,
+    type: 'click',
+    handler: (e) => {
+      e.stopPropagation()
+    }
+  }
+  this.$el.on('click', zxEditor.$eventHandlers[this.name].handler)
+
   if (opts.headHeight > 0) {
     // custom head
     if (opts.head) {
       this.$head = $(opts.head)
     } else {
+      // left btn
+      const $leftBtn = this.$head.find('.l')
+      zxEditor.$eventHandlers[this.name + 'HeadLeftBtn'] = {
+        $target: $leftBtn,
+        type: 'click',
+        handler: (e) => {
+          opts.onHeadClick('left-button', e, this)
+        }
+      }
+      $leftBtn.on('click', zxEditor.$eventHandlers[this.name + 'HeadLeftBtn'].handler)
+
       const $switch = $(`<i class="switch" style="width:${opts.headHeight}px;height:${opts.headHeight}px;"></i>`)
       this.$head.append($switch)
       // switch event
-      zxEditor.$eventHandlers[this.name] = {
+      zxEditor.$eventHandlers[this.name + 'HeadSwitch'] = {
         $target: $switch,
         type: 'click',
-        handler: () => {
+        handler: (e) => {
+          opts.onHeadClick('switch', e, this)
           this.hide()
         }
       }
-      $switch.on('click', zxEditor.$eventHandlers[this.name].handler)
+      $switch.on('click', zxEditor.$eventHandlers[this.name + 'HeadSwitch'].handler)
     }
 
     this.$el.append(this.$head)

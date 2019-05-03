@@ -46,6 +46,7 @@ export function changeTag (tag) {
   }
 
   this.$cursorNode.changeNodeName(tag)
+  this.cursor.setRange(this.$cursorNode)
 }
 
 function createLi (child) {

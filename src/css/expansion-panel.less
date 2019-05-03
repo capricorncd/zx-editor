@@ -24,12 +24,18 @@
     left: 0;
     width: 100%;
     height: @headHeight;
-    text-align: center;
     box-shadow: 0 0 3px rgba(0, 0, 0, .05);
+    .l {
+      position: absolute;
+      top: 0;
+      padding: 0 10px;
+      height: 100%;
+      font-size: .8em;
+      color: #999;
+    }
     .switch {
       position: absolute;
       top: 0;
-      right: 0;
       width: @headHeight;
       height: @headHeight;
       display: flex;
@@ -42,6 +48,36 @@
         border-top: 7px solid @iconColor;
         border-left: 4px solid transparent;
         border-right: 4px solid transparent;
+      }
+    }
+    &.center {
+      text-align: center;
+      .l {
+        left: 0;
+      }
+      .switch {
+        right: 0;
+      }
+    }
+    &.left {
+      text-align: left;
+      padding-left: 10px;
+      .l {
+        right: @headHeight;
+      }
+      .switch {
+        right: 0;
+      }
+    }
+    &.right {
+      text-align: right;
+      padding-right: 10px;
+      .l {
+        left: @headHeight;
+        padding: 0;
+      }
+      .switch {
+        left: 0;
       }
     }
   }

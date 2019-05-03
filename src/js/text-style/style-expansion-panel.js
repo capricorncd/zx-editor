@@ -172,8 +172,11 @@ export function styleExpansionPanel (options) {
 
   // instance text style
   this.textStylePanel = new ExpansionPanel({
+    headLeftBtnText: options.textStyleHeadLeftBtnText,
     headTitle: options.textStyleTitle,
-    body: $panelBody
+    textStyleHeadAlign: options.textStyleHeadAlign,
+    body: $panelBody,
+    onHeadClick: handleHeadClick
   }, this)
 
   // handle events
@@ -184,6 +187,7 @@ export function styleExpansionPanel (options) {
     let key = style[0]
     let cursorNode = zxEditor.$cursorNode[0]
     cursorNode.style[key] = cursorNode.style[key] === style[1] ? '' : style[1]
+    zxEditor.cursor.setRange()
   })
 
   // color
@@ -200,6 +204,7 @@ export function styleExpansionPanel (options) {
         $el.removeClass('active')
       }
     }
+    zxEditor.cursor.setRange()
   })
 
   // tag
@@ -236,14 +241,30 @@ export function styleExpansionPanel (options) {
 
     // check tag
     let tag = $cursorNode.nodeName()
+    setTagInPanel(tag)
+
+    // check color
+    let color = this.rgbToHex($cursorNode.css('color'))
+    setColorInPanel(color)
+  }
+
+  /**
+   * set tag in panel
+   * @param tag
+   */
+  function setTagInPanel (tag) {
     let $activeTag = $tagsParent.find('.active')
     if ($activeTag.data('tag') !== tag) {
       $activeTag.removeClass('active')
       $tagsParent.find(`.__${tag}`).addClass('active')
     }
+  }
 
-    // check color
-    let color = this.rgbToHex($cursorNode.css('color'))
+  /**
+   * set color in panel
+   * @param color
+   */
+  function setColorInPanel (color) {
     let $activeColor = $colorsParent.find('.active')
     if ($activeColor.data('color') !== color) {
 
@@ -257,6 +278,28 @@ export function styleExpansionPanel (options) {
           break
         }
       }
+    }
+  }
+
+  /**
+   * handle head click
+   * @param type
+   */
+  function handleHeadClick (type) {
+    // clear style
+    if (type === 'left-button') {
+      // clear style
+      let currentNode = zxEditor.$cursorNode[0]
+      currentNode.className = ''
+      currentNode.setAttribute('style', '')
+      if (currentNode.nodeName !== 'SECTION') {
+        zxEditor.$cursorNode = $(zxEditor.changeNodeName(currentNode, 'section'))
+      }
+      // reset text style expansion
+      setColorInPanel(COLORS[0])
+      setTagInPanel('section')
+      // set Range
+      zxEditor.cursor.setRange(zxEditor.$cursorNode)
     }
   }
 

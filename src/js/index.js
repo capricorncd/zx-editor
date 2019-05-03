@@ -71,6 +71,8 @@ const DEF_OPTIONS = {
   // text style, value ['#333', '#f00', ...]
   textStyleColors: [],
   textStyleTitle: 'Set Style',
+  textStyleHeadLeftBtnText: 'Clear style',
+  textStyleHeadAlign: 'center',
   // border color
   borderColor: ''
 }
@@ -250,7 +252,7 @@ ZxEditor.prototype = {
   insertBlankLine () {
     let $el = $(`<section><br></section>`)
     this.insertElm($el)
-    this.cursor.setRange($el[0], 0)
+    this.cursor.setRange($el, 0)
   },
 
   /**
@@ -313,7 +315,7 @@ ZxEditor.prototype = {
   setHtml (html) {
     this.$content.html(html || '<section><br></section>')
     this._checkChildSection()
-    this.cursor.setRange(this.$content.firstChild()[0], 0)
+    this.cursor.setRange(this.$content.firstChild(), 0)
     this.$content.trigger('input')
   },
 

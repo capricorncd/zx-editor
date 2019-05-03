@@ -3,7 +3,7 @@
  * https://github.com/capricorncd/zx-editor
  * Copyright © 2018-present, capricorncd
  * Released under the MIT License
- * Released on: 2019-05-01 20:11:36
+ * Released on: 2019-05-03 14:20:35
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -1343,8 +1343,11 @@
       } // 光标移动到到原来的位置加上新内容的长度
 
 
+      el = el || this.currentNode;
+
       if (el) {
-        this.range.setStart(el, this.offset);
+        // el: '<section>kkkkkkkkkkkkk</section>'
+        this.range.setStart(el.childNodes[el.childNodes.length - 1] || el, this.offset);
         this.currentNode = el;
       } // cursor start and end position is collapse
 
@@ -1398,13 +1401,17 @@
     className: '',
     // head setup
     headHeight: 44,
+    headLeftBtnClassName: '',
+    headLeftBtnText: '',
     headTitle: 'Expansion Panel',
     // height
     height: 260,
     // body内容
     body: null,
     // Used to distinguish ExpansionPanel instance
-    name: 'expansion-panel'
+    name: 'expansion-panel',
+    onHeadClick: function onHeadClick() {},
+    onBodyClick: function onBodyClick() {}
     /**
      * ExpansionPanel
      * Extension panel fixed at the bottom of the editor
@@ -1431,27 +1438,49 @@
     this.visible = false; // Used to distinguish ExpansionPanel instance
 
     this.name = util.toHump(opts.name);
-    this.$head = $("<div class=\"head-wrapper border-bottom\" style=\"height:".concat(opts.headHeight, "px;line-height:").concat(opts.headHeight, "px;\">").concat(opts.headTitle || '', "</div>"));
+    this.$head = $("<div class=\"head-wrapper border-bottom ".concat(opts.textStyleHeadAlign, "\" style=\"height:").concat(opts.headHeight, "px;line-height:").concat(opts.headHeight, "px;\"><div class=\"l cur ").concat(opts.headLeftBtnClassName, "\">").concat(opts.headLeftBtnText, "</div>").concat(opts.headTitle || '', "</div>"));
     this.$body = $("<div class=\"body-wrapper\" style=\"height:".concat(opts.height - opts.headHeight, "px;\"></div>")); // node
 
-    this.$el = $("<div class=\"zx-editor-expansion-panel border-top\"></div>");
+    this.$el = $("<div class=\"zx-editor-expansion-panel border-top\"></div>"); // click
+    // stop propagation
+
+    zxEditor.$eventHandlers[this.name] = {
+      $target: this.$el,
+      type: 'click',
+      handler: function handler(e) {
+        e.stopPropagation();
+      }
+    };
+    this.$el.on('click', zxEditor.$eventHandlers[this.name].handler);
 
     if (opts.headHeight > 0) {
       // custom head
       if (opts.head) {
         this.$head = $(opts.head);
       } else {
+        // left btn
+        var $leftBtn = this.$head.find('.l');
+        zxEditor.$eventHandlers[this.name + 'HeadLeftBtn'] = {
+          $target: $leftBtn,
+          type: 'click',
+          handler: function handler(e) {
+            opts.onHeadClick('left-button', e, _this);
+          }
+        };
+        $leftBtn.on('click', zxEditor.$eventHandlers[this.name + 'HeadLeftBtn'].handler);
         var $switch = $("<i class=\"switch\" style=\"width:".concat(opts.headHeight, "px;height:").concat(opts.headHeight, "px;\"></i>"));
         this.$head.append($switch); // switch event
 
-        zxEditor.$eventHandlers[this.name] = {
+        zxEditor.$eventHandlers[this.name + 'HeadSwitch'] = {
           $target: $switch,
           type: 'click',
-          handler: function handler() {
+          handler: function handler(e) {
+            opts.onHeadClick('switch', e, _this);
+
             _this.hide();
           }
         };
-        $switch.on('click', zxEditor.$eventHandlers[this.name].handler);
+        $switch.on('click', zxEditor.$eventHandlers[this.name + 'HeadSwitch'].handler);
       }
 
       this.$el.append(this.$head);
@@ -2541,6 +2570,7 @@
     }
 
     this.$cursorNode.changeNodeName(tag);
+    this.cursor.setRange(this.$cursorNode);
   }
 
   function createLi(child) {
@@ -2709,8 +2739,11 @@
     var $panelBody = $(panelBody); // instance text style
 
     this.textStylePanel = new ExpansionPanel({
+      headLeftBtnText: options.textStyleHeadLeftBtnText,
       headTitle: options.textStyleTitle,
-      body: $panelBody
+      textStyleHeadAlign: options.textStyleHeadAlign,
+      body: $panelBody,
+      onHeadClick: handleHeadClick
     }, this); // handle events
     // style
 
@@ -2720,6 +2753,7 @@
       var key = style[0];
       var cursorNode = zxEditor.$cursorNode[0];
       cursorNode.style[key] = cursorNode.style[key] === style[1] ? '' : style[1];
+      zxEditor.cursor.setRange();
     }); // color
 
     var $colorsParent = $panelBody.find('.__color-wrapper');
@@ -2737,6 +2771,8 @@
           $el.removeClass('active');
         }
       }
+
+      zxEditor.cursor.setRange();
     }); // tag
 
     var $tagsParent = $panelBody.find('.__tag-wrapper');
@@ -2775,16 +2811,33 @@
 
 
       var tag = $cursorNode.nodeName();
+      setTagInPanel(tag); // check color
+
+      var color = _this.rgbToHex($cursorNode.css('color'));
+
+      setColorInPanel(color);
+    };
+    /**
+     * set tag in panel
+     * @param tag
+     */
+
+
+    function setTagInPanel(tag) {
       var $activeTag = $tagsParent.find('.active');
 
       if ($activeTag.data('tag') !== tag) {
         $activeTag.removeClass('active');
         $tagsParent.find(".__".concat(tag)).addClass('active');
-      } // check color
+      }
+    }
+    /**
+     * set color in panel
+     * @param color
+     */
 
 
-      var color = _this.rgbToHex($cursorNode.css('color'));
-
+    function setColorInPanel(color) {
       var $activeColor = $colorsParent.find('.active');
 
       if ($activeColor.data('color') !== color) {
@@ -2800,7 +2853,32 @@
           }
         }
       }
-    };
+    }
+    /**
+     * handle head click
+     * @param type
+     */
+
+
+    function handleHeadClick(type) {
+      // clear style
+      if (type === 'left-button') {
+        // clear style
+        var currentNode = zxEditor.$cursorNode[0];
+        currentNode.className = '';
+        currentNode.setAttribute('style', '');
+
+        if (currentNode.nodeName !== 'SECTION') {
+          zxEditor.$cursorNode = $(zxEditor.changeNodeName(currentNode, 'section'));
+        } // reset text style expansion
+
+
+        setColorInPanel(COLORS[0]);
+        setTagInPanel('section'); // set Range
+
+        zxEditor.cursor.setRange(zxEditor.$cursorNode);
+      }
+    }
 
     return {
       name: 'text-style',
@@ -2892,6 +2970,8 @@
     // text style, value ['#333', '#f00', ...]
     textStyleColors: [],
     textStyleTitle: 'Set Style',
+    textStyleHeadLeftBtnText: 'Clear style',
+    textStyleHeadAlign: 'center',
     // border color
     borderColor: ''
   };
@@ -3078,7 +3158,7 @@
     insertBlankLine: function insertBlankLine() {
       var $el = $("<section><br></section>");
       this.insertElm($el);
-      this.cursor.setRange($el[0], 0);
+      this.cursor.setRange($el, 0);
     },
 
     /**
@@ -3147,7 +3227,7 @@
 
       this._checkChildSection();
 
-      this.cursor.setRange(this.$content.firstChild()[0], 0);
+      this.cursor.setRange(this.$content.firstChild(), 0);
       this.$content.trigger('input');
     },
 

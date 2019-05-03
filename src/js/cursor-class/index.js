@@ -67,8 +67,10 @@ CursorClass.prototype = {
       this.selection.removeAllRanges()
     }
     // 光标移动到到原来的位置加上新内容的长度
+    el = el || this.currentNode
     if (el) {
-      this.range.setStart(el, this.offset)
+      // el: '<section>kkkkkkkkkkkkk</section>'
+      this.range.setStart(el.childNodes[el.childNodes.length - 1] || el, this.offset)
       this.currentNode = el
     }
     // cursor start and end position is collapse
