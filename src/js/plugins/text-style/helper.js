@@ -4,7 +4,7 @@
  * Date: 2019/04/29 21:08
  */
 import { document } from 'ssr-window'
-import $ from '../dom-class/index'
+import $ from '../../dom-class/index'
 
 export function changeTag (tag) {
 

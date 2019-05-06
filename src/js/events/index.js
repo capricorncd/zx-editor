@@ -4,21 +4,55 @@
  * Date: 2019/04/15 21:53
  */
 import $ from '../dom-class'
-import {
-  windowResize,
-  contentPaste,
-  contentInput,
-  contentFocus,
-  contentBlur,
-  contentClick,
-  contentKeyup
-} from '../events/handlers'
+import { window } from 'ssr-window'
+import util from '../util'
+import { getPasteText } from './paste'
 
+/**
+ * handle events
+ */
 export function handleEvents () {
-  let $content = this.$content
+
+  const $content = this.$content
+
+  const $window = $(window)
+
+  // const options = this.options
+
   /**
-   * content paste
+   * ****************************************************
+   * window on resize
+   * ****************************************************
    */
+  function windowResize () {
+    // toolbar
+    this.toolbar.init()
+    // expansion panels
+    this.expansionPanels.forEach(item => {
+      item.init()
+    })
+    this.emit('windowResize', this)
+  }
+
+  this.$eventHandlers.windowResize = {
+    $target: $window,
+    type: 'resize',
+    handler: windowResize.bind(this)
+  }
+
+  /**
+   * ****************************************************
+   * content on paste
+   * ****************************************************
+   */
+  function contentPaste (e) {
+    e.preventDefault()
+    getPasteText(e).then(str => {
+      // 添加至焦点处
+      this.insertElm(util.removeHtmlTags(str))
+    })
+  }
+
   this.$eventHandlers.contentPaste = {
     $target: $content,
     type: 'paste',
@@ -26,21 +60,42 @@ export function handleEvents () {
   }
 
   /**
-   * window resize
+   * ****************************************************
+   * content on input
+   * ****************************************************
    */
-  this.$eventHandlers.windowResize = {
-    $target: $(window),
-    type: 'resize',
-    handler: windowResize.bind(this)
+  function contentInput () {
+    // check empty in content
+    this._checkEmpty()
+
+    // check cursor node position
+    this.checkPosition()
+
+    // emit content on change
+    this.emit('change', this)
   }
 
-  /**
-   * content input
-   */
   this.$eventHandlers.contentInput = {
     $target: $content,
     type: 'input',
     handler: contentInput.bind(this)
+  }
+
+  /**
+   * ****************************************************
+   * content on focus
+   * ****************************************************
+   */
+  function contentFocus () {
+    // console.error('contentFocus')
+    // hide all expansionPanels
+    // this.expansionPanels.forEach(ep => {
+    //   ep.hide()
+    // })
+    // toolbar
+    if (!this.options.toolbarBeenFixed) {
+      this.toolbar.show()
+    }
   }
 
   this.$eventHandlers.contentFocus = {
@@ -49,16 +104,82 @@ export function handleEvents () {
     handler: contentFocus.bind(this)
   }
 
+  /**
+   * ****************************************************
+   * content on blur
+   * ****************************************************
+   */
+  function contentBlur () {
+    // save $cursorNode
+    this.$cursorNode = this.cursor.getCurrentNode()
+
+    this._checkChildSection()
+    // console.warn(this.$cursorNode[0])
+    // toolbar
+    if (!this.options.toolbarBeenFixed) {
+      this.toolbar.hide()
+    }
+  }
+
   this.$eventHandlers.contentBlur = {
     $target: $content,
     type: 'blur',
     handler: contentBlur.bind(this)
   }
 
+  /**
+   * ****************************************************
+   * content on click
+   * ****************************************************
+   */
+  function contentClick () {
+    // save $cursorNode
+    this.$cursorNode = this.cursor.getCurrentNode()
+    // check position
+    this.checkPosition()
+    // textStylePanel is undefined, or is hide
+    if (!this.textStylePanel || !this.textStylePanel.visible) return
+    this.textStylePanel.resetActiveState()
+  }
+
   this.$eventHandlers.contentClick = {
     $target: $content,
     type: 'click',
     handler: contentClick.bind(this)
+  }
+
+
+  /**
+   * ****************************************************
+   * content on keydown
+   * ****************************************************
+   */
+  function contentKeydown (e) {
+    this.emit('keydown', e)
+  }
+
+  this.$eventHandlers.contentKeyup = {
+    $target: $content,
+    type: 'keydown',
+    handler: contentKeydown.bind(this)
+  }
+
+  /**
+   * ****************************************************
+   * content on keyup
+   * ****************************************************
+   */
+  function contentKeyup (e) {
+    this.emit('keyup', e)
+    // handle enter keyup
+    if (e.key === 'Enter' || e.keyCode === 13) {
+      // check section node
+      this._checkChildSection()
+      // content on click
+      contentClick.call(this)
+    }
+    // check position
+    // this.checkPosition()
   }
 
   this.$eventHandlers.contentKeyup = {
@@ -68,7 +189,9 @@ export function handleEvents () {
   }
 
   /**
+   * ****************************************************
    * register events
+   * ****************************************************
    */
   let evt
   for (let key in this.$eventHandlers) {

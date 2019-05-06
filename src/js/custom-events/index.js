@@ -30,7 +30,7 @@ function emit (notifyName) {
     try {
       notifyArr[i].apply(null, args)
     } catch (e) {
-      this.emit('error', e)
+      this.emit('error', e, 'emit')
     }
   }
 }

@@ -5,7 +5,7 @@
  */
 import util from '../util/index'
 import { document, window } from 'ssr-window'
-import { unique, changeNodeName, addEventListener, removeEventListener } from './helper'
+import { unique, changeNodeName, addEventListener, removeEventListener, getWindow, scrollTo } from './helper'
 
 /**
  * DOM操作
@@ -78,20 +78,35 @@ ZxEditorQuery.prototype = {
   /**
    * get children
    * @param selector
-   * @return {*|jQuery|HTMLElement}
+   * @param anyNode Boolean
+   * @return {*|HTMLElement}
    */
-  children (selector) {
+  children (selector, anyNode) {
+    // check arguments
+    if (typeof selector === 'boolean') {
+      anyNode = selector
+      selector = void 0
+    }
+
     const children = []
+    let el
     for (let i = 0; i < this.length; i++) {
+
       const childNodes = this[i].childNodes
 
       for (let j = 0; j < childNodes.length; j++) {
+        el = childNodes[j]
         if (!selector) {
-          if (childNodes[j].nodeType === 1) children.push(childNodes[j])
-        } else if (childNodes[j].nodeType === 1 && $(childNodes[j]).is(selector)) {
-          children.push(childNodes[j])
+          if (anyNode) {
+            children.push(el)
+          } else if (el.nodeType === 1) {
+            children.push(el)
+          }
+        } else if (el.nodeType === 1 && $(el).is(selector)) {
+          children.push(el)
         }
       }
+
     }
     return $(unique(children))
   },
@@ -465,7 +480,7 @@ ZxEditorQuery.prototype = {
     for (let i = 0; i < this.length; i++) {
       parentNode = this[i].parentNode
       if (parentNode) {
-        parentNode.replaceChild(newChild[0], this[i])
+        parentNode.replaceChild(newChild[0].cloneNode(true), this[i])
       }
     }
     return this
@@ -528,11 +543,13 @@ ZxEditorQuery.prototype = {
     }
     return false
   },
+
   isTextNode () {
     let el = this[0]
     if (!el || !el.nodeType) return false
     return el.nodeType === 3
   },
+
   /**
    * 子元素（不包含br）是否为空
    * @return {boolean}
@@ -540,6 +557,7 @@ ZxEditorQuery.prototype = {
   isEmpty () {
     return !util.strip(this.text()) && !this.find('img, video, audio')[0]
   },
+
   /**
    * target是否为this的第一个子元素
    * @param target
@@ -548,6 +566,7 @@ ZxEditorQuery.prototype = {
   isFirstChildren (target) {
     return this.children().eq(0).is(target)
   },
+
   /**
    * target是否为this的最后一个子元素
    * @param target
@@ -556,6 +575,7 @@ ZxEditorQuery.prototype = {
   isLastChildren (target) {
     return this.children().eq(-1).is(target)
   },
+
   indexOf(el) {
     if (el instanceof ZxEditorQuery) el = el[0]
     for (let i = 0; i < this.length; i++) {
@@ -595,6 +615,7 @@ ZxEditorQuery.prototype = {
     }
     return true
   },
+
   /**
    * ********************************************
    * content
@@ -613,6 +634,7 @@ ZxEditorQuery.prototype = {
     }
     return this
   },
+
   html (html) {
     if (typeof html === 'undefined') {
       return this[0] ? this[0].innerHTML : ''
@@ -623,6 +645,7 @@ ZxEditorQuery.prototype = {
     }
     return this
   },
+
   /**
    * ********************************************
    * node
@@ -631,10 +654,12 @@ ZxEditorQuery.prototype = {
   nodeName () {
     return this[0] ? this[0].nodeName.toLowerCase() : null
   },
+
   // https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType
   nodeType () {
     return this[0] ? this[0].nodeType : 0
   },
+
   changeNodeName (nodeName) {
     for (let i = 0; i < this.length; i++) {
       // change nodeName
@@ -743,6 +768,7 @@ ZxEditorQuery.prototype = {
     }
     return this
   },
+
   styles() {
     if (this[0]) return window.getComputedStyle(this[0], null)
     return {}
@@ -756,6 +782,7 @@ ZxEditorQuery.prototype = {
     if (this[0] === window) return window.innerWidth
     return this.length > 0 ? parseFloat(this.css('width')) : null
   },
+
   outerWidth(includeMargins) {
     if (this.length > 0) {
       let offsetWidth = this[0].offsetWidth
@@ -769,10 +796,12 @@ ZxEditorQuery.prototype = {
     }
     return null
   },
+
   height() {
     if (this[0] === window) return window.innerHeight
     return this.length > 0 ? parseFloat(this.css('height')) : null
   },
+
   outerHeight(includeMargins) {
     if (this.length > 0) {
       let offsetHeight = this[0].offsetHeight
@@ -786,22 +815,78 @@ ZxEditorQuery.prototype = {
     }
     return null
   },
+
   offset() {
     if (this.length > 0) {
-      const el = this[0];
+      let el = this[0]
       let box = el.getBoundingClientRect()
-      const body = document.body
-      const clientTop = el.clientTop || body.clientTop || 0
-      const clientLeft = el.clientLeft || body.clientLeft || 0
-      const scrollTop = el === window ? window.scrollY : el.scrollTop
-      const scrollLeft = el === window ? window.scrollX : el.scrollLeft
+      let body = document.body
+      let clientTop = el.clientTop || body.clientTop || 0
+      let clientLeft = el.clientLeft || body.clientLeft || 0
+      let scrollTop = el === window ? window.scrollY : el.scrollTop
+      let scrollLeft = el === window ? window.scrollX : el.scrollLeft
       return {
         top: (box.top + scrollTop) - clientTop,
         left: (box.left + scrollLeft) - clientLeft,
       }
     }
     return null
+  },
+  /**
+   * ********************************************
+   * for
+   * ********************************************
+   */
+  each (fn) {
+    if (!fn) return this
+    for (let i = 0; i < this.length; i++) {
+      if (fn.call(this[i], i, this[i]) === false) {
+        return this
+      }
+    }
+    return this
+  },
+  /**
+   * ********************************************
+   * scroll
+   * ********************************************
+   */
+
+  scrollTo,
+
+  scrollTop(...args) {
+    let [top, duration, easing, callback] = args
+    if (args.length === 3 && typeof easing === 'function') {
+      [top, duration, callback, easing] = args
+    }
+    let el
+    if (typeof top === 'undefined') {
+      el = this[0]
+      if (el) return util.isWindow(el) ? el.pageYOffset : el.scrollTop
+      return null
+    }
+    return scrollTo.call(this, undefined, top, duration, easing, callback)
   }
+
+  // scrollTop (val) {
+  //   let win
+  //   let el = this[0]
+  //   // get
+  //   if (val === void 0) {
+  //     if (!el) return null
+  //     win = getWindow(el)
+  //     return win ? ('pageYOffset' in win) ? win.pageYOffset : util.supportBoxModel && win.document.documentElement.scrollTop || win.document.body.scrollTop : el.scrollTop
+  //   }
+  //   // set
+  //   for (let i = 0; i < this.length; i++) {
+  //     win = getWindow(this[i])
+  //     if (win) {
+  //       win.scrollTo(0, val)
+  //     } else {
+  //       this[i].scrollTop = val
+  //     }
+  //   }
+  // }
 }
 
 const $ = function (selector, context) {

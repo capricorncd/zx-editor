@@ -19,6 +19,7 @@
 </head>
 <body>
 <div id="editorContainer"></div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-polyfills/0.1.42/polyfill.min.js"></script>
 <!--exif获取照片参数插件-->
 <script src="./demo/libs/exif.min.js"></script>
@@ -44,17 +45,29 @@
 
   console.log('实例化 ZxEditor', zxEditor);
 
-  zxEditor.on('contentChange', function () {
-    console.log('contentChange')
+  zxEditor.on('change', function () {
+    // console.log('change input')
+  })
+
+  zxEditor.on('keydown', function () {
+    // console.log('keydown')
+  })
+
+  zxEditor.on('keyup', function () {
+    // console.log('keyup')
   })
 
   zxEditor.on('selectPictureInputChange', function (file, ze, e) {
     // console.log(file, ze, e)
   })
 
-  zxEditor.on('error', function (e, type) {
-    console.log(type)
+  zxEditor.on('error', function (e, methodName) {
+    console.log(methodName)
     console.error(e)
+  })
+
+  zxEditor.on('windowResize', function () {
+    console.error('windowResize', window.innerHeight)
   })
 </script>
 </body>

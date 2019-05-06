@@ -6,12 +6,14 @@
 import $ from '../dom-class'
 
 export function initStyle (options) {
-  let style = ''
   /**
    * *****************************************
    * append style
    * *****************************************
    */
+  // main color
+  let style = `.zx-editor .m-color{color:${options.mainColor} !important;}.zx-editor .text-style-outer-wrapper .__tag-wrapper dd i {border-color:${options.mainColor} !important;}`
+
   // line-height, caret-color
   if (options.lineHeight || options.cursorColor) {
     let lineHeight = options.lineHeight ? `line-height:${options.lineHeight};` : ''
@@ -30,17 +32,11 @@ export function initStyle (options) {
   if (options.borderColor) {
     style += `.zx-editor .border-top:before, .zx-editor .border-bottom:after {border-color: ${options.borderColor}`
   }
+
   /**
    * *****************************************
    * editor $content
    * *****************************************
    */
-  if (style) $('head').append(`<style type="text/css">${style}</style>`)
-  /**
-   * *****************************************
-   * set css
-   * *****************************************
-   */
-  let heightDiff = this.$wrapper.outerHeight(true) - this.$wrapper.height()
-  this.setHeight(options.height ? options.height : window.innerHeight - heightDiff)
+  $('head').append(`<style type="text/css">${style}</style>`)
 }

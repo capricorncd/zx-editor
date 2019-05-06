@@ -51,26 +51,33 @@ CursorClass.prototype = {
     if (el instanceof ZxEditorQuery) {
       el = el[0]
     }
-    // check offset
-    if (typeof offset === 'number') {
-      this.offset = offset
-    }
-    // check arguments
-    if (typeof el === 'number' && typeof offset === 'undefined') {
-      this.offset = el
-      el = null
-    }
+
     if (this.selection === null) {
       this.init()
     } else {
       // remove all range object
       this.selection.removeAllRanges()
     }
+
     // 光标移动到到原来的位置加上新内容的长度
     el = el || this.currentNode
+
     if (el) {
-      // el: '<section>kkkkkkkkkkkkk</section>'
-      this.range.setStart(el.childNodes[el.childNodes.length - 1] || el, this.offset)
+      // el: '<section>inner text.</section>'
+      let targetNode = el.childNodes[el.childNodes.length - 1] || el
+      // check img/video/audio
+      // console.log(targetNode.nodeName, this.offset)
+      if (/IMG|VIDEO|AUDIO/.test(targetNode.nodeName)) {
+        this.offset = 1
+        // get parentNode, can't set offset = 1 of IMG node.
+        targetNode = targetNode.parentNode
+      } else if (typeof offset === 'undefined') {
+        // get min offset, because offset cannot exceed the length of targetNode.textContent
+        this.offset = Math.min($(targetNode).text().length, this.offset)
+      } else {
+        this.offset = offset
+      }
+      this.range.setStart(targetNode, this.offset)
       this.currentNode = el
     }
     // cursor start and end position is collapse
@@ -94,7 +101,7 @@ CursorClass.prototype = {
    */
   getCurrentNode (needElement) {
     // 获取选定对象
-    this.selection = window.getSelection()
+    // this.selection = window.getSelection()
     // 设置最后光标对象
     try {
       this.range = this.selection.getRangeAt(0)

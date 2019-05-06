@@ -52,7 +52,7 @@ function ExpansionPanel (options, zxEditor) {
   // Used to distinguish ExpansionPanel instance
   this.name = util.toHump(opts.name)
 
-  this.$head = $(`<div class="head-wrapper border-bottom ${opts.textStyleHeadAlign}" style="height:${opts.headHeight}px;line-height:${opts.headHeight}px;"><div class="l cur ${opts.headLeftBtnClassName}">${opts.headLeftBtnText}</div>${opts.headTitle || ''}</div>`)
+  this.$head = $(`<div class="head-wrapper border-bottom ${opts.headAlign}" style="height:${opts.headHeight}px;line-height:${opts.headHeight}px;"><div class="l cur ${opts.headLeftBtnClassName}">${opts.headLeftBtnText}</div>${opts.headTitle || ''}</div>`)
 
   this.$body = $(`<div class="body-wrapper" style="height:${opts.height - opts.headHeight}px;"></div>`)
 

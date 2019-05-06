@@ -3,7 +3,7 @@
  * https://github.com/capricorncd/zx-editor
  * Copyright © 2018-present, capricorncd
  * Released under the MIT License
- * Released on: 2019-05-03 14:20:35
+ * Released on: 2019-05-06 19:59:12
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -100,6 +100,13 @@
     clearTimeout: function clearTimeout() {}
   } : window; // eslint-disable-line
 
+  /**
+   * unique
+   * Remove duplicate elements in an array
+   * @param arr
+   * @return {Array}
+   */
+
   function unique(arr) {
     var uniqueArray = [];
 
@@ -178,10 +185,22 @@
       el["on".concat(eventType)] = null;
     }
   }
+  /**
+   * crate text node
+   * @param str
+   * @return {Text | ActiveX.IXMLDOMText}
+   */
 
   function createTextNode(str) {
     return doc.createTextNode(str);
   }
+  /**
+   * create element
+   * @param tag HTML tag name
+   * @param attrs attributes
+   * @return {*|{children, childNodes, style, setAttribute, getElementsByTagName}|ActiveX.IXMLDOMElement|HTMLElement}
+   */
+
 
   function createElement(tag, attrs) {
     if (!tag && typeof tag !== 'string') {
@@ -200,6 +219,12 @@
 
     return el;
   }
+  /**
+   * create dom
+   * @param vnode {tag: 'div', attrs: {class: 'class-name', 'data-id': 1000}, child: ['any text', vnode]}
+   * @return {*}
+   */
+
   function createVdom(vnode) {
     if (!vnode) return null;
 
@@ -225,6 +250,57 @@
     }
 
     return el;
+  }
+  function scrollTo() {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    var left = args[0],
+        top = args[1],
+        duration = args[2],
+        easing = args[3],
+        callback = args[4];
+
+    if (args.length === 4 && typeof easing === 'function') {
+      left = args[0];
+      top = args[1];
+      duration = args[2];
+      callback = args[3];
+      easing = args[4];
+    }
+
+    if (typeof easing === 'undefined') easing = 'swing';
+    return this.each(function () {
+      var el = this;
+      var animateTop = top > 0 || top === 0;
+      var animateLeft = left > 0 || left === 0;
+      var isWindow = util.isWindow(el);
+
+      if (typeof easing === 'undefined') {
+        easing = 'swing';
+      }
+
+      if (animateTop) {
+        if (!duration) {
+          if (isWindow) {
+            el.scrollTo(0, top);
+          } else {
+            el.scrollTop = top;
+          }
+        }
+      }
+
+      if (animateLeft) {
+        if (!duration) {
+          if (isWindow) {
+            el.scrollTo(left, 0);
+          } else {
+            el.scrollLeft = left;
+          }
+        }
+      }
+    });
   }
 
   var arr = []; // Support: Android <=4.0 only
@@ -306,6 +382,10 @@
   function isIPhoneX() {
     return win.screen.height === 812 && win.screen.width === 375;
   }
+
+  function isWindow(obj) {
+    return obj !== null && obj === obj.window;
+  }
   /**
    * 移除html标签
    * @param str
@@ -344,18 +424,33 @@
 
   function toHump(str) {
     return strip(str).replace(/([-_\s]+\w)/g, function (match, $1) {
-      console.log(match, $1);
+      // console.log(match, $1)
       return $1[1].toUpperCase();
     });
   }
 
+  function supportBoxModel() {
+    var body = doc.getElementsByTagName('body')[0];
+    var div = doc.createElement('div');
+    body.appendChild(div); // Figure out if the W3C box model works as expected
+
+    div.innerHTML = '';
+    div.style.width = div.style.paddingLeft = '1px'; // 通过检测div块的offsetWidth值是否是2px来判断浏览器是否支持盒模型
+
+    var result = div.offsetWidth === 2;
+    body.removeChild(div);
+    return result;
+  }
+
   var util = {
+    isIPhone: isIPhone(),
+    isIPhoneX: isIPhoneX(),
+    supportBoxModel: supportBoxModel(),
     changeNodeName: changeNodeName,
     "int": _int,
     isElement: isElement,
-    isIPhone: isIPhone,
-    isIPhoneX: isIPhoneX,
     isObject: isObject,
+    isWindow: isWindow,
     removeHtmlTags: removeHtmlTags,
     rgbToHex: rgbToHex,
     slice: slice,
@@ -441,19 +536,33 @@
     /**
      * get children
      * @param selector
-     * @return {*|jQuery|HTMLElement}
+     * @param anyNode Boolean
+     * @return {*|HTMLElement}
      */
-    children: function children(selector) {
+    children: function children(selector, anyNode) {
+      // check arguments
+      if (typeof selector === 'boolean') {
+        anyNode = selector;
+        selector = void 0;
+      }
+
       var children = [];
+      var el;
 
       for (var i = 0; i < this.length; i++) {
         var childNodes = this[i].childNodes;
 
         for (var j = 0; j < childNodes.length; j++) {
+          el = childNodes[j];
+
           if (!selector) {
-            if (childNodes[j].nodeType === 1) children.push(childNodes[j]);
-          } else if (childNodes[j].nodeType === 1 && $(childNodes[j]).is(selector)) {
-            children.push(childNodes[j]);
+            if (anyNode) {
+              children.push(el);
+            } else if (el.nodeType === 1) {
+              children.push(el);
+            }
+          } else if (el.nodeType === 1 && $(el).is(selector)) {
+            children.push(el);
           }
         }
       }
@@ -866,7 +975,7 @@
         parentNode = this[i].parentNode;
 
         if (parentNode) {
-          parentNode.replaceChild(newChild[0], this[i]);
+          parentNode.replaceChild(newChild[0].cloneNode(true), this[i]);
         }
       }
 
@@ -1261,7 +1370,77 @@
       }
 
       return null;
-    }
+    },
+
+    /**
+     * ********************************************
+     * for
+     * ********************************************
+     */
+    each: function each(fn) {
+      if (!fn) return this;
+
+      for (var i = 0; i < this.length; i++) {
+        if (fn.call(this[i], i, this[i]) === false) {
+          return this;
+        }
+      }
+
+      return this;
+    },
+
+    /**
+     * ********************************************
+     * scroll
+     * ********************************************
+     */
+    scrollTo: scrollTo,
+    scrollTop: function scrollTop() {
+      for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        args[_key4] = arguments[_key4];
+      }
+
+      var top = args[0],
+          duration = args[1],
+          easing = args[2],
+          callback = args[3];
+
+      if (args.length === 3 && typeof easing === 'function') {
+        top = args[0];
+        duration = args[1];
+        callback = args[2];
+        easing = args[3];
+      }
+
+      var el;
+
+      if (typeof top === 'undefined') {
+        el = this[0];
+        if (el) return util.isWindow(el) ? el.pageYOffset : el.scrollTop;
+        return null;
+      }
+
+      return scrollTo.call(this, undefined, top, duration, easing, callback);
+    } // scrollTop (val) {
+    //   let win
+    //   let el = this[0]
+    //   // get
+    //   if (val === void 0) {
+    //     if (!el) return null
+    //     win = getWindow(el)
+    //     return win ? ('pageYOffset' in win) ? win.pageYOffset : util.supportBoxModel && win.document.documentElement.scrollTop || win.document.body.scrollTop : el.scrollTop
+    //   }
+    //   // set
+    //   for (let i = 0; i < this.length; i++) {
+    //     win = getWindow(this[i])
+    //     if (win) {
+    //       win.scrollTo(0, val)
+    //     } else {
+    //       this[i].scrollTop = val
+    //     }
+    //   }
+    // }
+
   };
 
   var $ = function $(selector, context) {
@@ -1322,17 +1501,6 @@
 
       if (el instanceof ZxEditorQuery) {
         el = el[0];
-      } // check offset
-
-
-      if (typeof offset === 'number') {
-        this.offset = offset;
-      } // check arguments
-
-
-      if (typeof el === 'number' && typeof offset === 'undefined') {
-        this.offset = el;
-        el = null;
       }
 
       if (this.selection === null) {
@@ -1346,8 +1514,22 @@
       el = el || this.currentNode;
 
       if (el) {
-        // el: '<section>kkkkkkkkkkkkk</section>'
-        this.range.setStart(el.childNodes[el.childNodes.length - 1] || el, this.offset);
+        // el: '<section>inner text.</section>'
+        var targetNode = el.childNodes[el.childNodes.length - 1] || el; // check img/video/audio
+        // console.log(targetNode.nodeName, this.offset)
+
+        if (/IMG|VIDEO|AUDIO/.test(targetNode.nodeName)) {
+          this.offset = 1; // get parentNode, can't set offset = 1 of IMG node.
+
+          targetNode = targetNode.parentNode;
+        } else if (typeof offset === 'undefined') {
+          // get min offset, because offset cannot exceed the length of targetNode.textContent
+          this.offset = Math.min($(targetNode).text().length, this.offset);
+        } else {
+          this.offset = offset;
+        }
+
+        this.range.setStart(targetNode, this.offset);
         this.currentNode = el;
       } // cursor start and end position is collapse
 
@@ -1373,8 +1555,8 @@
      */
     getCurrentNode: function getCurrentNode(needElement) {
       // 获取选定对象
-      this.selection = window.getSelection(); // 设置最后光标对象
-
+      // this.selection = window.getSelection()
+      // 设置最后光标对象
       try {
         this.range = this.selection.getRangeAt(0);
       } catch (e) {
@@ -1438,7 +1620,7 @@
     this.visible = false; // Used to distinguish ExpansionPanel instance
 
     this.name = util.toHump(opts.name);
-    this.$head = $("<div class=\"head-wrapper border-bottom ".concat(opts.textStyleHeadAlign, "\" style=\"height:").concat(opts.headHeight, "px;line-height:").concat(opts.headHeight, "px;\"><div class=\"l cur ").concat(opts.headLeftBtnClassName, "\">").concat(opts.headLeftBtnText, "</div>").concat(opts.headTitle || '', "</div>"));
+    this.$head = $("<div class=\"head-wrapper border-bottom ".concat(opts.headAlign, "\" style=\"height:").concat(opts.headHeight, "px;line-height:").concat(opts.headHeight, "px;\"><div class=\"l cur ").concat(opts.headLeftBtnClassName, "\">").concat(opts.headLeftBtnText, "</div>").concat(opts.headTitle || '', "</div>"));
     this.$body = $("<div class=\"body-wrapper\" style=\"height:".concat(opts.height - opts.headHeight, "px;\"></div>")); // node
 
     this.$el = $("<div class=\"zx-editor-expansion-panel border-top\"></div>"); // click
@@ -1546,23 +1728,602 @@
   /**
    * Created by Capricorncd.
    * User: https://github.com/capricorncd
-   * Date: 2019/04/25 21:29
+   * Date: 2019/04/29 21:08
    */
-  function onWatcher() {
+  function changeTag(tag) {
+    // same tag
+    if (this.$cursorNode.nodeName() === tag) return;
+    var cursorNode = this.$cursorNode[0];
+    var childNodes = cursorNode.childNodes;
+    var len = childNodes.length; // to ul
+
+    if (tag === 'ul') {
+      var ul = doc.createElement('ul');
+      cloneAttrs(ul, cursorNode);
+
+      for (var i = 0; i < len; i++) {
+        ul.appendChild(createLi(childNodes[i].cloneNode(true)));
+      }
+
+      cursorNode.parentNode.replaceChild(ul, cursorNode); // save current node
+
+      this.$cursorNode = $(ul);
+      return;
+    } // change ul
+
+
+    if (cursorNode.nodeName === 'UL') {
+      var li, el;
+
+      for (var _i = 0; _i < len; _i++) {
+        li = childNodes[_i].cloneNode(true);
+        cloneAttrs(li, cursorNode);
+        el = this.changeNodeName(li, tag);
+        $(el).insertBefore(this.$cursorNode);
+      } // remove old ul
+
+
+      this.$cursorNode.remove();
+      this.$cursorNode = $(el);
+      return;
+    }
+
+    this.$cursorNode.changeNodeName(tag);
+    this.cursor.setRange(this.$cursorNode);
+  }
+
+  function createLi(child) {
+    var li = doc.createElement('li');
+    li.appendChild(child);
+    return li;
+  }
+
+  function cloneAttrs(target, source) {
+    var style, id, className;
+    style = source.getAttribute('style');
+    id = source.id;
+    className = source.className;
+    if (style) target.setAttribute('style', style);
+    if (id) target.id = id;
+    if (className) target.className = className;
+  }
+
+  /**
+   * Created by Capricorncd.
+   * User: https://github.com/capricorncd
+   * Date: 2019/04/21 10:33
+   */
+  var IPHONEX_BOTTOM_OFFSET_HEIGHT = 34;
+
+  /**
+   * Created by Capricorncd.
+   * User: https://github.com/capricorncd
+   * Date: 2019/04/27 21:11
+   */
+
+  var DEF_COLORS = ['#333', '#d0d0d0', '#ff583d', '#fdaa25', '#44c67b', '#14b2e0', '#b065e2'];
+  /**
+   * create color vnode
+   * @param colors
+   * @return Object
+   */
+
+  function createColorVNode(colors) {
+    var arr = [];
+    colors.forEach(function (color, i) {
+      if (/^#\w{3,6}$/.test(color)) {
+        arr.push({
+          tag: 'dd',
+          attrs: {
+            "class": i === 0 ? 'active' : '',
+            'data-color': formatColorHexadecimal(color.toLowerCase())
+          },
+          child: [{
+            tag: 'i',
+            attrs: {
+              style: "background:".concat(color)
+            }
+          }]
+        });
+      }
+    });
+    return arr;
+  }
+
+  function formatColorHexadecimal(hex) {
+    var len = hex.length;
+    return len === 7 ? hex : "#".concat(hex[1]).concat(hex[1]).concat(hex[2]).concat(hex[2]).concat(hex[3]).concat(hex[3]);
+  }
+  /**
+   * text style panel
+   * @param options
+   * @return {{name: string, className: string, events: {type: string, handler: events.handler}}}
+   */
+
+
+  function styleExpansionPanel(options) {
     var _this = this;
 
-    /**
-     * *********************************
-     * toolbar change
-     * *********************************
-     */
-    this.on('toolbarShow', function (toolbar) {
-      _this.$content.css('padding-bottom', toolbar.height + 'px');
+    var zxEditor = this;
+    var COLORS = options.textStyleColors.length ? options.textStyleColors : DEF_COLORS; // dom structure
+
+    var panelBodyChild = [// style
+    {
+      tag: 'dl',
+      attrs: {
+        "class": '__style-wrapper border-bottom'
+      },
+      child: [{
+        tag: 'dd',
+        attrs: {
+          style: 'font-weight: 800;',
+          'data-style': 'fontWeight:800'
+        },
+        child: ['B']
+      }, {
+        tag: 'dd',
+        attrs: {
+          style: 'font-style: italic;',
+          'data-style': 'fontStyle:italic'
+        },
+        child: ['I']
+      }, {
+        tag: 'dd',
+        attrs: {
+          style: 'text-decoration: line-through;',
+          'data-style': 'textDecoration:line-through'
+        },
+        child: ['abc']
+      }]
+    }, // color
+    {
+      tag: 'dl',
+      attrs: {
+        "class": '__color-wrapper border-bottom'
+      },
+      child: createColorVNode(COLORS)
+    }, // tag
+    {
+      tag: 'dl',
+      attrs: {
+        "class": '__tag-wrapper'
+      },
+      child: [{
+        tag: 'dd',
+        attrs: {
+          "class": '__h2',
+          'data-tag': 'h2'
+        },
+        child: ['大标题', {
+          tag: 'i'
+        }]
+      }, {
+        tag: 'dd',
+        attrs: {
+          "class": '__h4',
+          'data-tag': 'h4'
+        },
+        child: ['小标题', {
+          tag: 'i'
+        }]
+      }, {
+        tag: 'dd',
+        attrs: {
+          "class": '__section active',
+          'data-tag': 'section'
+        },
+        child: ['正文', {
+          tag: 'i'
+        }]
+      }, {
+        tag: 'dd',
+        attrs: {
+          "class": '__blockquote',
+          'data-tag': 'blockquote'
+        },
+        child: ['引用', {
+          tag: 'i'
+        }]
+      }, {
+        tag: 'dd',
+        attrs: {
+          "class": '__ul',
+          'data-tag': 'ul'
+        },
+        child: ['无序列表', {
+          tag: 'i'
+        }]
+      }]
+    }];
+    var panelBody = createVdom({
+      tag: 'div',
+      attrs: {
+        "class": 'text-style-outer-wrapper'
+      },
+      child: panelBodyChild
     });
-    this.on('toolbarHide', function () {
-      _this.$content.css('padding-bottom', 0);
+    var $panelBody = $(panelBody); // instance text style
+
+    this.textStylePanel = new this.ExpansionPanel({
+      headLeftBtnText: options.textStyleHeadLeftBtnText,
+      headTitle: options.textStyleTitle,
+      headAlign: options.textStyleHeadAlign,
+      body: $panelBody,
+      onHeadClick: handleHeadClick
+    }, this); // handle events
+    // style
+
+    var $styles = $panelBody.find('.__style-wrapper').children();
+    $styles.on('click', function () {
+      var style = $(this).data('style').split(':');
+      var key = style[0];
+      var cursorNode = zxEditor.$cursorNode[0];
+      cursorNode.style[key] = cursorNode.style[key] === style[1] ? '' : style[1];
+      zxEditor.cursor.setRange();
+    }); // color
+
+    var $colorsParent = $panelBody.find('.__color-wrapper');
+    var $colors = $colorsParent.children();
+    $colors.on('click', function () {
+      var $el;
+
+      for (var i = 0; i < $colors.length; i++) {
+        $el = $($colors[i]);
+
+        if ($el[0] === this && !$el.hasClass('active')) {
+          $el.addClass('active');
+          zxEditor.$cursorNode.css('color', $el.data('color'));
+        } else if ($el.hasClass('active')) {
+          $el.removeClass('active');
+        }
+      }
+
+      zxEditor.cursor.setRange();
+    }); // tag
+
+    var $tagsParent = $panelBody.find('.__tag-wrapper');
+    var $tags = $tagsParent.children();
+    $tags.on('click', function () {
+      if ($(this).hasClass('active')) return;
+      var tag = $(this).data('tag');
+      var $el;
+
+      for (var i = 0; i < $tags.length; i++) {
+        $el = $($tags[i]);
+
+        if ($el[0] === this) {
+          // add active class name
+          $el.addClass('active'); // change tag
+
+          changeTag.call(zxEditor, tag);
+        } else if ($el.hasClass('active')) {
+          $el.removeClass('active');
+        }
+      }
+    });
+
+    if (this.isIPhoneX) {
+      $tagsParent.css('margin-bottom', IPHONEX_BOTTOM_OFFSET_HEIGHT + 'px');
+    } // extend method
+
+    /**
+     * reset active state
+     * when content onClick and onKeyup code === 13
+     */
+
+
+    this.textStylePanel.resetActiveState = function () {
+      var $cursorNode = _this.cursor.getCurrentNode(); // check tag
+
+
+      var tag = $cursorNode.nodeName();
+      setTagInPanel(tag); // check color
+
+      var color = _this.rgbToHex($cursorNode.css('color'));
+
+      setColorInPanel(color);
+    };
+    /**
+     * set tag in panel
+     * @param tag
+     */
+
+
+    function setTagInPanel(tag) {
+      var $activeTag = $tagsParent.find('.active');
+
+      if ($activeTag.data('tag') !== tag) {
+        $activeTag.removeClass('active');
+        $tagsParent.find(".__".concat(tag)).addClass('active');
+      }
+    }
+    /**
+     * set color in panel
+     * @param color
+     */
+
+
+    function setColorInPanel(color) {
+      var $activeColor = $colorsParent.find('.active');
+
+      if ($activeColor.data('color') !== color) {
+        $activeColor.removeClass('active');
+        var $tmp;
+
+        for (var i = 0; i < $colors.length; i++) {
+          $tmp = $($colors[i]);
+
+          if ($tmp.data('color') === color) {
+            $tmp.addClass('active');
+            break;
+          }
+        }
+      }
+    }
+    /**
+     * handle head click
+     * @param type
+     */
+
+
+    function handleHeadClick(type) {
+      // clear style
+      if (type === 'left-button') {
+        // clear style
+        var currentNode = zxEditor.$cursorNode[0];
+        currentNode.className = '';
+        currentNode.setAttribute('style', '');
+
+        if (currentNode.nodeName !== 'SECTION') {
+          zxEditor.$cursorNode = $(zxEditor.changeNodeName(currentNode, 'section'));
+        } // reset text style expansion
+
+
+        setColorInPanel(COLORS[0]);
+        setTagInPanel('section'); // set Range
+
+        zxEditor.cursor.setRange(zxEditor.$cursorNode);
+      }
+    }
+
+    return {
+      name: 'text-style',
+      className: 'text-style-btn',
+      events: {
+        type: 'click',
+        handler: function handler() {
+          _this.textStylePanel.show();
+        }
+      }
+    };
+  }
+
+  /**
+   * Created by Capricorncd.
+   * User: https://github.com/capricorncd
+   * Date: 2019/05/04 00:09
+   */
+  function textStyle() {
+    this.toolbar.addButton(styleExpansionPanel.call(this, this.options));
+  }
+
+  /**
+   * Created by Capricorncd.
+   * User: https://github.com/capricorncd
+   * Date: 2019/04/27 21:19
+   */
+  function selectPictureBtn() {
+    var _this = this;
+
+    var options = this.options;
+    /**
+     * *******************************************
+     * select picture
+     * image file handler
+     * *******************************************
+     */
+    // select picture
+
+    var $selectPictureLabel = $('<label class="toolbar-icon-pic" style="position:absolute;top:0;left:0;width:100%;height:100%;"></label>');
+    var $selectPictrueInput = $('<input type="file" accept="image/*" style="display:none">');
+    $selectPictureLabel.append($selectPictrueInput);
+    var input = $selectPictrueInput[0]; // register selectPictureInputClick
+
+    this.$eventHandlers['selectPictureInputClick'] = {
+      $target: $selectPictrueInput,
+      type: 'click',
+      handler: function handler() {
+        input.value = '';
+      },
+      capture: false // image section template
+
+    };
+    var imageSectionTemplate = /^<\w+\b.*<\/\w+>$/.test(options.imageSectionTemp) ? options.imageSectionTemp : "<section><img src=\"{url}\"></section>"; // register selectPictureInputChange
+
+    var imageOptions = Object.assign({}, _this.options, {
+      width: options.imageMaxWidth
+    });
+    this.$eventHandlers['selectPictureInputChange'] = {
+      $target: $selectPictrueInput,
+      type: 'change',
+      handler: function handler(e) {
+        var file = input.files[0];
+
+        _this.emit('selectPictureInputChange', file, e, _this); // customize Picture Handler
+
+
+        if (options.customizePictureHandler) return; // handler picture
+
+        _this.fileToBase64(file, imageOptions).then(function (res) {
+          // console.log(res)
+          var $el = $(imageSectionTemplate.replace('{url}', res.base64)); // set attribute
+
+          $el.find('img').attr({
+            id: 'zxEditor_img_' + +new Date(),
+            alt: file.name
+          }); // insert to $content
+
+          _this.insertElm($el);
+        })["catch"](function (e) {
+          _this.emit('error', e, 'fileToBase64');
+        });
+      },
+      capture: false
+    };
+    this.toolbar.addButton({
+      name: 'select-picture',
+      el: $selectPictureLabel
     });
   }
+
+  var DEF_BTN_OPTS = {
+    name: '',
+    // button className
+    className: '',
+    // ElementHTML or $()
+    el: null,
+    // innerHTML
+    innerHtml: '',
+    // style
+    style: '',
+    // obj{type: 'click', handler: fn, capture: false} or array[obj1, obj2]
+    events: null
+  };
+
+  function Toolbar(options, zxEditor) {
+    // zxEditor instance
+    this.editorInstance = zxEditor; // options
+
+    this.options = options; // visible
+
+    this.visible = options.toolbarBeenFixed; // create element
+
+    this.height = options.toolbarHeight;
+    this.$el = $("<div class=\"zx-editor-toolbar-wrapper border-top ".concat(this.visible ? 'in' : 'out', "\" style=\"height:").concat(this.height + (util.isIPhoneX ? IPHONEX_BOTTOM_OFFSET_HEIGHT : 0), "px;\"><dl class=\"inner-wrapper\" style=\"height:").concat(this.height, "px;\"></dl></div>")); // append to $editor
+
+    zxEditor.$editor.append(this.$el); // init
+
+    this.init(options);
+  }
+
+  Toolbar.prototype = {
+    /**
+     * constructor
+     */
+    constructor: Toolbar,
+
+    /**
+     * Used to window.onresize
+     * @param options
+     */
+    init: function init(options) {
+      options = options || this.options;
+      var winHeight = win.innerHeight;
+      this.$el.css({
+        top: winHeight + 'px'
+      });
+      if (this.visible) this.editorInstance.emit('toolbarShow', this, this.editorInstance);
+    },
+
+    /**
+     * show
+     */
+    show: function show() {
+      if (!this.visible) {
+        // change className
+        this.$el.removeClass('out').addClass('in');
+        this.visible = true;
+        this.editorInstance.emit('toolbarShow', this, this.editorInstance);
+      }
+    },
+
+    /**
+     * hide
+     */
+    hide: function hide() {
+      if (this.visible) {
+        // change className
+        this.$el.removeClass('in').addClass('out');
+        this.visible = false;
+        this.editorInstance.emit('toolbarHide', this, this.editorInstance);
+      }
+    },
+
+    /**
+     * add button
+     * @param opts
+     * @param index Insert index
+     */
+    addButton: function addButton(opts, index) {
+      var _this = this;
+
+      // params
+      var params = Object.assign({}, DEF_BTN_OPTS, opts); // name
+
+      if (!params.name) params.name = 'toolbar-btn-' + +new Date(); // create $node
+
+      var $btn = $("<dd class=\"icon-item\" data-name=\"".concat(params.name, "\" style=\"").concat(params.style, "\"></dd>")); // handle el
+
+      if (params.el && _typeof(params.el) === 'object') {
+        $btn.append($(params.el));
+      } else {
+        // handle innerHtml
+        $btn.html(params.innerHtml);
+      } // className
+
+
+      if (params.className) {
+        $btn.addClass(params.className);
+      } // style
+
+
+      var css = {};
+
+      if (this.options.toolbarHeight) {
+        css.width = css.height = this.options.toolbarHeight + 'px';
+      }
+
+      $btn.css(css); // insert to document
+
+      var $btns = this.$el.find('.inner-wrapper').children();
+
+      if (typeof index === 'number' && index < $btns.length) {
+        $btn.insertBefore($btns[index]);
+      } else {
+        this.$el.find('.inner-wrapper').append($btn);
+      } // events
+
+
+      if (params.events) {
+        var events;
+
+        if (util.isObject(params.events)) {
+          events = [];
+          events.push(params.events);
+        } else if (Array.isArray(params.events)) {
+          events = params.events;
+        } // register events
+
+
+        var eventHandlerKey;
+        var $eventHandlers = this.editorInstance.$eventHandlers;
+        events.forEach(function (item) {
+          if (item && typeof item.type === 'string' && typeof item.handler === 'function') {
+            eventHandlerKey = "toolbarBtnEvent_".concat(item.name);
+            $eventHandlers[eventHandlerKey] = {
+              $target: $btn,
+              type: item.type,
+              handler: item.handler.bind(_this.editorInstance),
+              capture: typeof item.capture === 'boolean' ? item.capture : false
+            };
+            $btn.on(item.type, $eventHandlers[eventHandlerKey].handler, $eventHandlers[eventHandlerKey].capture);
+          } else {
+            throw new TypeError("Function addButton(opts), opts.events's parameter error.");
+          }
+        });
+      }
+    }
+  };
 
   /**
    * Created by Capricorncd.
@@ -1570,15 +2331,30 @@
    * Date: 2019/04/15 21:49
    */
   function initDom(options) {
+    var _this = this;
+
     // content
-    this.$content = $("<div class=\"zx-editor-content-wrapper is-empty\" contenteditable=\"".concat(options.editable, "\"><section><br></section></div>")); // editor
+    this.$content = $("<div class=\"zx-editor-content-wrapper is-empty\" contenteditable=\"".concat(options.editable, "\"><section><br></section></div>"));
+    this.setContentHeight(options); // editor
 
     this.$editor = $("<div class=\"zx-editor\"></div>"); // append to $eidtor
 
-    this.$editor.append(this.$content); // expansion-panel
-    // append to $wrapper
+    this.$editor.append(this.$content); // toolbar
 
-    this.$wrapper.append(this.$editor);
+    this.toolbar = new Toolbar(options, this); // append to $wrapper
+
+    this.$wrapper.append(this.$editor); // get lineHeight
+
+    this.lineHeight = util["int"](this.$content.styles().lineHeight); // plugin
+    // sort btn
+
+    options.toolbarBtns.forEach(function (name) {
+      if (name === 'select-picture') {
+        _this.plugin(selectPictureBtn);
+      } else if (name === 'text-style') {
+        _this.plugin(textStyle);
+      }
+    });
   }
 
   /**
@@ -1587,13 +2363,13 @@
    * Date: 2019/04/15 21:46
    */
   function initStyle(options) {
-    var style = '';
     /**
      * *****************************************
      * append style
      * *****************************************
      */
-    // line-height, caret-color
+    // main color
+    var style = ".zx-editor .m-color{color:".concat(options.mainColor, " !important;}.zx-editor .text-style-outer-wrapper .__tag-wrapper dd i {border-color:").concat(options.mainColor, " !important;}"); // line-height, caret-color
 
     if (options.lineHeight || options.cursorColor) {
       var lineHeight = options.lineHeight ? "line-height:".concat(options.lineHeight, ";") : '';
@@ -1622,15 +2398,7 @@
      */
 
 
-    if (style) $('head').append("<style type=\"text/css\">".concat(style, "</style>"));
-    /**
-     * *****************************************
-     * set css
-     * *****************************************
-     */
-
-    var heightDiff = this.$wrapper.outerHeight(true) - this.$wrapper.height();
-    this.setHeight(options.height ? options.height : window.innerHeight - heightDiff);
+    $('head').append("<style type=\"text/css\">".concat(style, "</style>"));
   }
 
   /**
@@ -1697,139 +2465,197 @@
   /**
    * Created by Capricorncd.
    * User: https://github.com/capricorncd
-   * Date: 2019/04/21 14:57
-   */
-  /**
-   * window onResize handler
-   */
-
-  function windowResize() {
-    this.toolbar.init();
-    this.emit('windowResize', this);
-  }
-  /**
-   * content onPaste
-   * @param e
-   */
-
-  function contentPaste(e) {
-    var _this = this;
-
-    e.preventDefault();
-    getPasteText(e).then(function (str) {
-      // 添加至焦点处
-      _this.insertElm(util.removeHtmlTags(str));
-    });
-  }
-  /**
-   * content input
-   */
-
-  function contentInput() {
-    this._checkEmpty();
-
-    this.emit('contentChange', this);
-  }
-  /**
-   * content on focus
-   */
-
-  function contentFocus() {
-    // console.error('contentFocus')
-    // hide all expansionPanels
-    // this.expansionPanels.forEach(ep => {
-    //   ep.hide()
-    // })
-    // toolbar
-    if (!this.options.toolbarBeenFixed) {
-      this.toolbar.show();
-    }
-  }
-  /**
-   * content on blur
-   */
-
-  function contentBlur() {
-    // save $cursorNode
-    this.$cursorNode = this.cursor.getCurrentNode();
-
-    this._checkChildSection(); // console.warn(this.$cursorNode[0])
-    // toolbar
-
-
-    if (!this.options.toolbarBeenFixed) {
-      this.toolbar.hide();
-    }
-  }
-  function contentKeyup(e) {
-    // handle enter keyup
-    if (e.key === 'Enter' || e.keyCode === 13) {
-      this._checkChildSection();
-
-      contentClick.call(this);
-    }
-  }
-  function contentClick() {
-    // textStylePanel is undefined, or is hide
-    if (!this.textStylePanel || !this.textStylePanel.visible) return;
-    this.textStylePanel.resetActiveState();
-  }
-
-  /**
-   * Created by Capricorncd.
-   * User: https://github.com/capricorncd
    * Date: 2019/04/15 21:53
    */
+  /**
+   * handle events
+   */
+
   function handleEvents() {
     var $content = this.$content;
+    var $window = $(win); // const options = this.options
+
     /**
-     * content paste
+     * ****************************************************
+     * window on resize
+     * ****************************************************
      */
+
+    function windowResize() {
+      // toolbar
+      this.toolbar.init(); // expansion panels
+
+      this.expansionPanels.forEach(function (item) {
+        item.init();
+      });
+      this.emit('windowResize', this);
+    }
+
+    this.$eventHandlers.windowResize = {
+      $target: $window,
+      type: 'resize',
+      handler: windowResize.bind(this)
+      /**
+       * ****************************************************
+       * content on paste
+       * ****************************************************
+       */
+
+    };
+
+    function contentPaste(e) {
+      var _this = this;
+
+      e.preventDefault();
+      getPasteText(e).then(function (str) {
+        // 添加至焦点处
+        _this.insertElm(util.removeHtmlTags(str));
+      });
+    }
 
     this.$eventHandlers.contentPaste = {
       $target: $content,
       type: 'paste',
       handler: contentPaste.bind(this)
       /**
-       * window resize
+       * ****************************************************
+       * content on input
+       * ****************************************************
        */
 
     };
-    this.$eventHandlers.windowResize = {
-      $target: $(window),
-      type: 'resize',
-      handler: windowResize.bind(this)
-      /**
-       * content input
-       */
 
-    };
+    function contentInput() {
+      // check empty in content
+      this._checkEmpty(); // check cursor node position
+
+
+      this.checkPosition(); // emit content on change
+
+      this.emit('change', this);
+    }
+
     this.$eventHandlers.contentInput = {
       $target: $content,
       type: 'input',
       handler: contentInput.bind(this)
+      /**
+       * ****************************************************
+       * content on focus
+       * ****************************************************
+       */
+
     };
+
+    function contentFocus() {
+      // console.error('contentFocus')
+      // hide all expansionPanels
+      // this.expansionPanels.forEach(ep => {
+      //   ep.hide()
+      // })
+      // toolbar
+      if (!this.options.toolbarBeenFixed) {
+        this.toolbar.show();
+      }
+    }
+
     this.$eventHandlers.contentFocus = {
       $target: $content,
       type: 'focus',
       handler: contentFocus.bind(this)
+      /**
+       * ****************************************************
+       * content on blur
+       * ****************************************************
+       */
+
     };
+
+    function contentBlur() {
+      // save $cursorNode
+      this.$cursorNode = this.cursor.getCurrentNode();
+
+      this._checkChildSection(); // console.warn(this.$cursorNode[0])
+      // toolbar
+
+
+      if (!this.options.toolbarBeenFixed) {
+        this.toolbar.hide();
+      }
+    }
+
     this.$eventHandlers.contentBlur = {
       $target: $content,
       type: 'blur',
       handler: contentBlur.bind(this)
+      /**
+       * ****************************************************
+       * content on click
+       * ****************************************************
+       */
+
     };
+
+    function contentClick() {
+      // save $cursorNode
+      this.$cursorNode = this.cursor.getCurrentNode(); // check position
+
+      this.checkPosition(); // textStylePanel is undefined, or is hide
+
+      if (!this.textStylePanel || !this.textStylePanel.visible) return;
+      this.textStylePanel.resetActiveState();
+    }
+
     this.$eventHandlers.contentClick = {
       $target: $content,
       type: 'click',
       handler: contentClick.bind(this)
+      /**
+       * ****************************************************
+       * content on keydown
+       * ****************************************************
+       */
+
     };
+
+    function contentKeydown(e) {
+      this.emit('keydown', e);
+    }
+
+    this.$eventHandlers.contentKeyup = {
+      $target: $content,
+      type: 'keydown',
+      handler: contentKeydown.bind(this)
+      /**
+       * ****************************************************
+       * content on keyup
+       * ****************************************************
+       */
+
+    };
+
+    function contentKeyup(e) {
+      this.emit('keyup', e); // handle enter keyup
+
+      if (e.key === 'Enter' || e.keyCode === 13) {
+        // check section node
+        this._checkChildSection(); // content on click
+
+
+        contentClick.call(this);
+      } // check position
+      // this.checkPosition()
+
+    }
+
     this.$eventHandlers.contentKeyup = {
       $target: $content,
       type: 'keyup',
       handler: contentKeyup.bind(this)
       /**
+       * ****************************************************
        * register events
+       * ****************************************************
        */
 
     };
@@ -1875,7 +2701,7 @@
       try {
         notifyArr[i].apply(null, args);
       } catch (e) {
-        this.emit('error', e);
+        this.emit('error', e, 'emit');
       }
     }
   }
@@ -2148,7 +2974,7 @@
       if (!/image\/.*/i.test(file.type)) {
         reject(new TypeError("\"".concat(file.name, "\" is not Image File!")));
         return;
-      } // roate image
+      } // rotate image
 
 
       if (typeof win.EXIF === 'undefined') {
@@ -2304,626 +3130,16 @@
 
   /**
    * Created by Capricorncd.
-   * User: https://github.com/capricorncd
-   * Date: 2019/04/21 10:33
-   */
-  var IPHONEX_BOTTOM_OFFSET_HEIGHT = 34;
-
-  var DEF_BTN_OPTS = {
-    name: '',
-    // button className
-    className: '',
-    // ElementHTML or $()
-    el: null,
-    // innerHTML
-    innerHtml: '',
-    // style
-    style: '',
-    // obj{type: 'click', handler: fn, capture: false} or array[obj1, obj2]
-    events: null
-  };
-
-  function Toolbar(options, zxEditor) {
-    // zxEditor instance
-    this.editorInstance = zxEditor; // options
-
-    this.options = options; // visible
-
-    this.visible = options.toolbarBeenFixed; // create element
-
-    this.height = options.toolbarHeight;
-    this.$el = $("<div class=\"zx-editor-toolbar-wrapper border-top ".concat(this.visible ? 'in' : 'out', "\" style=\"height:").concat(this.height + (util.isIPhoneX() ? IPHONEX_BOTTOM_OFFSET_HEIGHT : 0), "px;\"><dl class=\"inner-wrapper\" style=\"height:").concat(this.height, "px;\"></dl></div>")); // append to $editor
-
-    zxEditor.$editor.append(this.$el); // init
-
-    this.init(options);
-  }
-
-  Toolbar.prototype = {
-    /**
-     * constructor
-     */
-    constructor: Toolbar,
-
-    /**
-     * Used to window.onresize
-     * @param options
-     */
-    init: function init(options) {
-      options = options || this.options;
-      var winHeight = win.innerHeight;
-      this.$el.css({
-        top: winHeight + 'px'
-      });
-      if (this.visible) this.editorInstance.emit('toolbarShow', this, this.editorInstance);
-    },
-
-    /**
-     * show
-     */
-    show: function show() {
-      if (!this.visible) {
-        // change className
-        this.$el.removeClass('out').addClass('in');
-        this.visible = true;
-        this.editorInstance.emit('toolbarShow', this, this.editorInstance);
-      }
-    },
-
-    /**
-     * hide
-     */
-    hide: function hide() {
-      if (this.visible) {
-        // change className
-        this.$el.removeClass('in').addClass('out');
-        this.visible = false;
-        this.editorInstance.emit('toolbarHide', this, this.editorInstance);
-      }
-    },
-
-    /**
-     * add button
-     * @param opts
-     * @param index Insert index
-     */
-    addButton: function addButton(opts, index) {
-      var _this = this;
-
-      // params
-      var params = Object.assign({}, DEF_BTN_OPTS, opts); // name
-
-      if (!params.name) params.name = 'toolbar-btn-' + +new Date(); // create $node
-
-      var $btn = $("<dd class=\"icon-item\" data-name=\"".concat(params.name, "\" style=\"").concat(params.style, "\"></dd>")); // handle el
-
-      if (params.el && _typeof(params.el) === 'object') {
-        $btn.append($(params.el));
-      } else {
-        // handle innerHtml
-        $btn.html(params.innerHtml);
-      } // className
-
-
-      if (params.className) {
-        $btn.addClass(params.className);
-      } // style
-
-
-      var css = {};
-
-      if (this.options.toolbarHeight) {
-        css.width = css.height = this.options.toolbarHeight + 'px';
-      }
-
-      $btn.css(css); // insert to document
-
-      var $btns = this.$el.find('.inner-wrapper').children();
-
-      if (typeof index === 'number' && index < $btns.length) {
-        $btn.insertBefore($btns[index]);
-      } else {
-        this.$el.find('.inner-wrapper').append($btn);
-      } // events
-
-
-      if (params.events) {
-        var events;
-
-        if (util.isObject(params.events)) {
-          events = [];
-          events.push(params.events);
-        } else if (Array.isArray(params.events)) {
-          events = params.events;
-        } // register events
-
-
-        var eventHandlerKey;
-        var $eventHandlers = this.editorInstance.$eventHandlers;
-        events.forEach(function (item) {
-          if (item && typeof item.type === 'string' && typeof item.handler === 'function') {
-            eventHandlerKey = "toolbarBtnEvent_".concat(item.name);
-            $eventHandlers[eventHandlerKey] = {
-              $target: $btn,
-              type: item.type,
-              handler: item.handler.bind(_this.editorInstance),
-              capture: typeof item.capture === 'boolean' ? item.capture : false
-            };
-            $btn.on(item.type, $eventHandlers[eventHandlerKey].handler, $eventHandlers[eventHandlerKey].capture);
-          } else {
-            throw new TypeError("Function addButton(opts), opts.events's parameter error.");
-          }
-        });
-      }
-    }
-  };
-
-  /**
-   * Created by Capricorncd.
-   * User: https://github.com/capricorncd
-   * Date: 2019/04/27 21:19
-   */
-  function selectPictureBtn(options) {
-    var _this = this;
-    /**
-     * *******************************************
-     * select picture
-     * image file handler
-     * *******************************************
-     */
-    // select picture
-
-
-    var $selectPictureLabel = $('<label class="toolbar-icon-pic" style="position:absolute;top:0;left:0;width:100%;height:100%;"></label>');
-    var $selectPictrueInput = $('<input type="file" accept="image/*" style="display:none">');
-    $selectPictureLabel.append($selectPictrueInput);
-    var input = $selectPictrueInput[0]; // register selectPictureInputClick
-
-    this.$eventHandlers['selectPictureInputClick'] = {
-      $target: $selectPictrueInput,
-      type: 'click',
-      handler: function handler() {
-        input.value = '';
-      },
-      capture: false // image section template
-
-    };
-    var imageSectionTemplate = /^<section\b.*<\/section>$/.test(options.imageSectionTemp) ? options.imageSectionTemp : "<section><img src=\"{url}\"></section>"; // register selectPictureInputChange
-
-    var imageOptions = Object.assign({}, _this.options, {
-      width: options.imageMaxWidth
-    });
-    this.$eventHandlers['selectPictureInputChange'] = {
-      $target: $selectPictrueInput,
-      type: 'change',
-      handler: function handler(e) {
-        var file = input.files[0];
-
-        _this.emit('selectPictureInputChange', file, e, _this); // customize Picture Handler
-
-
-        if (options.customizePictureHandler) return; // handler picture
-
-        _this.fileToBase64(file, imageOptions).then(function (res) {
-          console.log(res);
-          var $el = $(imageSectionTemplate.replace('{url}', res.base64)); // set attribute
-
-          $el.find('img').attr({
-            id: 'zxEditor_img_' + +new Date(),
-            alt: file.name
-          }); // insert to $content
-
-          _this.insertElm($el);
-        })["catch"](function (e) {
-          _this.emit('error', e, 'handlePictureFile');
-        });
-      },
-      capture: false
-    };
-    return {
-      name: 'select-picture',
-      el: $selectPictureLabel
-    };
-  }
-
-  /**
-   * Created by Capricorncd.
-   * User: https://github.com/capricorncd
-   * Date: 2019/04/29 21:08
-   */
-  function changeTag(tag) {
-    // same tag
-    if (this.$cursorNode.nodeName() === tag) return;
-    var cursorNode = this.$cursorNode[0];
-    var childNodes = cursorNode.childNodes;
-    var len = childNodes.length; // to ul
-
-    if (tag === 'ul') {
-      var ul = doc.createElement('ul');
-      cloneAttrs(ul, cursorNode);
-
-      for (var i = 0; i < len; i++) {
-        ul.appendChild(createLi(childNodes[i].cloneNode(true)));
-      }
-
-      cursorNode.parentNode.replaceChild(ul, cursorNode); // save current node
-
-      this.$cursorNode = $(ul);
-      return;
-    } // change ul
-
-
-    if (cursorNode.nodeName === 'UL') {
-      var li, el;
-
-      for (var _i = 0; _i < len; _i++) {
-        li = childNodes[_i].cloneNode(true);
-        cloneAttrs(li, cursorNode);
-        el = this.changeNodeName(li, tag);
-        $(el).insertBefore(this.$cursorNode);
-      } // remove old ul
-
-
-      this.$cursorNode.remove();
-      this.$cursorNode = $(el);
-      return;
-    }
-
-    this.$cursorNode.changeNodeName(tag);
-    this.cursor.setRange(this.$cursorNode);
-  }
-
-  function createLi(child) {
-    var li = doc.createElement('li');
-    li.appendChild(child);
-    return li;
-  }
-
-  function cloneAttrs(target, source) {
-    var style, id, className;
-    style = source.getAttribute('style');
-    id = source.id;
-    className = source.className;
-    if (style) target.setAttribute('style', style);
-    if (id) target.id = id;
-    if (className) target.className = className;
-  }
-
-  /**
-   * Created by Capricorncd.
-   * User: https://github.com/capricorncd
-   * Date: 2019/04/27 21:11
-   */
-
-  var DEF_COLORS = ['#333', '#d0d0d0', '#ff583d', '#fdaa25', '#44c67b', '#14b2e0', '#b065e2'];
-  /**
-   * create color vnode
-   * @param colors
-   * @return Object
-   */
-
-  function createColorVNode(colors) {
-    var arr = [];
-    colors.forEach(function (color, i) {
-      if (/^#\w{3,6}$/.test(color)) {
-        arr.push({
-          tag: 'dd',
-          attrs: {
-            "class": i === 0 ? 'active' : '',
-            'data-color': formatColorHexadecimal(color.toLowerCase())
-          },
-          child: [{
-            tag: 'i',
-            attrs: {
-              style: "background:".concat(color)
-            }
-          }]
-        });
-      }
-    });
-    return arr;
-  }
-
-  function formatColorHexadecimal(hex) {
-    var len = hex.length;
-    return len === 7 ? hex : "#".concat(hex[1]).concat(hex[1]).concat(hex[2]).concat(hex[2]).concat(hex[3]).concat(hex[3]);
-  }
-  /**
-   * text style panel
-   * @param options
-   * @return {{name: string, className: string, events: {type: string, handler: events.handler}}}
-   */
-
-
-  function styleExpansionPanel(options) {
-    var _this = this;
-
-    var zxEditor = this;
-    var COLORS = options.textStyleColors.length ? options.textStyleColors : DEF_COLORS; // dom structure
-
-    var panelBodyChild = [// style
-    {
-      tag: 'dl',
-      attrs: {
-        "class": '__style-wrapper border-bottom'
-      },
-      child: [{
-        tag: 'dd',
-        attrs: {
-          style: 'font-weight: 800;',
-          'data-style': 'fontWeight:800'
-        },
-        child: ['B']
-      }, {
-        tag: 'dd',
-        attrs: {
-          style: 'font-style: italic;',
-          'data-style': 'fontStyle:italic'
-        },
-        child: ['I']
-      }, {
-        tag: 'dd',
-        attrs: {
-          style: 'text-decoration: line-through;',
-          'data-style': 'textDecoration:line-through'
-        },
-        child: ['abc']
-      }]
-    }, // color
-    {
-      tag: 'dl',
-      attrs: {
-        "class": '__color-wrapper border-bottom'
-      },
-      child: createColorVNode(COLORS)
-    }, // tag
-    {
-      tag: 'dl',
-      attrs: {
-        "class": '__tag-wrapper'
-      },
-      child: [{
-        tag: 'dd',
-        attrs: {
-          "class": '__h2',
-          'data-tag': 'h2'
-        },
-        child: ['大标题', {
-          tag: 'i'
-        }]
-      }, {
-        tag: 'dd',
-        attrs: {
-          "class": '__h4',
-          'data-tag': 'h4'
-        },
-        child: ['小标题', {
-          tag: 'i'
-        }]
-      }, {
-        tag: 'dd',
-        attrs: {
-          "class": '__section active',
-          'data-tag': 'section'
-        },
-        child: ['正文', {
-          tag: 'i'
-        }]
-      }, {
-        tag: 'dd',
-        attrs: {
-          "class": '__blockquote',
-          'data-tag': 'blockquote'
-        },
-        child: ['引用', {
-          tag: 'i'
-        }]
-      }, {
-        tag: 'dd',
-        attrs: {
-          "class": '__ul',
-          'data-tag': 'ul'
-        },
-        child: ['无序列表', {
-          tag: 'i'
-        }]
-      }]
-    }];
-    var panelBody = createVdom({
-      tag: 'div',
-      attrs: {
-        "class": 'text-style-outer-wrapper'
-      },
-      child: panelBodyChild
-    });
-    var $panelBody = $(panelBody); // instance text style
-
-    this.textStylePanel = new ExpansionPanel({
-      headLeftBtnText: options.textStyleHeadLeftBtnText,
-      headTitle: options.textStyleTitle,
-      textStyleHeadAlign: options.textStyleHeadAlign,
-      body: $panelBody,
-      onHeadClick: handleHeadClick
-    }, this); // handle events
-    // style
-
-    var $styles = $panelBody.find('.__style-wrapper').children();
-    $styles.on('click', function () {
-      var style = $(this).data('style').split(':');
-      var key = style[0];
-      var cursorNode = zxEditor.$cursorNode[0];
-      cursorNode.style[key] = cursorNode.style[key] === style[1] ? '' : style[1];
-      zxEditor.cursor.setRange();
-    }); // color
-
-    var $colorsParent = $panelBody.find('.__color-wrapper');
-    var $colors = $colorsParent.children();
-    $colors.on('click', function () {
-      var $el;
-
-      for (var i = 0; i < $colors.length; i++) {
-        $el = $($colors[i]);
-
-        if ($el[0] === this && !$el.hasClass('active')) {
-          $el.addClass('active');
-          zxEditor.$cursorNode.css('color', $el.data('color'));
-        } else if ($el.hasClass('active')) {
-          $el.removeClass('active');
-        }
-      }
-
-      zxEditor.cursor.setRange();
-    }); // tag
-
-    var $tagsParent = $panelBody.find('.__tag-wrapper');
-    var $tags = $tagsParent.children();
-    $tags.on('click', function () {
-      if ($(this).hasClass('active')) return;
-      var tag = $(this).data('tag');
-      var $el;
-
-      for (var i = 0; i < $tags.length; i++) {
-        $el = $($tags[i]);
-
-        if ($el[0] === this) {
-          // add active class name
-          $el.addClass('active'); // change tag
-
-          changeTag.call(zxEditor, tag);
-        } else if ($el.hasClass('active')) {
-          $el.removeClass('active');
-        }
-      }
-    });
-
-    if (this.isIPhoneX()) {
-      $tagsParent.css('margin-bottom', IPHONEX_BOTTOM_OFFSET_HEIGHT + 'px');
-    } // extend method
-
-    /**
-     * reset active state
-     * when content onClick and onKeyup code === 13
-     */
-
-
-    this.textStylePanel.resetActiveState = function () {
-      var $cursorNode = _this.cursor.getCurrentNode(); // check tag
-
-
-      var tag = $cursorNode.nodeName();
-      setTagInPanel(tag); // check color
-
-      var color = _this.rgbToHex($cursorNode.css('color'));
-
-      setColorInPanel(color);
-    };
-    /**
-     * set tag in panel
-     * @param tag
-     */
-
-
-    function setTagInPanel(tag) {
-      var $activeTag = $tagsParent.find('.active');
-
-      if ($activeTag.data('tag') !== tag) {
-        $activeTag.removeClass('active');
-        $tagsParent.find(".__".concat(tag)).addClass('active');
-      }
-    }
-    /**
-     * set color in panel
-     * @param color
-     */
-
-
-    function setColorInPanel(color) {
-      var $activeColor = $colorsParent.find('.active');
-
-      if ($activeColor.data('color') !== color) {
-        $activeColor.removeClass('active');
-        var $tmp;
-
-        for (var i = 0; i < $colors.length; i++) {
-          $tmp = $($colors[i]);
-
-          if ($tmp.data('color') === color) {
-            $tmp.addClass('active');
-            break;
-          }
-        }
-      }
-    }
-    /**
-     * handle head click
-     * @param type
-     */
-
-
-    function handleHeadClick(type) {
-      // clear style
-      if (type === 'left-button') {
-        // clear style
-        var currentNode = zxEditor.$cursorNode[0];
-        currentNode.className = '';
-        currentNode.setAttribute('style', '');
-
-        if (currentNode.nodeName !== 'SECTION') {
-          zxEditor.$cursorNode = $(zxEditor.changeNodeName(currentNode, 'section'));
-        } // reset text style expansion
-
-
-        setColorInPanel(COLORS[0]);
-        setTagInPanel('section'); // set Range
-
-        zxEditor.cursor.setRange(zxEditor.$cursorNode);
-      }
-    }
-
-    return {
-      name: 'text-style',
-      className: 'text-style-btn',
-      events: {
-        type: 'click',
-        handler: function handler() {
-          _this.textStylePanel.show();
-        }
-      }
-    };
-  }
-
-  /**
-   * Created by Capricorncd.
-   * User: https://github.com/capricorncd
-   * Date: 2019/04/23 22:44
-   */
-  function initToolbar(options) {
-    var _this = this;
-
-    // toolbar
-    this.toolbar = new Toolbar(options, this); // Add buttons sequentially
-
-    options.toolbarBtns.forEach(function (name) {
-      if (name === 'select-picture') {
-        _this.toolbar.addButton(selectPictureBtn.call(_this, options));
-      } else if (name === 'text-style') {
-        _this.toolbar.addButton(styleExpansionPanel.call(_this, options));
-      }
-    });
-  }
-
-  /**
-   * Created by Capricorncd.
    * Date: 2019/04/12 11:12
    * Copyright © 2017-present, https://github.com/capricorncd
    */
   var DEF_OPTIONS$1 = {
     // 内容是否可以被编辑
     editable: true,
-    // editor height
-    height: null,
-    // fixed editor height
-    fixedHeight: false,
+    // 编辑器输入内容绝对定位
+    fixed: false,
+    // editor min height
+    // minHeight: window.innerHeight,
     // style
     placeholder: '',
     placeholderColor: '',
@@ -2931,6 +3147,10 @@
     // paragraph tail spacing, default 10px
     paragraphTailSpacing: '',
     cursorColor: '',
+    // iphone会自动移动，难控制
+    offsetTop: 30,
+    // 位置检测，输入可视区域元素移动速度
+    speed: 0,
 
     /**
      * ******************************
@@ -2972,6 +3192,13 @@
     textStyleTitle: 'Set Style',
     textStyleHeadLeftBtnText: 'Clear style',
     textStyleHeadAlign: 'center',
+
+    /**
+     * ******************************
+     * color options
+     * ******************************
+     */
+    mainColor: '',
     // border color
     borderColor: ''
   };
@@ -3019,9 +3246,7 @@
 
       this.customEvents = {}; // extend prototype
 
-      extendPrototypes(ZxEditor); // watcher
-
-      onWatcher.call(this); // expansionPanel instance
+      extendPrototypes(ZxEditor); // expansionPanel instances
 
       this.expansionPanels = [];
       /**
@@ -3031,7 +3256,6 @@
        */
 
       initDom.call(this, options);
-      initToolbar.call(this, options);
       /**
        * ***************************************************
        * style and placeholder
@@ -3074,7 +3298,7 @@
         // 光标所在元素内容为空
         if ($cursorNode.isEmpty()) {
           $cursorNode.text(el);
-          newRangeEl = $cursorNode[0].childNodes[0];
+          newRangeEl = $cursorNode;
           newRangeOffset = el.length;
         } else if ($cursorNode.children().every(function ($item) {
           return $item.isTextNode();
@@ -3084,14 +3308,14 @@
           var tmpStr = rangeNodeStr.substr(0, rangeOffset) + el + rangeNodeStr.substr(rangeOffset); // $section = $cursorNode.closest('section')
 
           $cursorNode.text(tmpStr);
-          newRangeEl = $cursorNode[0].childNodes[0];
+          newRangeEl = $cursorNode;
           newRangeOffset = el.length + rangeOffset;
         } else {
           // 创建一个section
           var $newEl = $("<section>".concat(el, "</section>")); // 插入到childIndex后
 
           $newEl.insertAfter($cursorNode);
-          newRangeEl = $newEl[0].childNodes[0];
+          newRangeEl = $newEl;
           newRangeOffset = el.length;
         }
       }
@@ -3130,17 +3354,12 @@
             var next = $elm.next()[0];
 
             if (next) {
-              if ($elm.lastChild().isTextNode()) {
-                newRangeEl = $elm.lastChild()[0];
-                newRangeOffset = $elm.lastChild().text().length;
-              } else {
-                newRangeEl = $elm[0];
-                newRangeOffset = 1;
-              }
+              newRangeEl = $elm;
+              newRangeOffset = $elm.isTextNode() ? $elm.text().length : 0;
             } else {
               var $section = $("<section><br></section>");
               this.$content.append($section);
-              newRangeEl = $section[0];
+              newRangeEl = $section;
               newRangeOffset = 0;
             }
           }
@@ -3149,6 +3368,7 @@
       this._checkChildSection();
 
       this.$content.trigger('input');
+      console.log(newRangeEl, newRangeOffset);
       this.cursor.setRange(newRangeEl, newRangeOffset);
     },
 
@@ -3284,11 +3504,24 @@
 
     /**
      * set content height
-     * @param height
+     * default minHeight is window innerHeight, marginBottom
+     * @param data
      */
-    setHeight: function setHeight(height) {
-      this.$content.css('height', typeof height === 'number' ? height + 'px' : height);
-      this.emit('heightChange', this);
+    setContentHeight: function setContentHeight(data) {
+      var winHeight = window.innerHeight;
+      var styles = {
+        // 防止正文内容被键盘挡住，无法查看
+        marginBottom: winHeight + 'px' // check height
+
+      };
+
+      if (data.height) {
+        styles.height = typeof data.height === 'number' ? data.height + 'px' : data.height;
+      } else {
+        styles.minHeight = (util["int"](data.minHeight) || winHeight) + 'px';
+      }
+
+      this.$content.css(styles);
     },
 
     /**
@@ -3332,6 +3565,50 @@
       }
 
       return false;
+    },
+
+    /**
+     * plugin
+     * @param fn
+     */
+    plugin: function plugin(fn) {
+      if (typeof fn === 'function') {
+        fn.call(this);
+      }
+    },
+
+    /**
+     * check cursor position
+     */
+    checkPosition: function checkPosition() {
+      var $el = this.$cursorNode = this.cursor.getCurrentNode(); // 当前光标位置
+
+      var cursorOffset = this.cursor.offset; // 文本内容长度
+
+      var len = $el.text().length; // 当前元素高度
+
+      var height = $el.height(); // 当前元素top
+
+      var top = $el.offset().top;
+      var scrollTop; // 当前光标位置，距当前元素顶部距离
+
+      var cursorHeight = 0; // 每行大概有几个字
+
+      var textNumOfPerLine = len / (height / this.lineHeight); // 当前光标所在行
+
+      var line = height > this.lineHeight ? Math.floor(cursorOffset / textNumOfPerLine) : 1; // 当前光标位置，至当前元素顶部高度 - 1行高，防止移动后，光标位置太贴近顶部
+
+      var cursorHeightInCurrentNode = (line - 1) * this.lineHeight; // editor postion: fixed;
+
+      if (this.options.fixed) ; else {
+        // 当前光标位置超过了屏幕的4分之1
+        if (cursorHeightInCurrentNode > window.innerHeight / 4) {
+          cursorHeight = cursorHeightInCurrentNode;
+        }
+
+        scrollTop = $(window).scrollTop();
+        $(window).scrollTop(scrollTop + top + cursorHeight - this.options.offsetTop, this.options.speed);
+      }
     }
   };
 

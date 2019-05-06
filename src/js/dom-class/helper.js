@@ -6,6 +6,12 @@
 import util from '../util/index'
 import { document } from 'ssr-window'
 
+/**
+ * unique
+ * Remove duplicate elements in an array
+ * @param arr
+ * @return {Array}
+ */
 export function unique (arr) {
   const uniqueArray = []
   for (let i = 0; i < arr.length; i += 1) {
@@ -80,10 +86,21 @@ export function removeEventListener (el, eventType, fn, useCapture) {
   }
 }
 
+/**
+ * crate text node
+ * @param str
+ * @return {Text | ActiveX.IXMLDOMText}
+ */
 function createTextNode (str) {
   return document.createTextNode(str)
 }
 
+/**
+ * create element
+ * @param tag HTML tag name
+ * @param attrs attributes
+ * @return {*|{children, childNodes, style, setAttribute, getElementsByTagName}|ActiveX.IXMLDOMElement|HTMLElement}
+ */
 export function createElement (tag, attrs) {
   if (!tag && typeof tag !== 'string') {
     throw new TypeError('Parameter error')
@@ -99,6 +116,11 @@ export function createElement (tag, attrs) {
   return el
 }
 
+/**
+ * create dom
+ * @param vnode {tag: 'div', attrs: {class: 'class-name', 'data-id': 1000}, child: ['any text', vnode]}
+ * @return {*}
+ */
 export function createVdom (vnode) {
   if (!vnode) return null
   if (typeof vnode === 'string') {
@@ -120,4 +142,56 @@ export function createVdom (vnode) {
     el.appendChild(createTextNode(child))
   }
   return el
+}
+
+/**
+ * get window
+ * @param el
+ * @return {any}
+ */
+export function getWindow (el) {
+  // nodeType = 9 文档节点document
+  // document.defaultView reference to the window object
+  // document.parentWindow reference to the container object of the window
+  return util.isWindow(el) ? el : el.nodeType === 9 ? el.defaultView || el.parentWindow : false
+}
+
+export function scrollTo (...args) {
+  let [left, top, duration, easing, callback] = args
+  if (args.length === 4 && typeof easing === 'function') {
+    [left, top, duration, callback, easing] = args
+  }
+  if (typeof easing === 'undefined') easing = 'swing'
+
+  return this.each(function () {
+    const el = this
+    let animateTop = top > 0 || top === 0
+    let animateLeft = left > 0 || left === 0
+
+    let isWindow = util.isWindow(el)
+
+    if (typeof easing === 'undefined') {
+      easing = 'swing'
+    }
+
+    if (animateTop) {
+      if (!duration) {
+        if (isWindow) {
+          el.scrollTo(0, top)
+        } else {
+          el.scrollTop = top
+        }
+      }
+    }
+    if (animateLeft) {
+      if (!duration) {
+        if (isWindow) {
+          el.scrollTo(left, 0)
+        } else {
+          el.scrollLeft = left
+        }
+      }
+    }
+
+  })
 }

@@ -3,7 +3,7 @@
  * Date: 2019/04/15 13:16
  * Copyright © 2017-present, https://github.com/capricorncd
  */
-import { window } from 'ssr-window'
+import { document, window } from 'ssr-window'
 import {
   changeNodeName,
   unique
@@ -86,6 +86,10 @@ function isIPhoneX () {
   return window.screen.height === 812 && window.screen.width === 375
 }
 
+function isWindow (obj) {
+  return obj !== null && obj === obj.window
+}
+
 /**
  * 移除html标签
  * @param str
@@ -119,18 +123,33 @@ function rgbToHex (rgb) {
  */
 function toHump (str) {
   return strip(str).replace(/([-_\s]+\w)/g, (match, $1) => {
-    console.log(match, $1)
+    // console.log(match, $1)
     return $1[1].toUpperCase()
   })
 }
 
+function supportBoxModel () {
+  const body = document.getElementsByTagName('body')[0]
+  let div = document.createElement('div')
+  body.appendChild(div)
+  // Figure out if the W3C box model works as expected
+  div.innerHTML = ''
+  div.style.width = div.style.paddingLeft = '1px'
+  // 通过检测div块的offsetWidth值是否是2px来判断浏览器是否支持盒模型
+  let result = div.offsetWidth === 2
+  body.removeChild(div)
+  return result
+}
+
 export default {
+  isIPhone: isIPhone(),
+  isIPhoneX: isIPhoneX(),
+  supportBoxModel: supportBoxModel(),
   changeNodeName,
   int,
   isElement,
-  isIPhone,
-  isIPhoneX,
   isObject,
+  isWindow,
   removeHtmlTags,
   rgbToHex,
   slice,

@@ -3,11 +3,10 @@
  * User: https://github.com/capricorncd
  * Date: 2019/04/27 21:11
  */
-import ExpansionPanel from '../expansion-panel/index'
-import $ from '../dom-class'
-import { createVdom } from '../dom-class/helper'
+import $ from '../../dom-class'
+import { createVdom } from '../../dom-class/helper'
 import { changeTag } from './helper'
-import { IPHONEX_BOTTOM_OFFSET_HEIGHT } from '../config'
+import { IPHONEX_BOTTOM_OFFSET_HEIGHT } from '../../config'
 
 // COLOR
 const DEF_COLORS = [
@@ -171,10 +170,10 @@ export function styleExpansionPanel (options) {
   let $panelBody = $(panelBody)
 
   // instance text style
-  this.textStylePanel = new ExpansionPanel({
+  this.textStylePanel = new this.ExpansionPanel({
     headLeftBtnText: options.textStyleHeadLeftBtnText,
     headTitle: options.textStyleTitle,
-    textStyleHeadAlign: options.textStyleHeadAlign,
+    headAlign: options.textStyleHeadAlign,
     body: $panelBody,
     onHeadClick: handleHeadClick
   }, this)
@@ -227,7 +226,7 @@ export function styleExpansionPanel (options) {
     }
   })
 
-  if (this.isIPhoneX()) {
+  if (this.isIPhoneX) {
     $tagsParent.css('margin-bottom', IPHONEX_BOTTOM_OFFSET_HEIGHT + 'px')
   }
 

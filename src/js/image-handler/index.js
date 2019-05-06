@@ -58,7 +58,7 @@ function fileToBase64 (file, opts) {
       return
     }
 
-    // roate image
+    // rotate image
     if (typeof window.EXIF === 'undefined') {
       options.orientation = 0
       handleFile(file, options).then(resolve).catch(reject)

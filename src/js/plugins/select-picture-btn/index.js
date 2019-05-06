@@ -3,10 +3,11 @@
  * User: https://github.com/capricorncd
  * Date: 2019/04/27 21:19
  */
-import $ from '../dom-class/index'
+import $ from '../../dom-class/index'
 
-export function selectPictureBtn (options) {
+export function selectPictureBtn () {
   const _this = this
+  const options = this.options
   /**
    * *******************************************
    * select picture
@@ -30,7 +31,7 @@ export function selectPictureBtn (options) {
   }
 
   // image section template
-  let imageSectionTemplate = /^<section\b.*<\/section>$/.test(options.imageSectionTemp) ? options.imageSectionTemp : `<section><img src="{url}"></section>`
+  let imageSectionTemplate = /^<\w+\b.*<\/\w+>$/.test(options.imageSectionTemp) ? options.imageSectionTemp : `<section><img src="{url}"></section>`
 
   // register selectPictureInputChange
   let imageOptions = Object.assign({}, _this.options, {
@@ -48,7 +49,7 @@ export function selectPictureBtn (options) {
 
       // handler picture
       _this.fileToBase64(file, imageOptions).then(res => {
-        console.log(res)
+        // console.log(res)
         let $el = $(imageSectionTemplate.replace('{url}', res.base64))
         // set attribute
         $el.find('img').attr({
@@ -58,14 +59,14 @@ export function selectPictureBtn (options) {
         // insert to $content
         _this.insertElm($el)
       }).catch(e => {
-        _this.emit('error', e, 'handlePictureFile')
+        _this.emit('error', e, 'fileToBase64')
       })
     },
     capture: false
   }
 
-  return {
+  this.toolbar.addButton({
     name: 'select-picture',
     el: $selectPictureLabel
-  }
+  })
 }

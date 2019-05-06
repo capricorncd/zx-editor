@@ -13,21 +13,19 @@ import $ from './dom-class/index'
 import CursorClass from './cursor-class/index'
 import ExpansionPanel from './expansion-panel/index'
 import util from './util/index'
-import { onWatcher } from './init/watcher'
 import { initDom } from './init/init-dom'
 import { initStyle } from './init/init-style'
 import { handleEvents } from './events/index'
 import { extendPrototypes } from './init/extend-prototype'
-import { initToolbar } from './init/toolbar'
 import { base64ToBlobData } from './image-handler/index'
 
 const DEF_OPTIONS = {
   // 内容是否可以被编辑
   editable: true,
-  // editor height
-  height: null,
-  // fixed editor height
-  fixedHeight: false,
+  // 编辑器输入内容绝对定位
+  fixed: false,
+  // editor min height
+  // minHeight: window.innerHeight,
   // style
   placeholder: '',
   placeholderColor: '',
@@ -35,6 +33,10 @@ const DEF_OPTIONS = {
   // paragraph tail spacing, default 10px
   paragraphTailSpacing: '',
   cursorColor: '',
+  // iphone会自动移动，难控制
+  offsetTop: 30,
+  // 位置检测，输入可视区域元素移动速度
+  speed: 0,
   /**
    * ******************************
    * toolbar options
@@ -73,6 +75,12 @@ const DEF_OPTIONS = {
   textStyleTitle: 'Set Style',
   textStyleHeadLeftBtnText: 'Clear style',
   textStyleHeadAlign: 'center',
+  /**
+   * ******************************
+   * color options
+   * ******************************
+   */
+  mainColor: '',
   // border color
   borderColor: ''
 }
@@ -97,6 +105,7 @@ function ZxEditor (selector, _options) {
 
   // ZxEditorQuery instance
   this.$ = $
+
   this.ExpansionPanel = ExpansionPanel
 
   // options
@@ -110,6 +119,7 @@ ZxEditor.prototype = {
 
   init (options) {
     options = options || this.options
+
     /**
      * ***************************************************
      * event listeners
@@ -122,9 +132,7 @@ ZxEditor.prototype = {
     this.customEvents = {}
     // extend prototype
     extendPrototypes(ZxEditor)
-    // watcher
-    onWatcher.call(this)
-    // expansionPanel instance
+    // expansionPanel instances
     this.expansionPanels = []
 
     /**
@@ -133,7 +141,6 @@ ZxEditor.prototype = {
      * ***************************************************
      */
     initDom.call(this, options)
-    initToolbar.call(this, options)
 
     /**
      * ***************************************************
@@ -176,7 +183,7 @@ ZxEditor.prototype = {
       // 光标所在元素内容为空
       if ($cursorNode.isEmpty()) {
         $cursorNode.text(el)
-        newRangeEl = $cursorNode[0].childNodes[0]
+        newRangeEl = $cursorNode
         newRangeOffset = el.length
       } else if ($cursorNode.children().every($item => $item.isTextNode())) {
         let rangeOffset = this.cursor.offset
@@ -184,14 +191,14 @@ ZxEditor.prototype = {
         let tmpStr = rangeNodeStr.substr(0, rangeOffset) + el + rangeNodeStr.substr(rangeOffset)
         // $section = $cursorNode.closest('section')
         $cursorNode.text(tmpStr)
-        newRangeEl = $cursorNode[0].childNodes[0]
+        newRangeEl = $cursorNode
         newRangeOffset = el.length + rangeOffset
       } else {
         // 创建一个section
         let $newEl = $(`<section>${el}</section>`)
         // 插入到childIndex后
         $newEl.insertAfter($cursorNode)
-        newRangeEl = $newEl[0].childNodes[0]
+        newRangeEl = $newEl
         newRangeOffset = el.length
       }
     }
@@ -226,23 +233,19 @@ ZxEditor.prototype = {
         // 判断$el是否有下一个节点，有：光标指向el结束，无：则插入空行，并移动光标
         let next = $elm.next()[0]
         if (next) {
-          if ($elm.lastChild().isTextNode()) {
-            newRangeEl = $elm.lastChild()[0]
-            newRangeOffset = $elm.lastChild().text().length
-          } else {
-            newRangeEl = $elm[0]
-            newRangeOffset = 1
-          }
+          newRangeEl = $elm
+          newRangeOffset = $elm.isTextNode() ? $elm.text().length : 0
         } else {
           let $section = $(`<section><br></section>`)
           this.$content.append($section)
-          newRangeEl = $section[0]
+          newRangeEl = $section
           newRangeOffset = 0
         }
       }
     }
     this._checkChildSection()
     this.$content.trigger('input')
+    console.log(newRangeEl, newRangeOffset)
     this.cursor.setRange(newRangeEl, newRangeOffset)
   },
 
@@ -373,11 +376,23 @@ ZxEditor.prototype = {
 
   /**
    * set content height
-   * @param height
+   * default minHeight is window innerHeight, marginBottom
+   * @param data
    */
-  setHeight (height) {
-    this.$content.css('height', typeof height === 'number' ? (height + 'px') : height)
-    this.emit('heightChange', this)
+  setContentHeight (data) {
+    let winHeight = window.innerHeight
+    let styles = {
+      // 防止正文内容被键盘挡住，无法查看
+      marginBottom: winHeight + 'px'
+    }
+    // check height
+    if (data.height) {
+      styles.height = typeof data.height === 'number' ? (data.height + 'px') : data.height
+    } else {
+      styles.minHeight = (util.int(data.minHeight) || winHeight) + 'px'
+    }
+
+    this.$content.css(styles)
   },
 
   /**
@@ -416,6 +431,54 @@ ZxEditor.prototype = {
       return true
     }
     return false
+  },
+
+  /**
+   * plugin
+   * @param fn
+   */
+  plugin (fn) {
+    if (typeof fn === 'function') {
+      fn.call(this)
+    }
+  },
+
+  /**
+   * check cursor position
+   */
+  checkPosition () {
+    const $el = this.$cursorNode = this.cursor.getCurrentNode()
+    // 当前光标位置
+    let cursorOffset = this.cursor.offset
+    // 文本内容长度
+    let len = $el.text().length
+    // 当前元素高度
+    let height = $el.height()
+    // 当前元素top
+    let top = $el.offset().top
+    let scrollTop
+
+    // 当前光标位置，距当前元素顶部距离
+    let cursorHeight = 0
+
+    // 每行大概有几个字
+    let textNumOfPerLine = len / (height / this.lineHeight)
+    // 当前光标所在行
+    let line = height > this.lineHeight ? Math.floor(cursorOffset / textNumOfPerLine) : 1
+    // 当前光标位置，至当前元素顶部高度 - 1行高，防止移动后，光标位置太贴近顶部
+    let cursorHeightInCurrentNode = (line - 1) * this.lineHeight
+
+    // editor postion: fixed;
+    if (this.options.fixed) {
+
+    } else {
+      // 当前光标位置超过了屏幕的4分之1
+      if (cursorHeightInCurrentNode > window.innerHeight / 4) {
+        cursorHeight = cursorHeightInCurrentNode
+      }
+      scrollTop = $(window).scrollTop()
+      $(window).scrollTop(scrollTop + top + cursorHeight - this.options.offsetTop, this.options.speed)
+    }
   }
 }
 
