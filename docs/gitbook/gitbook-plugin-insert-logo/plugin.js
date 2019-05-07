@@ -1,0 +1,1 @@
+require(["gitbook","jQuery"],function(e,n){var i="",t="";e.events.bind("start",function(e,o){i=o["insert-logo"].url,t=o["insert-logo"].style}),e.events.bind("page.change",function(){!function(e,o){n(".book-summary").children().eq(0).before('<div class="book-logo"><img src="'+e+'" style="'+o+'"></div>')}(i,t)})});
