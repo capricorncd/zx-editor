@@ -6,7 +6,7 @@
 /**
  * ***********************************************
  * Notes:
- * 1. The property or variables prefixed $ are ZxEditorQuery instance, or related to them
+ * 1. The property or variables prefixed $ are ZxQuery instance, or related to them
  * ***********************************************
  */
 import $ from './dom-class/index'
@@ -27,16 +27,16 @@ const DEF_OPTIONS = {
   // editor min height
   // minHeight: window.innerHeight,
   // style
-  placeholder: '',
+  placeholder: 'Enter...',
   placeholderColor: '',
   lineHeight: 1.5,
   // paragraph tail spacing, default 10px
   paragraphTailSpacing: '',
   cursorColor: '',
   // iphone会自动移动，难控制
-  offsetTop: 30,
-  // 位置检测，输入可视区域元素移动速度
-  speed: 0,
+  cursorOffsetTop: 30,
+  // 自定义粘贴处理
+  customPasteHandler: false,
   /**
    * ******************************
    * toolbar options
@@ -53,7 +53,7 @@ const DEF_OPTIONS = {
    * ******************************
    */
   // customize Picture Handler
-  customizePictureHandler: false,
+  customPictureHandler: false,
   // image max width
   imageMaxWidth: 720,
   // image max size, unit Kib, default 20M
@@ -103,7 +103,7 @@ function ZxEditor (selector, _options) {
   // version
   this.version = '__VERSION__'
 
-  // ZxEditorQuery instance
+  // ZxQuery instance
   this.$ = $
 
   this.ExpansionPanel = ExpansionPanel
@@ -477,7 +477,7 @@ ZxEditor.prototype = {
         cursorHeight = cursorHeightInCurrentNode
       }
       scrollTop = $(window).scrollTop()
-      $(window).scrollTop(scrollTop + top + cursorHeight - this.options.offsetTop, this.options.speed)
+      $(window).scrollTop(scrollTop + top + cursorHeight - this.options.cursorOffsetTop)
     }
   }
 }

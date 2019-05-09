@@ -5,7 +5,7 @@
  */
 import util from '../util/index'
 import { document, window } from 'ssr-window'
-import { unique, changeNodeName, addEventListener, removeEventListener, getWindow, scrollTo } from './helper'
+import { unique, changeNodeName, addEventListener, removeEventListener } from './helper'
 
 /**
  * DOM操作
@@ -13,12 +13,12 @@ import { unique, changeNodeName, addEventListener, removeEventListener, getWindo
  * @param context
  * @constructor
  */
-export function ZxEditorQuery (selector, context) {
+export function ZxQuery (selector, context) {
 
   // HANDLE: $(""), $(null), $(undefined), $(false)
   if ( !selector ) return this
 
-  if (selector instanceof ZxEditorQuery) return selector
+  if (selector instanceof ZxQuery) return selector
 
   let doms
 
@@ -32,7 +32,7 @@ export function ZxEditorQuery (selector, context) {
       tempDiv.innerHTML = selector
       doms = util.slice(tempDiv.childNodes)
     } else if (/^[#\w\d_,\s-]+$/.test(selector)) {
-      if (context instanceof ZxEditorQuery) {
+      if (context instanceof ZxQuery) {
         context =  context[0]
       }
       context = util.isElement(context) && context.nodeType === 1 ? context : document
@@ -58,11 +58,11 @@ export function ZxEditorQuery (selector, context) {
 /**
  * prototype
  */
-ZxEditorQuery.prototype = {
+ZxQuery.prototype = {
   /**
    * constructor
    */
-  constructor: ZxEditorQuery,
+  constructor: ZxQuery,
 
   /**
    * length
@@ -162,7 +162,7 @@ ZxEditorQuery.prototype = {
    * @return {*}
    */
   findParentFrom (parent) {
-    if (parent instanceof ZxEditorQuery) parent = parent[0]
+    if (parent instanceof ZxQuery) parent = parent[0]
     let current = this[0]
     // if (!current || !current.nodeType || !parent || !parent.nodeType) return null
     if (current === parent) return null
@@ -259,7 +259,7 @@ ZxEditorQuery.prototype = {
   /**
    * add className
    * @param className
-   * @return {ZxEditorQuery}
+   * @return {ZxQuery}
    */
   addClass (className) {
     if (!className) return this
@@ -275,7 +275,7 @@ ZxEditorQuery.prototype = {
   /**
    * remove className
    * @param className
-   * @return {ZxEditorQuery}
+   * @return {ZxQuery}
    */
   removeClass (className) {
     let classes = className.split(' ')
@@ -335,7 +335,7 @@ ZxEditorQuery.prototype = {
   /**
    * remove attribute
    * @param attr
-   * @return {ZxEditorQuery}
+   * @return {ZxQuery}
    */
   removeAttr (attr) {
     for (let i = 0; i < this.length; i++) {
@@ -380,7 +380,7 @@ ZxEditorQuery.prototype = {
   /**
    * appendChild
    * @param args
-   * @return {ZxEditorQuery}
+   * @return {ZxQuery}
    */
   append (...args) {
     let newChild
@@ -394,7 +394,7 @@ ZxEditorQuery.prototype = {
           while (tempDiv.firstChild) {
             this[i].appendChild(tempDiv.firstChild)
           }
-        } else if (newChild instanceof ZxEditorQuery) {
+        } else if (newChild instanceof ZxQuery) {
           for (let j = 0; j < newChild.length; j++) {
             this[i].appendChild(newChild[j])
           }
@@ -409,7 +409,7 @@ ZxEditorQuery.prototype = {
   /**
    * append child to parent
    * @param parent
-   * @return {ZxEditorQuery}
+   * @return {ZxQuery}
    */
   appendTo (parent) {
     $(parent).append(this)
@@ -454,7 +454,7 @@ ZxEditorQuery.prototype = {
         for (j = tempDiv.childNodes.length - 1; j >= 0; j--) {
           this[i].insertBefore(tempDiv.childNodes[j], this[i].childNodes[0])
         }
-      } else if (newChild instanceof ZxEditorQuery) {
+      } else if (newChild instanceof ZxQuery) {
         for (j = 0; j < newChild.length; j++) {
           this[i].insertBefore(newChild[j], this[i].childNodes[0])
         }
@@ -472,7 +472,7 @@ ZxEditorQuery.prototype = {
   /**
    * replace child
    * @param selector
-   * @return {ZxEditorQuery}
+   * @return {ZxQuery}
    */
   replace (selector) {
     let newChild = $(selector)
@@ -489,7 +489,7 @@ ZxEditorQuery.prototype = {
   /**
    * remove item
    * @param index
-   * @return {ZxEditorQuery}
+   * @return {ZxQuery}
    */
   remove (index) {
     let el
@@ -534,7 +534,7 @@ ZxEditorQuery.prototype = {
     } else if (selector === document) return el === document
     else if (selector === window) return el === window
 
-    if (selector.nodeType || selector instanceof ZxEditorQuery) {
+    if (selector.nodeType || selector instanceof ZxQuery) {
       compareWith = selector.nodeType ? [selector] : selector
       for (i = 0; i < compareWith.length; i++) {
         if (compareWith[i] === el) return true
@@ -577,7 +577,7 @@ ZxEditorQuery.prototype = {
   },
 
   indexOf(el) {
-    if (el instanceof ZxEditorQuery) el = el[0]
+    if (el instanceof ZxQuery) el = el[0]
     for (let i = 0; i < this.length; i++) {
       if (this[i] === el) return i
     }
@@ -816,7 +816,7 @@ ZxEditorQuery.prototype = {
     return null
   },
 
-  offset() {
+  offset () {
     if (this.length > 0) {
       let el = this[0]
       let box = el.getBoundingClientRect()
@@ -851,46 +851,18 @@ ZxEditorQuery.prototype = {
    * scroll
    * ********************************************
    */
-
-  scrollTo,
-
-  scrollTop(...args) {
-    let [top, duration, easing, callback] = args
-    if (args.length === 3 && typeof easing === 'function') {
-      [top, duration, callback, easing] = args
-    }
-    let el
-    if (typeof top === 'undefined') {
-      el = this[0]
-      if (el) return util.isWindow(el) ? el.pageYOffset : el.scrollTop
-      return null
-    }
-    return scrollTo.call(this, undefined, top, duration, easing, callback)
+  scrollTop (value) {
+    if (!this.length) return
+    let hasScrollTop = 'scrollTop' in this[0]
+    if (value === undefined) return hasScrollTop ? this[0].scrollTop : this[0].pageYOffset
+    return this.each(hasScrollTop ?
+      function(){ this.scrollTop = value } :
+      function(){ this.scrollTo(this.scrollX, value) })
   }
-
-  // scrollTop (val) {
-  //   let win
-  //   let el = this[0]
-  //   // get
-  //   if (val === void 0) {
-  //     if (!el) return null
-  //     win = getWindow(el)
-  //     return win ? ('pageYOffset' in win) ? win.pageYOffset : util.supportBoxModel && win.document.documentElement.scrollTop || win.document.body.scrollTop : el.scrollTop
-  //   }
-  //   // set
-  //   for (let i = 0; i < this.length; i++) {
-  //     win = getWindow(this[i])
-  //     if (win) {
-  //       win.scrollTo(0, val)
-  //     } else {
-  //       this[i].scrollTop = val
-  //     }
-  //   }
-  // }
 }
 
 const $ = function (selector, context) {
-  return new ZxEditorQuery(selector, context)
+  return new ZxQuery(selector, context)
 }
 
 export default $

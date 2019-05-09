@@ -17,21 +17,21 @@ export function handleEvents () {
 
   const $window = $(window)
 
-  // const options = this.options
+  const options = this.options
 
   /**
    * ****************************************************
    * window on resize
    * ****************************************************
    */
-  function windowResize () {
+  function windowResize (e) {
+    this.emit('windowResize', e, this)
     // toolbar
     this.toolbar.init()
     // expansion panels
     this.expansionPanels.forEach(item => {
       item.init()
     })
-    this.emit('windowResize', this)
   }
 
   this.$eventHandlers.windowResize = {
@@ -46,11 +46,14 @@ export function handleEvents () {
    * ****************************************************
    */
   function contentPaste (e) {
-    e.preventDefault()
-    getPasteText(e).then(str => {
-      // 添加至焦点处
-      this.insertElm(util.removeHtmlTags(str))
-    })
+    this.emit('paste', e, this)
+    if (!options.customPasteHandler) {
+      e.preventDefault()
+      getPasteText(e).then(str => {
+        // 添加至焦点处
+        this.insertElm(util.removeHtmlTags(str))
+      })
+    }
   }
 
   this.$eventHandlers.contentPaste = {
@@ -64,7 +67,8 @@ export function handleEvents () {
    * content on input
    * ****************************************************
    */
-  function contentInput () {
+  function contentInput (e) {
+    this.emit('input', e, this)
     // check empty in content
     this._checkEmpty()
 
@@ -72,7 +76,7 @@ export function handleEvents () {
     this.checkPosition()
 
     // emit content on change
-    this.emit('change', this)
+    this.emit('change', e, this)
   }
 
   this.$eventHandlers.contentInput = {
@@ -86,7 +90,8 @@ export function handleEvents () {
    * content on focus
    * ****************************************************
    */
-  function contentFocus () {
+  function contentFocus (e) {
+    this.emit('focus', e, this)
     // console.error('contentFocus')
     // hide all expansionPanels
     // this.expansionPanels.forEach(ep => {
@@ -109,7 +114,8 @@ export function handleEvents () {
    * content on blur
    * ****************************************************
    */
-  function contentBlur () {
+  function contentBlur (e) {
+    this.emit('blur', e, this)
     // save $cursorNode
     this.$cursorNode = this.cursor.getCurrentNode()
 
@@ -132,7 +138,8 @@ export function handleEvents () {
    * content on click
    * ****************************************************
    */
-  function contentClick () {
+  function contentClick (e) {
+    this.emit('click', e, this)
     // save $cursorNode
     this.$cursorNode = this.cursor.getCurrentNode()
     // check position
@@ -155,7 +162,7 @@ export function handleEvents () {
    * ****************************************************
    */
   function contentKeydown (e) {
-    this.emit('keydown', e)
+    this.emit('keydown', e, this)
   }
 
   this.$eventHandlers.contentKeyup = {
@@ -170,7 +177,7 @@ export function handleEvents () {
    * ****************************************************
    */
   function contentKeyup (e) {
-    this.emit('keyup', e)
+    this.emit('keyup', e, this)
     // handle enter keyup
     if (e.key === 'Enter' || e.keyCode === 13) {
       // check section node

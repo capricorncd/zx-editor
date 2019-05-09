@@ -3,7 +3,7 @@
  * Date: 2019/04/15 13:14
  * Copyright © 2017-present, https://github.com/capricorncd
  */
-import $, { ZxEditorQuery } from '../dom-class/index'
+import $, { ZxQuery } from '../dom-class/index'
 
 /**
  * Cursor Class
@@ -48,7 +48,7 @@ CursorClass.prototype = {
    * @param offset
    */
   setRange (el, offset) {
-    if (el instanceof ZxEditorQuery) {
+    if (el instanceof ZxQuery) {
       el = el[0]
     }
 
@@ -96,7 +96,7 @@ CursorClass.prototype = {
 
   /**
    * get cursor node in $parent
-   * @param needElement Want to get element node, not ZxEditorQuery object
+   * @param needElement Want to get element node, not ZxQuery object
    * @return {*}
    */
   getCurrentNode (needElement) {

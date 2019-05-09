@@ -7,6 +7,8 @@ import $ from '../dom-class'
 import util from '../util'
 import ZxEditor from '../index'
 
+const fn = function () {}
+
 const DEF_OPTS = {
   head: null,
   // className
@@ -22,8 +24,12 @@ const DEF_OPTS = {
   body: null,
   // Used to distinguish ExpansionPanel instance
   name: 'expansion-panel',
-  onHeadClick: function () {},
-  onBodyClick: function () {}
+  onHeadClick: fn,
+  onBodyClick: fn,
+  onBeforeShow: fn,
+  onShow: fn,
+  onBeforeHide: fn,
+  onHide: fn
 }
 
 /**
@@ -35,7 +41,7 @@ const DEF_OPTS = {
  */
 function ExpansionPanel (options, zxEditor) {
   if (!zxEditor instanceof ZxEditor) {
-    throw new TypeError(`new ExpansionPanel() parameter error, arguments[1] is no a ZxEditor instance.`)
+    throw new TypeError(`new ExpansionPanel() parameter error, arguments[1] is not a ZxEditor instance.`)
   }
 
   // options
@@ -50,9 +56,7 @@ function ExpansionPanel (options, zxEditor) {
   this.visible = false
 
   // Used to distinguish ExpansionPanel instance
-  this.name = util.toHump(opts.name)
-
-  this.$head = $(`<div class="head-wrapper border-bottom ${opts.headAlign}" style="height:${opts.headHeight}px;line-height:${opts.headHeight}px;"><div class="l cur ${opts.headLeftBtnClassName}">${opts.headLeftBtnText}</div>${opts.headTitle || ''}</div>`)
+  this.name = opts.name
 
   this.$body = $(`<div class="body-wrapper" style="height:${opts.height - opts.headHeight}px;"></div>`)
 
@@ -75,13 +79,16 @@ function ExpansionPanel (options, zxEditor) {
     if (opts.head) {
       this.$head = $(opts.head)
     } else {
+      // default head
+      this.$head = $(`<div class="head-wrapper border-bottom ${opts.headAlign}" style="height:${opts.headHeight}px;line-height:${opts.headHeight}px;"><div class="l cur ${opts.headLeftBtnClassName}">${opts.headLeftBtnText}</div>${opts.headTitle || ''}</div>`)
+
       // left btn
       const $leftBtn = this.$head.find('.l')
       zxEditor.$eventHandlers[this.name + 'HeadLeftBtn'] = {
         $target: $leftBtn,
         type: 'click',
         handler: (e) => {
-          opts.onHeadClick('left-button', e, this)
+          opts.onHeadClick.call(this, e, 'left-button')
         }
       }
       $leftBtn.on('click', zxEditor.$eventHandlers[this.name + 'HeadLeftBtn'].handler)
@@ -93,7 +100,7 @@ function ExpansionPanel (options, zxEditor) {
         $target: $switch,
         type: 'click',
         handler: (e) => {
-          opts.onHeadClick('switch', e, this)
+          opts.onHeadClick.call(this, e, 'switch')
           this.hide()
         }
       }
@@ -101,6 +108,10 @@ function ExpansionPanel (options, zxEditor) {
     }
 
     this.$el.append(this.$head)
+
+    this.$head.on('click', (e) => {
+      opts.onHeadClick.call(this, e)
+    })
   }
 
   // body
@@ -109,6 +120,10 @@ function ExpansionPanel (options, zxEditor) {
   } catch (e) {
     throw e
   }
+
+  this.$body.on('click', (e) => {
+    opts.onBodyClick.call(this, e)
+  })
 
   this.$el.append(this.$body)
 
@@ -144,9 +159,11 @@ ExpansionPanel.prototype = {
    */
   show () {
     if (!this.visible) {
+      this.options.onBeforeShow.call(this)
       this.$el.removeClass('out').addClass('in')
       this.visible = true
       this.editorInstance.emit('expansionPanelShow', this, this.editorInstance)
+      this.options.onShow.call(this)
     }
   },
 
@@ -155,9 +172,11 @@ ExpansionPanel.prototype = {
    */
   hide () {
     if (this.visible) {
+      this.options.onBeforeHide.call(this)
       this.$el.removeClass('in').addClass('out')
       this.visible = false
       this.editorInstance.emit('expansionPanelHide', this, this.editorInstance)
+      this.options.onHide.call(this)
     }
   }
 }

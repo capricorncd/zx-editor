@@ -3,7 +3,7 @@
  * https://github.com/capricorncd/zx-editor
  * Copyright © 2018-present, capricorncd
  * Released under the MIT License
- * Released on: 2019-05-06 19:59:12
+ * Released on: 2019-05-09 22:28:46
  *//**
  * ******************************************
  * animation
@@ -95,7 +95,7 @@
   content: '';
   -webkit-transform: scaleY(0.5);
           transform: scaleY(0.5);
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #ddd;
 }
 .zx-editor .border-top:before {
   position: absolute;
@@ -105,7 +105,7 @@
   content: '';
   -webkit-transform: scaleY(0.5);
           transform: scaleY(0.5);
-  border-top: 1px solid #eee;
+  border-top: 1px solid #ddd;
 }
 .zx-editor .zx-editor-content-wrapper {
   position: relative;
@@ -118,7 +118,7 @@
   position: absolute;
   z-index: -1;
   padding: 0;
-  content: 'Enter content.';
+  content: '';
   color: #ccc;
 }
 .zx-editor .zx-editor-content-wrapper > * {
@@ -141,7 +141,7 @@
 .zx-editor .zx-editor-content-wrapper blockquote {
   display: inline-block;
   padding-left: 1em;
-  border-left: 3px solid #eee;
+  border-left: 3px solid #ddd;
 }
 .zx-editor .zx-editor-content-wrapper ul {
   padding-left: 20px;
@@ -154,7 +154,7 @@
 .zx-editor .zx-editor-content-wrapper hr {
   margin: 0 20%;
   border: 0;
-  border-top: 1px dashed #eee;
+  border-top: 1px dashed #ddd;
 }
 /**
  * ******************************************
@@ -342,7 +342,7 @@
   content: '';
   -webkit-transform: scaleX(0.5);
           transform: scaleX(0.5);
-  border-right: 1px solid #eee;
+  border-right: 1px solid #ddd;
 }
 .zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__style-wrapper dd:last-child:after {
   border-right-width: 0;
@@ -389,7 +389,7 @@
   display: none;
 }
 .zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__tag-wrapper {
-  border-top: 5px solid #eee;
+  border-top: 5px solid #ddd;
 }
 .zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__tag-wrapper dd {
   position: relative;
@@ -404,7 +404,7 @@
   left: 0;
   width: 100%;
   content: '';
-  border-top: 1px solid #eee;
+  border-top: 1px solid #ddd;
   -webkit-transform: scaleY(0.5);
           transform: scaleY(0.5);
 }

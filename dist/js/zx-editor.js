@@ -3,7 +3,7 @@
  * https://github.com/capricorncd/zx-editor
  * Copyright © 2018-present, capricorncd
  * Released under the MIT License
- * Released on: 2019-05-06 19:59:12
+ * Released on: 2019-05-09 22:28:46
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -251,57 +251,6 @@
 
     return el;
   }
-  function scrollTo() {
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    var left = args[0],
-        top = args[1],
-        duration = args[2],
-        easing = args[3],
-        callback = args[4];
-
-    if (args.length === 4 && typeof easing === 'function') {
-      left = args[0];
-      top = args[1];
-      duration = args[2];
-      callback = args[3];
-      easing = args[4];
-    }
-
-    if (typeof easing === 'undefined') easing = 'swing';
-    return this.each(function () {
-      var el = this;
-      var animateTop = top > 0 || top === 0;
-      var animateLeft = left > 0 || left === 0;
-      var isWindow = util.isWindow(el);
-
-      if (typeof easing === 'undefined') {
-        easing = 'swing';
-      }
-
-      if (animateTop) {
-        if (!duration) {
-          if (isWindow) {
-            el.scrollTo(0, top);
-          } else {
-            el.scrollTop = top;
-          }
-        }
-      }
-
-      if (animateLeft) {
-        if (!duration) {
-          if (isWindow) {
-            el.scrollTo(left, 0);
-          } else {
-            el.scrollLeft = left;
-          }
-        }
-      }
-    });
-  }
 
   var arr = []; // Support: Android <=4.0 only
   // Make sure we trim BOM and NBSP
@@ -472,12 +421,12 @@
    * @constructor
    */
 
-  function ZxEditorQuery(selector, context) {
+  function ZxQuery(selector, context) {
     var _this = this;
 
     // HANDLE: $(""), $(null), $(undefined), $(false)
     if (!selector) return this;
-    if (selector instanceof ZxEditorQuery) return selector;
+    if (selector instanceof ZxQuery) return selector;
     var doms; // Handle HTML strings
 
     if (typeof selector === 'string') {
@@ -487,7 +436,7 @@
         tempDiv.innerHTML = selector;
         doms = util.slice(tempDiv.childNodes);
       } else if (/^[#\w\d_,\s-]+$/.test(selector)) {
-        if (context instanceof ZxEditorQuery) {
+        if (context instanceof ZxQuery) {
           context = context[0];
         }
 
@@ -516,11 +465,11 @@
    * prototype
    */
 
-  ZxEditorQuery.prototype = {
+  ZxQuery.prototype = {
     /**
      * constructor
      */
-    constructor: ZxEditorQuery,
+    constructor: ZxQuery,
 
     /**
      * length
@@ -627,7 +576,7 @@
      * @return {*}
      */
     findParentFrom: function findParentFrom(parent) {
-      if (parent instanceof ZxEditorQuery) parent = parent[0];
+      if (parent instanceof ZxQuery) parent = parent[0];
       var current = this[0]; // if (!current || !current.nodeType || !parent || !parent.nodeType) return null
 
       if (current === parent) return null;
@@ -734,7 +683,7 @@
     /**
      * add className
      * @param className
-     * @return {ZxEditorQuery}
+     * @return {ZxQuery}
      */
     addClass: function addClass(className) {
       var _this2 = this;
@@ -752,7 +701,7 @@
     /**
      * remove className
      * @param className
-     * @return {ZxEditorQuery}
+     * @return {ZxQuery}
      */
     removeClass: function removeClass(className) {
       var _this3 = this;
@@ -815,7 +764,7 @@
     /**
      * remove attribute
      * @param attr
-     * @return {ZxEditorQuery}
+     * @return {ZxQuery}
      */
     removeAttr: function removeAttr(attr) {
       for (var i = 0; i < this.length; i++) {
@@ -865,7 +814,7 @@
     /**
      * appendChild
      * @param args
-     * @return {ZxEditorQuery}
+     * @return {ZxQuery}
      */
     append: function append() {
       var newChild;
@@ -881,7 +830,7 @@
             while (tempDiv.firstChild) {
               this[i].appendChild(tempDiv.firstChild);
             }
-          } else if (newChild instanceof ZxEditorQuery) {
+          } else if (newChild instanceof ZxQuery) {
             for (var j = 0; j < newChild.length; j++) {
               this[i].appendChild(newChild[j]);
             }
@@ -897,7 +846,7 @@
     /**
      * append child to parent
      * @param parent
-     * @return {ZxEditorQuery}
+     * @return {ZxQuery}
      */
     appendTo: function appendTo(parent) {
       $(parent).append(this);
@@ -946,7 +895,7 @@
           for (j = tempDiv.childNodes.length - 1; j >= 0; j--) {
             this[i].insertBefore(tempDiv.childNodes[j], this[i].childNodes[0]);
           }
-        } else if (newChild instanceof ZxEditorQuery) {
+        } else if (newChild instanceof ZxQuery) {
           for (j = 0; j < newChild.length; j++) {
             this[i].insertBefore(newChild[j], this[i].childNodes[0]);
           }
@@ -965,7 +914,7 @@
     /**
      * replace child
      * @param selector
-     * @return {ZxEditorQuery}
+     * @return {ZxQuery}
      */
     replace: function replace(selector) {
       var newChild = $(selector);
@@ -985,7 +934,7 @@
     /**
      * remove item
      * @param index
-     * @return {ZxEditorQuery}
+     * @return {ZxQuery}
      */
     remove: function remove(index) {
       var el;
@@ -1031,7 +980,7 @@
         return false;
       } else if (selector === doc) return el === doc;else if (selector === win) return el === win;
 
-      if (selector.nodeType || selector instanceof ZxEditorQuery) {
+      if (selector.nodeType || selector instanceof ZxQuery) {
         compareWith = selector.nodeType ? [selector] : selector;
 
         for (i = 0; i < compareWith.length; i++) {
@@ -1075,7 +1024,7 @@
       return this.children().eq(-1).is(target);
     },
     indexOf: function indexOf(el) {
-      if (el instanceof ZxEditorQuery) el = el[0];
+      if (el instanceof ZxQuery) el = el[0];
 
       for (var i = 0; i < this.length; i++) {
         if (this[i] === el) return i;
@@ -1394,57 +1343,20 @@
      * scroll
      * ********************************************
      */
-    scrollTo: scrollTo,
-    scrollTop: function scrollTop() {
-      for (var _len4 = arguments.length, args = new Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-        args[_key4] = arguments[_key4];
-      }
-
-      var top = args[0],
-          duration = args[1],
-          easing = args[2],
-          callback = args[3];
-
-      if (args.length === 3 && typeof easing === 'function') {
-        top = args[0];
-        duration = args[1];
-        callback = args[2];
-        easing = args[3];
-      }
-
-      var el;
-
-      if (typeof top === 'undefined') {
-        el = this[0];
-        if (el) return util.isWindow(el) ? el.pageYOffset : el.scrollTop;
-        return null;
-      }
-
-      return scrollTo.call(this, undefined, top, duration, easing, callback);
-    } // scrollTop (val) {
-    //   let win
-    //   let el = this[0]
-    //   // get
-    //   if (val === void 0) {
-    //     if (!el) return null
-    //     win = getWindow(el)
-    //     return win ? ('pageYOffset' in win) ? win.pageYOffset : util.supportBoxModel && win.document.documentElement.scrollTop || win.document.body.scrollTop : el.scrollTop
-    //   }
-    //   // set
-    //   for (let i = 0; i < this.length; i++) {
-    //     win = getWindow(this[i])
-    //     if (win) {
-    //       win.scrollTo(0, val)
-    //     } else {
-    //       this[i].scrollTop = val
-    //     }
-    //   }
-    // }
-
+    scrollTop: function scrollTop(value) {
+      if (!this.length) return;
+      var hasScrollTop = 'scrollTop' in this[0];
+      if (value === undefined) return hasScrollTop ? this[0].scrollTop : this[0].pageYOffset;
+      return this.each(hasScrollTop ? function () {
+        this.scrollTop = value;
+      } : function () {
+        this.scrollTo(this.scrollX, value);
+      });
+    }
   };
 
   var $ = function $(selector, context) {
-    return new ZxEditorQuery(selector, context);
+    return new ZxQuery(selector, context);
   };
 
   /**
@@ -1499,7 +1411,7 @@
     setRange: function setRange(el, offset) {
       var _this = this;
 
-      if (el instanceof ZxEditorQuery) {
+      if (el instanceof ZxQuery) {
         el = el[0];
       }
 
@@ -1550,7 +1462,7 @@
 
     /**
      * get cursor node in $parent
-     * @param needElement Want to get element node, not ZxEditorQuery object
+     * @param needElement Want to get element node, not ZxQuery object
      * @return {*}
      */
     getCurrentNode: function getCurrentNode(needElement) {
@@ -1577,6 +1489,9 @@
    * User: https://github.com/capricorncd
    * Date: 2019/04/21 22:42
    */
+
+  var fn = function fn() {};
+
   var DEF_OPTS = {
     head: null,
     // className
@@ -1592,8 +1507,12 @@
     body: null,
     // Used to distinguish ExpansionPanel instance
     name: 'expansion-panel',
-    onHeadClick: function onHeadClick() {},
-    onBodyClick: function onBodyClick() {}
+    onHeadClick: fn,
+    onBodyClick: fn,
+    onBeforeShow: fn,
+    onShow: fn,
+    onBeforeHide: fn,
+    onHide: fn
     /**
      * ExpansionPanel
      * Extension panel fixed at the bottom of the editor
@@ -1608,7 +1527,7 @@
     var _this = this;
 
     if (!zxEditor instanceof ZxEditor) {
-      throw new TypeError("new ExpansionPanel() parameter error, arguments[1] is no a ZxEditor instance.");
+      throw new TypeError("new ExpansionPanel() parameter error, arguments[1] is not a ZxEditor instance.");
     } // options
 
 
@@ -1619,8 +1538,7 @@
 
     this.visible = false; // Used to distinguish ExpansionPanel instance
 
-    this.name = util.toHump(opts.name);
-    this.$head = $("<div class=\"head-wrapper border-bottom ".concat(opts.headAlign, "\" style=\"height:").concat(opts.headHeight, "px;line-height:").concat(opts.headHeight, "px;\"><div class=\"l cur ").concat(opts.headLeftBtnClassName, "\">").concat(opts.headLeftBtnText, "</div>").concat(opts.headTitle || '', "</div>"));
+    this.name = opts.name;
     this.$body = $("<div class=\"body-wrapper\" style=\"height:".concat(opts.height - opts.headHeight, "px;\"></div>")); // node
 
     this.$el = $("<div class=\"zx-editor-expansion-panel border-top\"></div>"); // click
@@ -1640,13 +1558,15 @@
       if (opts.head) {
         this.$head = $(opts.head);
       } else {
-        // left btn
+        // default head
+        this.$head = $("<div class=\"head-wrapper border-bottom ".concat(opts.headAlign, "\" style=\"height:").concat(opts.headHeight, "px;line-height:").concat(opts.headHeight, "px;\"><div class=\"l cur ").concat(opts.headLeftBtnClassName, "\">").concat(opts.headLeftBtnText, "</div>").concat(opts.headTitle || '', "</div>")); // left btn
+
         var $leftBtn = this.$head.find('.l');
         zxEditor.$eventHandlers[this.name + 'HeadLeftBtn'] = {
           $target: $leftBtn,
           type: 'click',
           handler: function handler(e) {
-            opts.onHeadClick('left-button', e, _this);
+            opts.onHeadClick.call(_this, e, 'left-button');
           }
         };
         $leftBtn.on('click', zxEditor.$eventHandlers[this.name + 'HeadLeftBtn'].handler);
@@ -1657,7 +1577,7 @@
           $target: $switch,
           type: 'click',
           handler: function handler(e) {
-            opts.onHeadClick('switch', e, _this);
+            opts.onHeadClick.call(_this, e, 'switch');
 
             _this.hide();
           }
@@ -1666,6 +1586,9 @@
       }
 
       this.$el.append(this.$head);
+      this.$head.on('click', function (e) {
+        opts.onHeadClick.call(_this, e);
+      });
     } // body
 
 
@@ -1675,6 +1598,9 @@
       throw e;
     }
 
+    this.$body.on('click', function (e) {
+      opts.onBodyClick.call(_this, e);
+    });
     this.$el.append(this.$body); // append to $editor
 
     zxEditor.$editor.append(this.$el); // init
@@ -1707,9 +1633,11 @@
      */
     show: function show() {
       if (!this.visible) {
+        this.options.onBeforeShow.call(this);
         this.$el.removeClass('out').addClass('in');
         this.visible = true;
         this.editorInstance.emit('expansionPanelShow', this, this.editorInstance);
+        this.options.onShow.call(this);
       }
     },
 
@@ -1718,9 +1646,11 @@
      */
     hide: function hide() {
       if (this.visible) {
+        this.options.onBeforeHide.call(this);
         this.$el.removeClass('in').addClass('out');
         this.visible = false;
         this.editorInstance.emit('expansionPanelHide', this, this.editorInstance);
+        this.options.onHide.call(this);
       }
     }
   };
@@ -2473,22 +2403,22 @@
 
   function handleEvents() {
     var $content = this.$content;
-    var $window = $(win); // const options = this.options
-
+    var $window = $(win);
+    var options = this.options;
     /**
      * ****************************************************
      * window on resize
      * ****************************************************
      */
 
-    function windowResize() {
-      // toolbar
+    function windowResize(e) {
+      this.emit('windowResize', e, this); // toolbar
+
       this.toolbar.init(); // expansion panels
 
       this.expansionPanels.forEach(function (item) {
         item.init();
       });
-      this.emit('windowResize', this);
     }
 
     this.$eventHandlers.windowResize = {
@@ -2506,11 +2436,15 @@
     function contentPaste(e) {
       var _this = this;
 
-      e.preventDefault();
-      getPasteText(e).then(function (str) {
-        // 添加至焦点处
-        _this.insertElm(util.removeHtmlTags(str));
-      });
+      this.emit('paste', e, this);
+
+      if (!options.customPasteHandler) {
+        e.preventDefault();
+        getPasteText(e).then(function (str) {
+          // 添加至焦点处
+          _this.insertElm(util.removeHtmlTags(str));
+        });
+      }
     }
 
     this.$eventHandlers.contentPaste = {
@@ -2525,14 +2459,15 @@
 
     };
 
-    function contentInput() {
-      // check empty in content
+    function contentInput(e) {
+      this.emit('input', e, this); // check empty in content
+
       this._checkEmpty(); // check cursor node position
 
 
       this.checkPosition(); // emit content on change
 
-      this.emit('change', this);
+      this.emit('change', e, this);
     }
 
     this.$eventHandlers.contentInput = {
@@ -2547,13 +2482,14 @@
 
     };
 
-    function contentFocus() {
-      // console.error('contentFocus')
+    function contentFocus(e) {
+      this.emit('focus', e, this); // console.error('contentFocus')
       // hide all expansionPanels
       // this.expansionPanels.forEach(ep => {
       //   ep.hide()
       // })
       // toolbar
+
       if (!this.options.toolbarBeenFixed) {
         this.toolbar.show();
       }
@@ -2571,8 +2507,9 @@
 
     };
 
-    function contentBlur() {
-      // save $cursorNode
+    function contentBlur(e) {
+      this.emit('blur', e, this); // save $cursorNode
+
       this.$cursorNode = this.cursor.getCurrentNode();
 
       this._checkChildSection(); // console.warn(this.$cursorNode[0])
@@ -2596,8 +2533,9 @@
 
     };
 
-    function contentClick() {
-      // save $cursorNode
+    function contentClick(e) {
+      this.emit('click', e, this); // save $cursorNode
+
       this.$cursorNode = this.cursor.getCurrentNode(); // check position
 
       this.checkPosition(); // textStylePanel is undefined, or is hide
@@ -2619,7 +2557,7 @@
     };
 
     function contentKeydown(e) {
-      this.emit('keydown', e);
+      this.emit('keydown', e, this);
     }
 
     this.$eventHandlers.contentKeyup = {
@@ -2635,7 +2573,7 @@
     };
 
     function contentKeyup(e) {
-      this.emit('keyup', e); // handle enter keyup
+      this.emit('keyup', e, this); // handle enter keyup
 
       if (e.key === 'Enter' || e.keyCode === 13) {
         // check section node
@@ -3141,16 +3079,16 @@
     // editor min height
     // minHeight: window.innerHeight,
     // style
-    placeholder: '',
+    placeholder: 'Enter...',
     placeholderColor: '',
     lineHeight: 1.5,
     // paragraph tail spacing, default 10px
     paragraphTailSpacing: '',
     cursorColor: '',
     // iphone会自动移动，难控制
-    offsetTop: 30,
-    // 位置检测，输入可视区域元素移动速度
-    speed: 0,
+    cursorOffsetTop: 30,
+    // 自定义粘贴处理
+    customPasteHandler: false,
 
     /**
      * ******************************
@@ -3169,7 +3107,7 @@
      * ******************************
      */
     // customize Picture Handler
-    customizePictureHandler: false,
+    customPictureHandler: false,
     // image max width
     imageMaxWidth: 720,
     // image max size, unit Kib, default 20M
@@ -3221,7 +3159,7 @@
     } // version
 
 
-    this.version = '3.0.0-alpha'; // ZxEditorQuery instance
+    this.version = '3.0.0-alpha'; // ZxQuery instance
 
     this.$ = $;
     this.ExpansionPanel = ExpansionPanel; // options
@@ -3607,7 +3545,7 @@
         }
 
         scrollTop = $(window).scrollTop();
-        $(window).scrollTop(scrollTop + top + cursorHeight - this.options.offsetTop, this.options.speed);
+        $(window).scrollTop(scrollTop + top + cursorHeight - this.options.cursorOffsetTop);
       }
     }
   };
