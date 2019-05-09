@@ -4,7 +4,7 @@
 
 可用于独立web项目开发，也可以用于与原生App混合(hybrid)开发。
 
-旧版请见：[v2.x.x](https://github.com/capricorncd/zx-editor/tree/v3.0.0-alpha)
+旧版请见：[v2.x.x](https://github.com/capricorncd/zx-editor/tree/v2.x.x)
 
 ## 本地运行 Build Setup
 
