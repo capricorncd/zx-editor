@@ -6,7 +6,7 @@
 
 旧版请见：[v2.x.x](https://github.com/capricorncd/zx-editor/tree/v2.x.x)
 
-文档地址：https://capricorncd.github.io/zx-editor/docs/index.html
+文档地址：<a href="https://capricorncd.github.io/zx-editor/docs/index.html" target="_blank">https://capricorncd.github.io/zx-editor/docs/index.html</a>
 
 ## 本地运行 Build Setup
 
