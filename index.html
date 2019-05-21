@@ -5,62 +5,73 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>ZxEditor - 移动端H5富文本编辑器</title>
+  <link rel="stylesheet" href="./dist/css/zx-editor.css">
   <style>
     body {
       margin: 0;
-      padding: 0 0 50px;
-      background-color: #fff;
+      padding: 0;
     }
     #editorContainer {
-      /*padding: 15px;*/
+      padding: 15px;
       /*box-sizing: border-box;*/
     }
   </style>
 </head>
 <body>
 <div id="editorContainer"></div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/js-polyfills/0.1.42/polyfill.min.js"></script>
 <!--exif获取照片参数插件-->
-<script src="../demo/libs/exif.min.js"></script>
+<script src="./demo/libs/exif.min.js"></script>
 <!--debug-->
 <script src="https://cdn.bootcss.com/vConsole/3.2.0/vconsole.min.js"></script>
 <!--编辑器-->
-<script src="<%= htmlWebpackPlugin.files.chunks['zx-editor'].entry %>"></script>
+<script src="./dist/js/zx-editor.js"></script>
 <script>
   // 实例化 ZxEditor
   var zxEditor = new ZxEditor('#editorContainer', {
-    // 编辑器固定
-    fixed: false,
-    // 20秒自动保存一次编辑内容
-    autoSave: 20,
-    disableBackspaceDelete: false
+    editable: true,
+    // placeholder: '自定义placeholder',
+    // lineHeight: 1,
+    // padding: '0 0 30px',
+    // placeholderColor: 'red',
+    cursorColor: 'red'
   })
 
   // 实例化 VConsole
-  var debug = new VConsole()
+  new VConsole()
 
-  console.log(debug)
+  // console.log(debug)
 
   console.log('实例化 ZxEditor', zxEditor);
 
-  zxEditor.on('debug', function () {
-    // console.log.apply(console, arguments)
+  zxEditor.on('change', function () {
+    // console.log('change input')
   })
 
-  zxEditor.on('error', function (err) {
-    console.error.apply(console, arguments)
+  zxEditor.on('paste', function (e) {
+    console.log('paste', e)
   })
 
-  zxEditor.on('message', function () {
-    // console.log.apply(console, arguments)
+  zxEditor.on('keydown', function () {
+    // console.log('keydown')
   })
 
-  zxEditor.on('change', function (type, zxeditor) {
-    console.error(type + ' is change')
+  zxEditor.on('keyup', function () {
+    // console.log('keyup')
   })
-  // 删除元素
-  zxEditor.on('remove-attach', function ($el, type) {
-    console.log($el, type)
+
+  zxEditor.on('selectPictureInputChange', function (file, ze, e) {
+    // console.log(file, ze, e)
+  })
+
+  zxEditor.on('error', function (e, methodName) {
+    console.log(methodName)
+    console.error(e)
+  })
+
+  zxEditor.on('windowResize', function () {
+    console.error('windowResize', window.innerHeight)
   })
 </script>
 </body>

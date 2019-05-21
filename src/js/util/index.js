@@ -1,132 +1,160 @@
 /**
- * Create by capricorncd
- * 2018/1/24 0024.
- * https://github.com/capricorncd
+ * Created by Capricorncd.
+ * Date: 2019/04/15 13:16
+ * Copyright © 2017-present, https://github.com/capricorncd
  */
-// 十六进制
+import { document, window } from 'ssr-window'
+import {
+  changeNodeName,
+  unique
+} from '../dom-class/helper'
+
+const arr = []
+
+// Support: Android <=4.0 only
+// Make sure we trim BOM and NBSP
+const regTrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g
+
+// navigator
+const USER_AGENT = window.navigator.userAgent
+const PLATFORM = window.navigator.platform
+
+/**
+ * 转换为整数
+ * @param n
+ * @returns {*}
+ */
+function int (n) {
+  let num = parseInt(n)
+  return isNaN(num) ? 0 : num
+}
+
+/**
+ * 去除字符串首尾空格
+ * @param str
+ * @returns {string}
+ */
+function trim (str) {
+  return str ? str.toString().replace(regTrim, '') : ''
+}
+
+/**
+ * 将伪数组，转化为数组
+ * @param ArrayLike
+ * @param index
+ * @return {T[]}
+ */
+function slice (ArrayLike, index) {
+  return arr.slice.call(ArrayLike, int(index))
+}
+
+/**
+ * 去除字符串多余空格
+ * 除首尾外，中间连续空格被替换为一个空格
+ * @param str
+ * @return {string}
+ */
+function strip (str) {
+  return trim(str).replace(/\s+/g, ' ')
+}
+
+/**
+ * 是否为Element对象
+ * @param el
+ * @return {*|boolean}
+ */
+function isElement (el) {
+  return isObject(el) && el.nodeType
+}
+
+/**
+ * 是否为对象
+ * @param obj
+ * @param isAbsolute 必须满足父级原型为Object的对象
+ * @return {*|boolean}
+ */
+function isObject (obj, isAbsolute) {
+  let isObj = obj && typeof obj === 'object'
+  return isAbsolute ? isObj && obj.toString() === '[object Object]' : isObj
+}
+
+function isIPhone () {
+  return /iphone/i.test(USER_AGENT) && /iphone/.test(PLATFORM)
+}
+
+function isIPhoneX () {
+  return window.screen.height === 812 && window.screen.width === 375
+}
+
+function isWindow (obj) {
+  return obj !== null && obj === obj.window
+}
+
+/**
+ * 移除html标签
+ * @param str
+ * @return {string}
+ */
+function removeHtmlTags (str) {
+  str = (str + '').replace(/<\/?.+?>/g, '')
+  return strip(str)
+}
+
+function toHex (num) {
+  let n = typeof num === 'number' ? num : int(num)
+  let hex = n.toString(16)
+  return hex[1] ? hex : '0' + hex
+}
+
+function rgbToHex (rgb) {
+  let hex = ''
+  if (/rgb.*?\((\d+)\D+?(\d+)\D+?(\d+)/.test(rgb)) {
+    hex += toHex(RegExp.$1)
+    hex += toHex(RegExp.$2)
+    hex += toHex(RegExp.$3)
+  }
+  return hex ? '#' + hex : rgb
+}
+
+/**
+ * string to hump format
+ * @param str line-height: lineHeight
+ * @return {string}
+ */
+function toHump (str) {
+  return strip(str).replace(/([-_\s]+\w)/g, (match, $1) => {
+    // console.log(match, $1)
+    return $1[1].toUpperCase()
+  })
+}
+
+function supportBoxModel () {
+  const body = document.getElementsByTagName('body')[0]
+  let div = document.createElement('div')
+  body.appendChild(div)
+  // Figure out if the W3C box model works as expected
+  div.innerHTML = ''
+  div.style.width = div.style.paddingLeft = '1px'
+  // 通过检测div块的offsetWidth值是否是2px来判断浏览器是否支持盒模型
+  let result = div.offsetWidth === 2
+  body.removeChild(div)
+  return result
+}
+
 export default {
-  /**
-   * Exception 通知
-   * @param msg
-   */
-  err (msg) {
-    throw new Error(msg)
-  },
-
-  /**
-   * 获取文件后缀名
-   * @param fileName
-   * @returns {*}
-   */
-  getSuffix (fileName) {
-    return fileName ? fileName.toString().split('.').pop().toLowerCase() : null
-  },
-
-  /**
-   * 转换为整数
-   * @param n
-   * @returns {*}
-   */
-  int (n) {
-    let num = parseInt(n)
-    return isNaN(num) ? 0 : num
-  },
-
-  /**
-   * 去除字符串首尾空格
-   * @param str
-   * @returns {string}
-   */
-  trim (str) {
-    return str ? str.toString().replace(/^\s+|\s+$/g, '') : ''
-  },
-
-  /**
-   * 十进制转十六进制
-   * @param num
-   * @returns {string}
-   */
-  toHex (num) {
-    let n = typeof num === 'number' ? num : this.int(num)
-    let hex = n.toString(16)
-    return hex[1] ? hex : '0' + hex
-  },
-
-  /**
-   * 字符串'font-size'转换为驼峰
-   * @param str
-   * @returns {string}
-   */
-  strToHump (str) {
-    return str ? str.toString().replace(/-(\w)/g, (group, item) => item.toUpperCase()) : ''
-  },
-
-  /**
-   * rgb(68, 198, 123)转16进制字符串
-   * @param rgb
-   * @returns {string}
-   */
-  rgbToHex (rgb) {
-    let hex = ''
-    if (/rgb.*?\((\d+)\D+?(\d+)\D+?(\d+)/.test(rgb)) {
-      hex += this.toHex(RegExp.$1)
-      hex += this.toHex(RegExp.$2)
-      hex += this.toHex(RegExp.$3)
-    }
-    return hex ? '#' + hex : rgb
-  },
-
-  /**
-   * 是否为空
-   * @param str
-   * @returns {boolean}
-   */
-  isEmpty (str) {
-    return !str || /^\s*$/.test(str.toString())
-  },
-
-  /**
-   * 是否为http(s)链接
-   * @param url
-   * @returns {*|boolean}
-   */
-  isHttpUrl (url) {
-    return url && /^(http|https):\/\//i.test(url.toString())
-  },
-
-  /**
-   * 将伪数组，转换为数组
-   * @param pseudoArray 伪数组
-   * @returns {*}
-   */
-  slice (pseudoArray, index = 0) {
-    if (pseudoArray.length && pseudoArray[0]) {
-      return Array.prototype.slice.call(pseudoArray, index)
-    }
-    return []
-  },
-
-  /**
-   * 带时间戳的随机字符串
-   * @param prefix 前缀
-   * @returns {string}
-   * @private
-   */
-  randStr (prefix = 'zxEditor_') {
-    return prefix + (+new Date)
-  },
-
-  /**
-   * 判断o是否为对象{}
-   * @param o
-   * @returns {*|boolean}
-   */
-  isObject (o) {
-    return o && typeof o === 'object' && !Array.isArray(o)
-  },
-
-  /**
-   * 空函数
-   */
-  fn () {}
+  isIPhone: isIPhone(),
+  isIPhoneX: isIPhoneX(),
+  supportBoxModel: supportBoxModel(),
+  changeNodeName,
+  int,
+  isElement,
+  isObject,
+  isWindow,
+  removeHtmlTags,
+  rgbToHex,
+  slice,
+  strip,
+  trim,
+  toHump,
+  unique
 }

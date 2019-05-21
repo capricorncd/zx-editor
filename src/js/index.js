@@ -1,256 +1,421 @@
 /**
- * Create by capricorncd
- * 2018/1/23 0023.
- * https://github.com/capricorncd
+ * Created by Capricorncd.
+ * Date: 2019/04/12 11:12
+ * Copyright © 2017-present, https://github.com/capricorncd
  */
-import '../css/index.styl'
-import './util/polyfill'
-import dom from './util/dom-core'
-import util from './util/index'
-import broadcast from './broadcast/index'
-import { window } from 'ssr-window'
-import { initMixin } from './init'
-import { handleContent, checkContentInnerNull, removeContentClass } from './content'
-import { initEmoji } from './emoji/index'
-import { initTextStyle } from './text-style/index'
-import { initLink } from './link'
-import { initToolbar } from './toolbar'
-import { toBlobData, filesToBase64, MEDIA_TYPES, createMedia } from './image'
-import { initKeyboard } from './keyboard'
-
 /**
- * Note:
- * 1. 非特殊说明，带$符号的属性为Element对象
+ * ***********************************************
+ * Notes:
+ * 1. The property or variables prefixed $ are ZxQuery instance, or related to them
+ * ***********************************************
  */
+import $ from './dom-class/index'
+import CursorClass from './cursor-class/index'
+import ExpansionPanel from './expansion-panel/index'
+import util from './util/index'
+import { initDom } from './init/init-dom'
+import { initStyle } from './init/init-style'
+import { handleEvents } from './events/index'
+import { extendPrototypes } from './init/extend-prototype'
+import { base64ToBlobData } from './image-handler/index'
 
-class ZxEditor {
+const DEF_OPTIONS = {
+  // 内容是否可以被编辑
+  editable: true,
+  // 编辑器输入内容绝对定位
+  fixed: false,
+  // editor min height
+  // minHeight: window.innerHeight,
+  // style
+  placeholder: 'Enter...',
+  placeholderColor: '',
+  lineHeight: 1.5,
+  // paragraph tail spacing, default 10px
+  paragraphTailSpacing: '',
+  cursorColor: '',
+  // iphone会自动移动，难控制
+  cursorOffsetTop: 30,
+  // 自定义粘贴处理
+  customPasteHandler: false,
   /**
-   * constructor
-   * @param selector
-   * @param options
-   * @constructor
+   * ******************************
+   * toolbar options
+   * ******************************
    */
-  constructor (selector, options) {
-    if (this instanceof ZxEditor) {
-      this._init(selector, options)
-    } else {
-      throw new Error('ZxEditor is a constructor and should be called with the `new` keyword')
-    }
+  // Has the toolbar been fixed?
+  toolbarBeenFixed: true,
+  toolbarHeight: 50,
+  // buttons name, and order
+  toolbarBtns: ['select-picture', 'text-style'],
+  /**
+   * ******************************
+   * image options
+   * ******************************
+   */
+  // customize Picture Handler
+  customPictureHandler: false,
+  // image max width
+  imageMaxWidth: 720,
+  // image max size, unit Kib, default 20M
+  imageMaxSize: 20480,
+  // template
+  imageSectionTemp: `<section class="child-is-picture"><img src="{url}"></section>`,
+  // GIF pictures are not processed
+  ignoreGif: true,
+  // Force the width/height of the picture, even if the width/height of the picture
+  // is smaller than the target width/height
+  forceImageResize: false,
+  /**
+   * ******************************
+   * text style options
+   * ******************************
+   */
+  // text style, value ['#333', '#f00', ...]
+  textStyleColors: [],
+  textStyleTitle: 'Set Style',
+  textStyleHeadLeftBtnText: 'Clear style',
+  textStyleHeadAlign: 'center',
+  /**
+   * ******************************
+   * color options
+   * ******************************
+   */
+  mainColor: '',
+  // border color
+  borderColor: ''
+}
+
+function ZxEditor (selector, _options) {
+  if (!this instanceof ZxEditor) {
+    throw new Error('ZxEditor is a constructor and should be called with the `new` keyword')
+  }
+  /**
+   * ***************************************************
+   * check selector
+   * ***************************************************
+   */
+  this.$wrapper = $(selector)
+
+  if (!this.$wrapper[0]) {
+    throw new Error(`Cann't found '${selector}' Node in document!`)
   }
 
-  /**
-   * 初始化
-   * @param selector
-   * @param options
-   * @private
-   */
-  _init (selector, options) {
-    // version
-    this.version = '__VERSION__'
-    // broadcast
-    this.broadcast = broadcast.broadcast
-    // 初始化dom、参数
-    initMixin(this, selector, options)
-    // 初始化 toolbar
-    initToolbar(this)
-    // 初始化 emojiModal
-    initEmoji(this)
-    // 初始化 textStyleModal
-    initTextStyle(this)
-    // 初始化link
-    initLink(this)
-    // 处理content容器相关的
-    handleContent(this)
-    // 移动端键盘
-    initKeyboard(this)
-    // 检查光标位置
-    this.checkCursorPosition()
-  }
+  // version
+  this.version = '__VERSION__'
 
-  /**
-   * 插入dom元素
-   * @param $el
-   * @param type
-   * @param addRemoveIcon 添加remove icon
-   */
-  insertElm ($el, type, addRemoveIcon = false) {
-    if (!$el) {
-      this.emit('error', {
-        msg: `insertElm($el), $el is ${$el}`
-      })
-      return
-    }
-    // 元素类型
-    type = type || $el.nodeName.toLowerCase()
-    // console.log($el, type)
-    // 将图片插入至合适位置
-    this.$cursorElm = dom.insertToRangeElm($el, this.$cursorElm, 'child-node-is-' + type, addRemoveIcon)
-    // 重置光标位置
-    this.cursor.setRange(this.$cursorElm, 0)
-    // 延时执行光标所在元素位置计算
-    let tmr = setTimeout(_ => {
-      this.checkCursorPosition()
-      clearTimeout(tmr)
-      tmr = null
-    }, 350)
-    broadcast.emit('change', 'content', this)
-  }
+  // ZxQuery instance
+  this.$ = $
 
-  /**
-   * 添加媒体元素
-   * @param url
-   * @param tag 媒体类型，img、audio、video
-   */
-  addMedia (url, tag) {
-    this.emit('debug', 'addMedia start', url)
-    // check media type
-    if (!tag) {
-      this.emit('error', {
-        msg: `Unknown media type`
-      })
-      return
-    }
-    if (MEDIA_TYPES.indexOf(tag) === -1) {
-      this.emit('error', {
-        msg: `Media type "${tag}" is not valid!`
-      })
-      return
-    }
-    const $media = createMedia(tag, url)
-    this.insertElm($media, tag, true)
-  }
+  this.ExpansionPanel = ExpansionPanel
 
-  /**
-   * 向文档中添加图片
-   * @param src
-   */
-  addImage (src) {
-    this.addMedia(src, 'img')
-  }
+  // options
+  this.options = Object.assign(DEF_OPTIONS, _options)
+  this.init(this.options)
+}
 
+ZxEditor.prototype = {
+
+  constructor: ZxEditor,
+
+  init (options) {
+    options = options || this.options
+
+    /**
+     * ***************************************************
+     * event listeners
+     * or expansionPanel instance
+     * ***************************************************
+     */
+    // $().on, $().off, $().trigger
+    this.$eventHandlers = {}
+    // this.on, this.off, this.emit
+    this.customEvents = {}
+    // extend prototype
+    extendPrototypes(ZxEditor)
+    // expansionPanel instances
+    this.expansionPanels = []
+
+    /**
+     * ***************************************************
+     * create dom
+     * ***************************************************
+     */
+    initDom.call(this, options)
+
+    /**
+     * ***************************************************
+     * style and placeholder
+     * ***************************************************
+     */
+    initStyle.call(this, options)
+
+    /**
+     * ***************************************************
+     * cursor
+     * ***************************************************
+     */
+    this.cursor = new CursorClass(this.$content)
+
+    this.$cursorNode = this.cursor.getCurrentNode()
+
+    /**
+     * ***************************************************
+     * event: last
+     * ***************************************************
+     */
+    handleEvents.call(this)
+  },
   /**
-   * 添加链接
-   * @param title
-   * @param url
+   * 插入元素或字符串
+   * @param el
    */
-  addLink (url, title) {
-    this.emit('debug', 'addLink() is start', {url, title})
-    if (!url) return
-    if (!title) {
-      title = url
+  insertElm (el) {
+    // string
+    if (!el) return
+    // 光标元素及偏移量
+    let $cursorNode = this.$cursorNode
+
+    let newRangeEl, newRangeOffset
+    /**
+     * string
+     */
+    if (typeof el === 'string') {
+      // 光标所在元素内容为空
+      if ($cursorNode.isEmpty()) {
+        $cursorNode.text(el)
+        newRangeEl = $cursorNode
+        newRangeOffset = el.length
+      } else if ($cursorNode.children().every($item => $item.isTextNode())) {
+        let rangeOffset = this.cursor.offset
+        let rangeNodeStr = $cursorNode.text()
+        let tmpStr = rangeNodeStr.substr(0, rangeOffset) + el + rangeNodeStr.substr(rangeOffset)
+        // $section = $cursorNode.closest('section')
+        $cursorNode.text(tmpStr)
+        newRangeEl = $cursorNode
+        newRangeOffset = el.length + rangeOffset
+      } else {
+        // 创建一个section
+        let $newEl = $(`<section>${el}</section>`)
+        // 插入到childIndex后
+        $newEl.insertAfter($cursorNode)
+        newRangeEl = $newEl
+        newRangeOffset = el.length
+      }
     }
-    let avnode = {
-      tag: 'a',
-      attrs: {
-        href: url,
-        // 'data-url': url,
-        target: '_blank',
-        contenteditable: false
-      },
-      child: [
-        title,
-        {
-          tag: 'i',
-          attrs: {
-            class: '__remove'
+    /**
+     * 插入元素为：非文本
+     */
+    else {
+      let $el = $(el)
+      let $elm
+      for (let i = 0; i < $el.length; i++) {
+        $elm = $($el[i])
+        let nodeName = $elm.nodeName()
+        // SECTION
+        if (nodeName !== 'section') {
+          if ($elm.nodeType() === 1 && !/video|img|audio/.test(nodeName)) {
+            $elm.changeNodeName('section')
+          } else {
+            let $tmp = $(`<section></section>`)
+            $elm = $tmp.append($elm)
           }
         }
-      ]
-    }
-    // 创建$a元素
-    const $a = dom.createVdom(avnode)
-    this.insertElm($a)
-  }
-
-  /**
-   * 添加toolbar button
-   * @param opts
-   */
-  addFooterButton (opts) {
-    this.emit('debug', 'addFooterButton start')
-    let arr = []
-    if (util.isObject(opts)) {
-      arr.push(opts)
-    } else if (Array.isArray(opts)) {
-      arr = opts
-    } else {
-      this.emit('error', {
-        msg: 'addFooterButton failure',
-        data: arr
-      })
-      return
-    }
-    this._addToolbarChild(arr)
-  }
-
-  _addToolbarChild (arr) {
-    const $dl = dom.query('dl', this.$toolbar)
-    const _this = this
-    let $item, vnode
-    arr.forEach(item => {
-      vnode = {
-        tag: 'dd',
-        attrs: {
-          class: `${item.class}`,
-          'data-name': item.name,
-          'data-on': item.on
-        },
-        child: [
-          {
-            tag: 'i',
-            attrs: {
-              class: item.icon
-            }
+        if ($cursorNode.isEmpty()) {
+          // siblings is empty
+          if ($cursorNode.next()[0] && $cursorNode.next().isEmpty()) {
+            $cursorNode.replace($elm)
+          } else {
+            $elm.insertBefore($cursorNode)
           }
-        ]
+        } else {
+          $elm.insertAfter($cursorNode)
+        }
+        // 判断$el是否有下一个节点，有：光标指向el结束，无：则插入空行，并移动光标
+        let next = $elm.next()[0]
+        if (next) {
+          newRangeEl = $elm
+          newRangeOffset = $elm.isTextNode() ? $elm.text().length : 0
+        } else {
+          let $section = $(`<section><br></section>`)
+          this.$content.append($section)
+          newRangeEl = $section
+          newRangeOffset = 0
+        }
       }
-      $item = dom.createVdom(vnode)
-      _addEvent($item, item)
-    })
-
-    // 添加事件
-    function _addEvent ($item, item) {
-      // 添加事件
-      dom.addEvent($item, 'click', _ => {
-        _this.emit(item.on, item)
-      })
-      $dl.appendChild($item)
     }
-    this.emit('debug', 'addFooterButton ended')
-  }
+    this._checkChildSection()
+    this.$content.trigger('input')
+    console.log(newRangeEl, newRangeOffset)
+    this.cursor.setRange(newRangeEl, newRangeOffset)
+  },
 
   /**
-   * 设置$content底部距离
-   * @param pos
-   * @param offset 偏移量，使文章内容更容易查看
+   * 插入空行
    */
-  resetContentPostion (pos, offset = 0) {
-    let isFixed = this.options.fixed
-    let styleName = isFixed ? 'bottom' : 'marginBottom'
-    this.$content.style[styleName] = pos + util.int(offset) + 'px'
-  }
+  insertBlankLine () {
+    let $el = $(`<section><br></section>`)
+    this.insertElm($el)
+    this.cursor.setRange($el, 0)
+  },
 
   /**
-   * 获取正文中的base64图片
+   * 检查内容是否为空
+   * @private
+   */
+  _checkEmpty () {
+    let $el = this.$content
+    if ($el.isEmpty()) {
+      $el.addClass('is-empty')
+    } else if ($el.hasClass('is-empty')) {
+      $el.removeClass('is-empty')
+    }
+  },
+
+  /**
+   * 检查一级子元素，nodeName是否为(SECTION|H1|H2|H3|H4|BLOCKQUOTE|UL)
+   * 否：则替换为section标签，或者放入section标签内
+   * @private
+   */
+  _checkChildSection () {
+    if (!this.$cursorNode) this.$cursorNode = this.cursor.getCurrentNode()
+    let cursorNode = this.$cursorNode[0]
+    let isCursorNode = false
+    const parent = this.$content[0]
+    let childNodes = parent.childNodes
+    let el
+    for (let i = 0; i < childNodes.length; i++) {
+      el = childNodes[i]
+      if (el.nodeType === 1) {
+        if (!/SECTION|H1|H2|H3|H4|BLOCKQUOTE|UL/.test(el.nodeName)) {
+          isCursorNode = el === cursorNode
+          el = util.changeNodeName(el, 'section')
+          if (isCursorNode) {
+            this.$cursorNode = $(el)
+            this.cursor.setRange(el)
+          }
+        }
+      } else {
+        let $tmp = $(`<section></section>`)
+        $tmp.append(el.cloneNode())
+        parent.replaceChild($tmp[0], el)
+        this.$cursorNode = $tmp
+        this.cursor.setRange($tmp)
+      }
+    }
+  },
+
+  /**
+   * 清空内容
+   */
+  remove () {
+    this.setHtml()
+  },
+
+  /**
+   * 设置编辑器内容
+   * @param html
+   */
+  setHtml (html) {
+    this.$content.html(html || '<section><br></section>')
+    this._checkChildSection()
+    this.cursor.setRange(this.$content.firstChild(), 0)
+    this.$content.trigger('input')
+  },
+
+  /**
+   * 获取编辑器html内容
+   * 返回html内容
+   * @return {*}
+   */
+  getHtml () {
+    return this.$content.html()
+  },
+
+  /**
+   * 获取编辑器文本内容，
+   * 以纯文本形式返回数据
+   * @return {*|string}
+   */
+  getText () {
+    return this.$content.text()
+  },
+
+  /**
+   * destroy event and Node
+   */
+  destroy(){
+    let evt
+    // remove $events
+    for (let key in this.$eventHandlers) {
+      evt = this.$eventHandlers[key]
+      evt.$target.off(evt.type, evt.handler, evt.capture)
+      delete this.$eventHandlers[key]
+    }
+
+    // remove customEvents
+    for (let key in this.customEvents) {
+      evt = this.customEvents[key]
+      this.off(key)
+    }
+
+    // other object
+    this.cursor = null
+    this.toolbar = null
+    this.textStylePanel = null
+
+    // other ExpansionPanel
+    for (let key in this) {
+      if (this[key] instanceof ExpansionPanel) {
+        this[key] = null
+      }
+    }
+
+    // Node
+    this.$editor.remove()
+  },
+
+  /**
+   * set content height
+   * default minHeight is window innerHeight, marginBottom
+   * @param data
+   */
+  setContentHeight (data) {
+    let winHeight = window.innerHeight
+    let styles = {
+      // 防止正文内容被键盘挡住，无法查看
+      marginBottom: winHeight + 'px'
+    }
+    // check height
+    if (data.height) {
+      styles.height = typeof data.height === 'number' ? (data.height + 'px') : data.height
+    } else {
+      styles.minHeight = (util.int(data.minHeight) || winHeight) + 'px'
+    }
+
+    this.$content.css(styles)
+  },
+
+  /**
+   * get base64 images from this.$content
    * @returns {Array}
    */
   getBase64Images () {
     const arr = []
-    const $imgs = dom.queryAll('img', this.$content)
-    let $img, base64
+    const $imgs = this.$content.find('img')
+    let img, base64
     for (let i = 0; i < $imgs.length; i++) {
-      $img = $imgs[i]
-      base64 = $img.src
+      img = $imgs[i]
+      base64 = img.src
       if (/^data:.+?;base64,/.test(base64)) {
         arr.push({
-          id: $img.id,
+          id: img.id,
           base64: base64,
-          blob: toBlobData(base64)
+          blob: base64ToBlobData(base64)
         })
       }
     }
     return arr
-  }
+  },
 
   /**
    * 设置指定id图片src
@@ -259,212 +424,62 @@ class ZxEditor {
    * @returns {boolean}
    */
   setImageSrc (id, src) {
-    let $img = dom.query('#' + id, this.$content)
-    if ($img) {
-      $img.src = src
-      $img.removeAttribute('id')
-      broadcast.emit('change', 'content', this)
+    let img = this.$content.find('#' + id)[0]
+    if (img) {
+      img.src = src
+      img.removeAttribute('id')
       return true
     }
     return false
-  }
+  },
 
   /**
-   * 可视区间位置参数
+   * plugin
+   * @param fn
    */
-  _visiblePostion () {
-    // const winW = window.innerWidth
-    const winH = window.innerHeight
-    const opts = this.options
-    let top = util.int(opts.top)
-    // 底部位置
-    let bottom = 0
-    // 底部modal容器
-    // 是否显示
-    if (this.emojiModal && this.emojiModal.visible) {
-      bottom = this.emojiModal.height
+  plugin (fn) {
+    if (typeof fn === 'function') {
+      fn.call(this)
     }
-    else if (this.textstyleModal && this.textstyleModal.visible) {
-      bottom = this.textstyleModal.height
-    }
-    // 设置的bottom + 底部工具栏高度
-    else {
-      bottom = util.int(opts.bottom) + (opts.showToolbar ? this.toolbarHeight : 0)
-    }
-
-    let visiblePosition = {
-      fixed: opts.fixed,
-      // winWidth: winW,
-      winHeight: winH,
-      // startX: 0,
-      // endX: winW,
-      startY: top,
-      endY: winH - bottom - top - util.int(this.keyboard.height)
-    }
-    this.emit('message', visiblePosition)
-    return visiblePosition
-  }
+  },
 
   /**
-   * 检查光标元素位置
+   * check cursor position
    */
-  checkCursorPosition () {
-    const vpos = this._visiblePostion()
-    // 编辑器绝对定位时，光标位置交给系统处理
-    if (vpos.fixed) return
-    // 编辑器失去焦点时的焦点元素
-    const $el = this.$cursorElm
-    if (!$el) return
-    // 垂直偏移量，使内容滚动位置不要太贴边
-    const offsetY = 10
-    const pos = $el.getBoundingClientRect()
-    this.emit('message', '编辑器光标元素位置参数', pos)
-    // documentElement scrollTop
-    // let docScrollTop = d.documentElement.scrollTop
-    // body scrollTop
-    // let bodyScrollTop = d.body.scrollTop
-    // 取最大值
-    // let scrollTop = Math.max(docScrollTop, bodyScrollTop)
-    let scrollTop = dom.getScroll('top')
-    // 获取滚动容器
-    // let $body = docScrollTop >= bodyScrollTop ? d.documentElement : d.body
-    let top = 0
-    // 焦点元素顶部在可视开始区域以上位置
-    if (pos.top < vpos.startY) {
-      top = scrollTop - (vpos.startY - pos.top) - offsetY
-      // dom.scrollTop($body, top)
-      dom.scrollTop(window, top)
-    }
-    // 焦点元素底部在可视结束区域以下位置
-    if (pos.bottom > vpos.endY) {
-      top = scrollTop + vpos.endY + offsetY
-      // dom.scrollTop($body, top)
-      dom.scrollTop(window, top)
-    }
-    // this.emit('message', {
-    //   wrapper: $body.toString(),
-    //   scrollTop: [
-    //     'doc: ' + docScrollTop,
-    //     'body: ' + bodyScrollTop
-    //   ],
-    //   top
-    // })
-  }
+  checkPosition () {
+    const $el = this.$cursorNode = this.cursor.getCurrentNode()
+    // 当前光标位置
+    let cursorOffset = this.cursor.offset
+    // 文本内容长度
+    let len = $el.text().length
+    // 当前元素高度
+    let height = $el.height()
+    // 当前元素top
+    let top = $el.offset().top
+    let scrollTop
 
-  /**
-   * 设置内容
-   * @param data
-   */
-  setContent (data) {
-    this.$content.innerHTML = data
-    // 检查内容是否为空
-    if (!checkContentInnerNull(this.$content)) {
-      removeContentClass(this.$content)
-    }
-    // 重新获取$content 内光标元素
-    if (this.cursor) {
-      // 初始化完成后
-      this.$cursorElm = this.cursor.getRange()
-    }
-    broadcast.emit('change', 'content', this)
-  }
+    // 当前光标位置，距当前元素顶部距离
+    let cursorHeight = 0
 
-  /**
-   * 获取正文内容
-   * @param isText 只需要文本内容，即不含html标签
-   * 默认为false，获取html代码
-   */
-  getContent (isText = false) {
-    // 获取文本内容
-    if (isText) {
-      return this.$content.innerText
-    }
-    // 获取html内容
-    // 处理文本节点
-    let childNodes = this.$content.childNodes
-    let i, node
-    for (i = 0; i < childNodes.length; i++) {
-      node = childNodes[i]
-      // 将非空文本节点，转换为p元素节点
-      if (node.nodeType === 3) {
-        let text = util.trim(node.nodeValue)
-        if (text) {
-          let $p = dom.createElm('p')
-          $p.innerText = text
-          this.$content.replaceChild($p, node)
-        }
+    // 每行大概有几个字
+    let textNumOfPerLine = len / (height / this.lineHeight)
+    // 当前光标所在行
+    let line = height > this.lineHeight ? Math.floor(cursorOffset / textNumOfPerLine) : 1
+    // 当前光标位置，至当前元素顶部高度 - 1行高，防止移动后，光标位置太贴近顶部
+    let cursorHeightInCurrentNode = (line - 1) * this.lineHeight
+
+    // editor postion: fixed;
+    if (this.options.fixed) {
+
+    } else {
+      // 当前光标位置超过了屏幕的4分之1
+      if (cursorHeightInCurrentNode > window.innerHeight / 4) {
+        cursorHeight = cursorHeightInCurrentNode
       }
-    }
-    return this.$content.innerHTML
-  }
-
-  /**
-   * 自动保存
-   * @param interval 保存间隔时间，单位秒
-   */
-  autoSave (interval) {
-    if (typeof interval !== 'number' || interval <= 0) return
-    this.saveTimer = setInterval(_ => {
-      this.save()
-    }, interval * 1000)
-  }
-
-  /**
-   * 停止自动保存
-   * @private
-   */
-  stopAutoSave () {
-    if (this.saveTimer) {
-      clearInterval(this.saveTimer)
-      this.saveTimer = null
+      scrollTop = $(window).scrollTop()
+      $(window).scrollTop(scrollTop + top + cursorHeight - this.options.cursorOffsetTop)
     }
   }
-
-  /**
-   * 本地存储
-   */
-  save () {
-    this.storage.set('content', this.getContent())
-  }
-
-  /**
-   * 移除本地存储的content内容
-   */
-  removeSave () {
-    this.storage.remove('content')
-  }
-
-  /**
-   * 移除自定义事件&销毁dom元素
-   */
-  destroy () {
-    // 移除自定义事件
-    let bc = Object.keys(this.broadcast)
-    bc.forEach(key => {
-      this.off(key)
-    })
-    // 移除dom元素
-    this.$wrapper.parentElement.removeChild(this.$wrapper)
-  }
 }
 
-// 扩展属性
-ZxEditor.prototype.on = broadcast.on
-ZxEditor.prototype.off = broadcast.off
-ZxEditor.prototype.emit = broadcast.emit
-ZxEditor.prototype.toBlobData = toBlobData
-ZxEditor.prototype.filesToBase64 = filesToBase64
-
-for (let key in dom) {
-  if (dom.hasOwnProperty(key)) {
-    ZxEditor.prototype[key] = dom[key]
-  }
-}
-
-for (let key in util) {
-  if (util.hasOwnProperty(key)) {
-    ZxEditor.prototype[key] = util[key]
-  }
-}
-
-export { ZxEditor }
+export default ZxEditor

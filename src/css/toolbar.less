@@ -1,0 +1,56 @@
+/**
+ * ******************************************
+ * toolbar
+ * ******************************************
+ */
+@import "./config";
+
+@iconSize: 50px;
+
+.zx-editor .zx-editor-toolbar-wrapper {
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #fff;
+  height: @iconSize + 200;
+  transform: translateY(0);
+  opacity: 0;
+  .inner-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: @iconSize;
+    overflow-y: hidden;
+    overflow-x: auto;
+    white-space: nowrap;
+    .icon-item {
+      position: relative;
+      display: inline-block;
+      width: @iconSize;
+      height: @iconSize;
+      cursor: pointer;
+    }
+    // icons
+    .toolbar-icon-pic {
+      .bgImage('../img/pic', no-repeat center center);
+    }
+    .toolbar-icon-pic {
+      background-size: 25px 25px;
+    }
+    .text-style-btn {
+      .bgImage('../img/text', no-repeat center center);
+    }
+    .text-style-btn {
+      background-size: 25px 25px;
+    }
+  }
+  &.in {
+    animation: .3s zxEditorBottomIn forwards;
+  }
+  &.out {
+    animation: .3s zxEditorBottomOut forwards;
+  }
+}
