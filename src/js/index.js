@@ -97,7 +97,7 @@ function ZxEditor (selector, _options) {
   this.$wrapper = $(selector)
 
   if (!this.$wrapper[0]) {
-    throw new Error(`Cann't found '${selector}' Node in document!`)
+    throw new Error(`Can't found '${selector}' Node in document!`)
   }
 
   // version
@@ -343,7 +343,7 @@ ZxEditor.prototype = {
   /**
    * destroy event and Node
    */
-  destroy(){
+  destroy (){
     let evt
     // remove $events
     for (let key in this.$eventHandlers) {
