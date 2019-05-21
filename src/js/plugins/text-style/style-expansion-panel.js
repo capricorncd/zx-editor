@@ -96,6 +96,30 @@ export function styleExpansionPanel (options) {
             'data-style': 'textDecoration:line-through'
           },
           child: ['abc']
+        },
+        {
+          tag: 'dd',
+          attrs: {
+            style: '',
+            'data-style': 'textAlign:left'
+          },
+          child: ['L']
+        },
+        {
+          tag: 'dd',
+          attrs: {
+            style: '',
+            'data-style': 'textAlign:center'
+          },
+          child: ['C']
+        },
+        {
+          tag: 'dd',
+          attrs: {
+            style: '',
+            'data-style': 'textAlign:right'
+          },
+          child: ['R']
         }
       ]
     },

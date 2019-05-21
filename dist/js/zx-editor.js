@@ -3,7 +3,7 @@
  * https://github.com/capricorncd/zx-editor
  * Copyright © 2018-present, capricorncd
  * Released under the MIT License
- * Released on: 2019-05-09 22:28:46
+ * Released on: 2019-05-21 20:32:45
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -1804,6 +1804,27 @@
           'data-style': 'textDecoration:line-through'
         },
         child: ['abc']
+      }, {
+        tag: 'dd',
+        attrs: {
+          style: '',
+          'data-style': 'textAlign:left'
+        },
+        child: ['L']
+      }, {
+        tag: 'dd',
+        attrs: {
+          style: '',
+          'data-style': 'textAlign:center'
+        },
+        child: ['C']
+      }, {
+        tag: 'dd',
+        attrs: {
+          style: '',
+          'data-style': 'textAlign:right'
+        },
+        child: ['R']
       }]
     }, // color
     {
