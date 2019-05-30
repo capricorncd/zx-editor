@@ -45,7 +45,7 @@ export function selectPictureBtn () {
       _this.emit('selectPictureInputChange', file, e, _this)
 
       // customize Picture Handler
-      if (options.customizePictureHandler) return
+      if (options.customPictureHandler) return
 
       // handler picture
       _this.fileToBase64(file, imageOptions).then(res => {

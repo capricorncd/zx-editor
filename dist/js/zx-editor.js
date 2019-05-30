@@ -3,7 +3,7 @@
  * https://github.com/capricorncd/zx-editor
  * Copyright © 2018-present, capricorncd
  * Released under the MIT License
- * Released on: 2019-05-21 20:32:45
+ * Released on: 2019-05-30 22:54:06
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -2103,7 +2103,7 @@
         _this.emit('selectPictureInputChange', file, e, _this); // customize Picture Handler
 
 
-        if (options.customizePictureHandler) return; // handler picture
+        if (options.customPictureHandler) return; // handler picture
 
         _this.fileToBase64(file, imageOptions).then(function (res) {
           // console.log(res)
@@ -2322,10 +2322,11 @@
     // main color
     var style = ".zx-editor .m-color{color:".concat(options.mainColor, " !important;}.zx-editor .text-style-outer-wrapper .__tag-wrapper dd i {border-color:").concat(options.mainColor, " !important;}"); // line-height, caret-color
 
-    if (options.lineHeight || options.cursorColor) {
+    if (options.lineHeight || options.cursorColor || options.textColor) {
       var lineHeight = options.lineHeight ? "line-height:".concat(options.lineHeight, ";") : '';
-      var caretColor = options.cursorColor ? "caret-color:".concat(options.cursorColor) : '';
-      style += ".zx-editor .zx-editor-content-wrapper{".concat(lineHeight + caretColor, "}");
+      var caretColor = options.cursorColor ? "caret-color:".concat(options.cursorColor, ";") : '';
+      var textColor = options.textColor ? "color:".concat(options.textColor, ";") : '';
+      style += ".zx-editor .zx-editor-content-wrapper{".concat(lineHeight + caretColor + textColor, "}");
     }
 
     if (options.paragraphTailSpacing) {
@@ -3106,6 +3107,7 @@
     // paragraph tail spacing, default 10px
     paragraphTailSpacing: '',
     cursorColor: '',
+    textColor: '',
     // iphone会自动移动，难控制
     cursorOffsetTop: 30,
     // 自定义粘贴处理
@@ -3176,7 +3178,7 @@
     this.$wrapper = $(selector);
 
     if (!this.$wrapper[0]) {
-      throw new Error("Cann't found '".concat(selector, "' Node in document!"));
+      throw new Error("Can't found '".concat(selector, "' Node in document!"));
     } // version
 
 

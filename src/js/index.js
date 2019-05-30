@@ -33,6 +33,7 @@ const DEF_OPTIONS = {
   // paragraph tail spacing, default 10px
   paragraphTailSpacing: '',
   cursorColor: '',
+  textColor: '',
   // iphone会自动移动，难控制
   cursorOffsetTop: 30,
   // 自定义粘贴处理

@@ -15,10 +15,11 @@ export function initStyle (options) {
   let style = `.zx-editor .m-color{color:${options.mainColor} !important;}.zx-editor .text-style-outer-wrapper .__tag-wrapper dd i {border-color:${options.mainColor} !important;}`
 
   // line-height, caret-color
-  if (options.lineHeight || options.cursorColor) {
+  if (options.lineHeight || options.cursorColor || options.textColor) {
     let lineHeight = options.lineHeight ? `line-height:${options.lineHeight};` : ''
-    let caretColor = options.cursorColor ? `caret-color:${options.cursorColor}` : ''
-    style += `.zx-editor .zx-editor-content-wrapper{${lineHeight + caretColor}}`
+    let caretColor = options.cursorColor ? `caret-color:${options.cursorColor};` : ''
+    let textColor = options.textColor ? `color:${options.textColor};` : ''
+    style += `.zx-editor .zx-editor-content-wrapper{${lineHeight + caretColor + textColor}}`
   }
   if (options.paragraphTailSpacing) {
     style += `.zx-editor .zx-editor-content-wrapper > *{margin-bottom:${options.paragraphTailSpacing};}`
