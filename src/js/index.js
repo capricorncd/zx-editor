@@ -72,7 +72,7 @@ const DEF_OPTIONS = {
    * ******************************
    */
   // text style, value ['#333', '#f00', ...]
-  textStyleColors: [],
+  textStyleColors: null,
   textStyleTitle: 'Set Style',
   textStyleHeadLeftBtnText: 'Clear style',
   textStyleHeadAlign: 'center',

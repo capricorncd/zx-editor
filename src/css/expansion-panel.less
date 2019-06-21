@@ -124,6 +124,26 @@
         &:last-child:after {
           border-right-width: 0;
         }
+        &.text-align--l, &.text-align--c, &.text-align--r {
+          &:before {
+            display: inline-block;
+            content: '=';
+            line-height: 15px;
+            width: 20px;
+            height: 19px;
+            border-top: 2px solid #333;
+            border-bottom: 2px solid #333;
+            box-sizing: border-box;
+            overflow: hidden;
+          }
+        }
+        &.text-align--l:before {
+          text-indent: -10px;
+        }
+        &.text-align--c:before {}
+        &.text-align--r:before {
+          text-indent: 8px;
+        }
       }
     }
     .__color-wrapper {

@@ -4,7 +4,7 @@
  * Copyright © 2017-present, https://github.com/capricorncd
  */
 // https://gulpjs.com/docs/en/getting-started/creating-tasks
-const { parallel, series, watch, src, dest, task } = require('gulp')
+const { parallel, series, watch, src, task } = require('gulp')
 const connect = require('gulp-connect')
 const gopen = require('gulp-open')
 const modifyFile = require('gulp-modify-file')

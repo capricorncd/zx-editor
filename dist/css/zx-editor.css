@@ -1,9 +1,9 @@
 /*!
- * zx-editor v3.0.0-alpha
+ * zx-editor v3.0.2
  * https://github.com/capricorncd/zx-editor
  * Copyright © 2018-present, capricorncd
  * Released under the MIT License
- * Released on: 2019-05-30 22:54:06
+ * Released on: 2019-06-21 23:06:27
  *//**
  * ******************************************
  * animation
@@ -261,9 +261,12 @@
   top: 0;
   width: 44px;
   height: 44px;
+  display: -webkit-box;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  -webkit-box-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+          justify-content: center;
   cursor: pointer;
 }
 .zx-editor .zx-editor-expansion-panel .head-wrapper .switch:after {
@@ -322,12 +325,14 @@
 }
 .zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__style-wrapper {
   position: relative;
+  display: -webkit-box;
   display: flex;
   height: 50px;
 }
 .zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__style-wrapper dd {
   position: relative;
-  flex: 1;
+  -webkit-box-flex: 1;
+          flex: 1;
   line-height: 50px;
   text-align: center;
   font-size: 1.5em;
@@ -345,18 +350,42 @@
 .zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__style-wrapper dd:last-child:after {
   border-right-width: 0;
 }
+.zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__style-wrapper dd.text-align--l:before,
+.zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__style-wrapper dd.text-align--c:before,
+.zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__style-wrapper dd.text-align--r:before {
+  display: inline-block;
+  content: '=';
+  line-height: 15px;
+  width: 20px;
+  height: 19px;
+  border-top: 2px solid #333;
+  border-bottom: 2px solid #333;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__style-wrapper dd.text-align--l:before {
+  text-indent: -10px;
+}
+.zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__style-wrapper dd.text-align--r:before {
+  text-indent: 8px;
+}
 .zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__color-wrapper {
+  display: -webkit-box;
   display: flex;
   position: relative;
   height: 50px;
 }
 .zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__color-wrapper dd {
-  flex: 1;
+  -webkit-box-flex: 1;
+          flex: 1;
   position: relative;
   height: 50px;
+  display: -webkit-box;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  -webkit-box-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+          align-items: center;
 }
 .zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__color-wrapper dd i {
   position: relative;

@@ -62,125 +62,131 @@ export function styleExpansionPanel (options) {
 
   const zxEditor = this
 
-  const COLORS = options.textStyleColors.length ? options.textStyleColors : DEF_COLORS
-
   // dom structure
-  let panelBodyChild = [
-    // style
-    {
-      tag: 'dl',
-      attrs: {
-        class: '__style-wrapper border-bottom'
-      },
-      child: [
-        {
-          tag: 'dd',
-          attrs: {
-            style: 'font-weight: 800;',
-            'data-style': 'fontWeight:800'
-          },
-          child: ['B']
-        },
-        {
-          tag: 'dd',
-          attrs: {
-            style: 'font-style: italic;',
-            'data-style': 'fontStyle:italic'
-          },
-          child: ['I']
-        },
-        {
-          tag: 'dd',
-          attrs: {
-            style: 'text-decoration: line-through;',
-            'data-style': 'textDecoration:line-through'
-          },
-          child: ['abc']
-        },
-        {
-          tag: 'dd',
-          attrs: {
-            style: '',
-            'data-style': 'textAlign:left'
-          },
-          child: ['L']
-        },
-        {
-          tag: 'dd',
-          attrs: {
-            style: '',
-            'data-style': 'textAlign:center'
-          },
-          child: ['C']
-        },
-        {
-          tag: 'dd',
-          attrs: {
-            style: '',
-            'data-style': 'textAlign:right'
-          },
-          child: ['R']
-        }
-      ]
+  let panelBodyChild = []
+
+  let styleNode = {
+    tag: 'dl',
+    attrs: {
+      class: '__style-wrapper border-bottom'
     },
-    // color
-    {
+    child: [
+      {
+        tag: 'dd',
+        attrs: {
+          style: 'font-weight: 800;',
+          'data-style': 'fontWeight:800'
+        },
+        child: ['B']
+      },
+      {
+        tag: 'dd',
+        attrs: {
+          style: 'font-style: italic;',
+          'data-style': 'fontStyle:italic'
+        },
+        child: ['I']
+      },
+      {
+        tag: 'dd',
+        attrs: {
+          style: 'text-decoration: line-through;',
+          'data-style': 'textDecoration:line-through'
+        },
+        child: ['abc']
+      },
+      {
+        tag: 'dd',
+        attrs: {
+          style: '',
+          'data-style': 'textAlign:left',
+          class: 'text-align--l'
+        }
+      },
+      {
+        tag: 'dd',
+        attrs: {
+          style: '',
+          'data-style': 'textAlign:center',
+          class: 'text-align--c'
+        }
+      },
+      {
+        tag: 'dd',
+        attrs: {
+          style: '',
+          'data-style': 'textAlign:right',
+          class: 'text-align--r'
+        }
+      }
+    ]
+  }
+
+  panelBodyChild.push(styleNode)
+
+  const COLORS = Array.isArray(options.textStyleColors) ? options.textStyleColors : DEF_COLORS
+
+  if (COLORS.length) {
+    let colorsNode = {
       tag: 'dl',
       attrs: {
         class: '__color-wrapper border-bottom'
       },
       child: createColorVNode(COLORS)
-    },
-    // tag
-    {
-      tag: 'dl',
-      attrs: {
-        class: '__tag-wrapper'
-      },
-      child: [
-        {
-          tag: 'dd',
-          attrs: {
-            class: '__h2',
-            'data-tag': 'h2'
-          },
-          child: ['大标题', { tag: 'i' }]
-        },
-        {
-          tag: 'dd',
-          attrs: {
-            class: '__h4',
-            'data-tag': 'h4'
-          },
-          child: ['小标题', { tag: 'i' }]
-        },
-        {
-          tag: 'dd',
-          attrs: {
-            class: '__section active',
-            'data-tag': 'section'
-          },
-          child: ['正文', { tag: 'i' }]
-        },
-        {
-          tag: 'dd',
-          attrs: {
-            class: '__blockquote',
-            'data-tag': 'blockquote'
-          },
-          child: ['引用', { tag: 'i' }]
-        },
-        {
-          tag: 'dd',
-          attrs: {
-            class: '__ul',
-            'data-tag': 'ul'
-          },
-          child: ['无序列表', { tag: 'i' }]
-        }
-      ]
     }
-  ]
+    panelBodyChild.push(colorsNode)
+  }
+
+  let tagNode = {
+    tag: 'dl',
+    attrs: {
+      class: '__tag-wrapper'
+    },
+    child: [
+      {
+        tag: 'dd',
+        attrs: {
+          class: '__h2',
+          'data-tag': 'h2'
+        },
+        child: ['大标题', { tag: 'i' }]
+      },
+      {
+        tag: 'dd',
+        attrs: {
+          class: '__h4',
+          'data-tag': 'h4'
+        },
+        child: ['小标题', { tag: 'i' }]
+      },
+      {
+        tag: 'dd',
+        attrs: {
+          class: '__section active',
+          'data-tag': 'section'
+        },
+        child: ['正文', { tag: 'i' }]
+      },
+      {
+        tag: 'dd',
+        attrs: {
+          class: '__blockquote',
+          'data-tag': 'blockquote'
+        },
+        child: ['引用', { tag: 'i' }]
+      },
+      {
+        tag: 'dd',
+        attrs: {
+          class: '__ul',
+          'data-tag': 'ul'
+        },
+        child: ['无序列表', { tag: 'i' }]
+      }
+    ]
+  }
+
+  panelBodyChild.push(tagNode)
 
 
   let panelBody = createVdom({

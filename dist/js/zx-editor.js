@@ -1,9 +1,9 @@
 /*!
- * zx-editor v3.0.0-alpha
+ * zx-editor v3.0.2
  * https://github.com/capricorncd/zx-editor
  * Copyright © 2018-present, capricorncd
  * Released under the MIT License
- * Released on: 2019-05-30 22:54:06
+ * Released on: 2019-06-21 23:06:27
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -1774,11 +1774,10 @@
   function styleExpansionPanel(options) {
     var _this = this;
 
-    var zxEditor = this;
-    var COLORS = options.textStyleColors.length ? options.textStyleColors : DEF_COLORS; // dom structure
+    var zxEditor = this; // dom structure
 
-    var panelBodyChild = [// style
-    {
+    var panelBodyChild = [];
+    var styleNode = {
       tag: 'dl',
       attrs: {
         "class": '__style-wrapper border-bottom'
@@ -1808,33 +1807,40 @@
         tag: 'dd',
         attrs: {
           style: '',
-          'data-style': 'textAlign:left'
-        },
-        child: ['L']
+          'data-style': 'textAlign:left',
+          "class": 'text-align--l'
+        }
       }, {
         tag: 'dd',
         attrs: {
           style: '',
-          'data-style': 'textAlign:center'
-        },
-        child: ['C']
+          'data-style': 'textAlign:center',
+          "class": 'text-align--c'
+        }
       }, {
         tag: 'dd',
         attrs: {
           style: '',
-          'data-style': 'textAlign:right'
-        },
-        child: ['R']
+          'data-style': 'textAlign:right',
+          "class": 'text-align--r'
+        }
       }]
-    }, // color
-    {
-      tag: 'dl',
-      attrs: {
-        "class": '__color-wrapper border-bottom'
-      },
-      child: createColorVNode(COLORS)
-    }, // tag
-    {
+    };
+    panelBodyChild.push(styleNode);
+    var COLORS = Array.isArray(options.textStyleColors) ? options.textStyleColors : DEF_COLORS;
+
+    if (COLORS.length) {
+      var colorsNode = {
+        tag: 'dl',
+        attrs: {
+          "class": '__color-wrapper border-bottom'
+        },
+        child: createColorVNode(COLORS)
+      };
+      panelBodyChild.push(colorsNode);
+    }
+
+    var tagNode = {
       tag: 'dl',
       attrs: {
         "class": '__tag-wrapper'
@@ -1885,7 +1891,8 @@
           tag: 'i'
         }]
       }]
-    }];
+    };
+    panelBodyChild.push(tagNode);
     var panelBody = createVdom({
       tag: 'div',
       attrs: {
@@ -3149,7 +3156,7 @@
      * ******************************
      */
     // text style, value ['#333', '#f00', ...]
-    textStyleColors: [],
+    textStyleColors: null,
     textStyleTitle: 'Set Style',
     textStyleHeadLeftBtnText: 'Clear style',
     textStyleHeadAlign: 'center',
@@ -3182,7 +3189,7 @@
     } // version
 
 
-    this.version = '3.0.0-alpha'; // ZxQuery instance
+    this.version = '3.0.2'; // ZxQuery instance
 
     this.$ = $;
     this.ExpansionPanel = ExpansionPanel; // options
