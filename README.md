@@ -1,5 +1,11 @@
 # ZxEditor v3.0.0-Alpha
 
+<p align="left">
+  <a href="https://npmcharts.com/compare/zx-editor?minimal=true"><img src="https://img.shields.io/npm/dm/zx-editor.svg?sanitize=true" alt="Downloads"></a>
+  <a href="https://www.npmjs.com/package/zx-editor"><img src="https://img.shields.io/npm/v/zx-editor.svg?sanitize=true" alt="Version"></a>
+  <a href="https://www.npmjs.com/package/zx-editor"><img src="https://img.shields.io/npm/l/zx-editor.svg?sanitize=true" alt="License"></a>
+</p>
+
 移动端HTML文档（富文本）编辑器，支持图文混排、引用、大标题、无序列表，字体颜色、加粗、斜体。
 
 可用于独立web项目开发，也可以用于与原生App混合(hybrid)开发。
@@ -24,7 +30,11 @@ npm run build
 ## 使用 Use
 
 ```
+# npm
 npm i -S zx-editor
+
+# yarn
+yarn add zx-editor
 ```
 
 #### # browser
