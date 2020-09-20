@@ -6,3 +6,6 @@ npm-debug.log
 __psd/
 cache/
 src/js/dom/
+
+package-lock.json
+yarn.lock
