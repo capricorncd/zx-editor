@@ -25,7 +25,7 @@ class ZxDialog {
   }
 
   _init () {
-    this.broadcast = broadcast.broadcast
+    this.broadcast = {}
   }
 
   /**

@@ -6,7 +6,7 @@ export default {
   /**
    * BroadCast
    */
-  broadcast: {},
+  // broadcast: {},
 
   /**
    * on

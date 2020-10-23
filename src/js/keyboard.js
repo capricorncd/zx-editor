@@ -4,7 +4,7 @@
  * 2018-09-18 22:58
  */
 import util from './util/index'
-import broadcast from './broadcast/index'
+// import broadcast from './broadcast/index'
 export function initKeyboard (_this) {
   /**
    * ***************************************************
@@ -27,7 +27,7 @@ export function initKeyboard (_this) {
     }
     if (isUpdate) {
       _this.resetContentPostion( _this.keyboard.height, _this.toolbarHeight)
-      broadcast.emit('message', {
+      _this.emit('message', {
         msg: 'Property keyboard has been updated!'
       })
     }

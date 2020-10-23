@@ -40,7 +40,7 @@ export function handleContent (_this) {
       p.innerHTML = '<br>'
       $content.appendChild(p)
       p.focus()
-      broadcast.emit('change', 'content', _this)
+      _this.emit('change', 'content', _this)
       _this.$cursorElm = p
     } else {
       _this.$cursorElm = cursor.getRange()
@@ -51,7 +51,7 @@ export function handleContent (_this) {
   // 删除附件等操作
   dom.addEvent($content, 'click', e => {
     e.stopPropagation()
-    broadcast.emit('click', $content, e)
+    _this.emit('click', $content, e)
     // 隐藏emojiModal
     _this.emojiModal.hide()
     _this.textstyleModal.hide()
@@ -95,14 +95,14 @@ export function handleContent (_this) {
 
   // focus移除$content placeholder
   dom.addEvent($content, 'focus', _ => {
-    broadcast.emit('focus', $content)
+    _this.emit('focus', $content)
     removeContentClass($content)
   })
 
   // 离开编辑输入框时，内容是否为空
   // 为空则添加<br>
   dom.addEvent($content, 'blur', e => {
-    broadcast.emit('blur', $content)
+    _this.emit('blur', $content)
     // 存储$curor element
     _this.$cursorElm = cursor.getRange()
     // 检查$content是否为空
@@ -125,7 +125,7 @@ export function handleContent (_this) {
     // 存储$curor element
     _this.$cursorElm = cursor.getRange()
     _this.checkCursorPosition()
-    broadcast.emit('change', 'content', _this)
+    _this.emit('change', 'content', _this)
   }, false)
 
   // 粘贴
@@ -184,10 +184,10 @@ export function handleContent (_this) {
         tmr = null
       }, 350)
     }
-    broadcast.emit('paste', $content, {
+    _this.emit('paste', $content, {
       content: pasteStr
     })
-    broadcast.emit('change', 'content', _this)
+    _this.emit('change', 'content', _this)
   }
 
   /**
@@ -214,7 +214,7 @@ export function handleContent (_this) {
         const $newNode = dom.changeTagName($rootNode, 'p')
         $content.replaceChild($newNode, $rootNode)
       }
-      broadcast.emit('change', 'content', _this)
+      _this.emit('change', 'content', _this)
     }
   }
 
@@ -256,14 +256,14 @@ export function handleContent (_this) {
     _this.dialog.confirm(`您确定要删除${attachName}吗？`, result => {
       if (result) {
         if ($parent) {
-          broadcast.emit('remove-attach', $parent, type)
+          _this.emit('remove-attach', $parent, type)
           // 获取相邻元素
           let $sibling = $parent.nextElementSibling || $parent.previousElementSibling
           $parent.parentNode.removeChild($parent)
           // 移动光标
           cursor.setRange($sibling, 0)
         }
-        broadcast.emit('change', 'content', _this)
+        _this.emit('change', 'content', _this)
       }
       $parent = null
     })

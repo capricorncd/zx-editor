@@ -48,7 +48,7 @@ class ZxEditor {
     // version
     this.version = '__VERSION__'
     // broadcast
-    this.broadcast = broadcast.broadcast
+    this.broadcast = {}
     // 初始化dom、参数
     initMixin(this, selector, options)
     // 初始化 toolbar
@@ -93,7 +93,7 @@ class ZxEditor {
       clearTimeout(tmr)
       tmr = null
     }, 350)
-    broadcast.emit('change', 'content', this)
+    this.emit('change', 'content', this)
   }
 
   /**
@@ -263,7 +263,7 @@ class ZxEditor {
     if ($img) {
       $img.src = src
       $img.removeAttribute('id')
-      broadcast.emit('change', 'content', this)
+      this.emit('change', 'content', this)
       return true
     }
     return false
@@ -366,7 +366,7 @@ class ZxEditor {
       // 初始化完成后
       this.$cursorElm = this.cursor.getRange()
     }
-    broadcast.emit('change', 'content', this)
+    this.emit('change', 'content', this)
   }
 
   /**
