@@ -1,17 +1,19 @@
 /*!
- * zx-editor v3.0.2
+ * zx-editor v3.0.3-alpha
  * https://github.com/capricorncd/zx-editor
  * Copyright © 2018-present, capricorncd
  * Released under the MIT License
- * Released on: 2019-06-21 23:06:27
+ * Released on: 2020-10-23 17:51:36
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
   (global = global || self, global.ZxEditor = factory());
-}(this, function () { 'use strict';
+}(this, (function () { 'use strict';
 
   function _typeof(obj) {
+    "@babel/helpers - typeof";
+
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
       _typeof = function (obj) {
         return typeof obj;
@@ -1513,15 +1515,14 @@
     onShow: fn,
     onBeforeHide: fn,
     onHide: fn
-    /**
-     * ExpansionPanel
-     * Extension panel fixed at the bottom of the editor
-     * @param options
-     * @param zxEditor ZxEditor instance
-     * @constructor
-     */
-
   };
+  /**
+   * ExpansionPanel
+   * Extension panel fixed at the bottom of the editor
+   * @param options
+   * @param zxEditor ZxEditor instance
+   * @constructor
+   */
 
   function ExpansionPanel(options, zxEditor) {
     var _this = this;
@@ -1918,6 +1919,7 @@
       var cursorNode = zxEditor.$cursorNode[0];
       cursorNode.style[key] = cursorNode.style[key] === style[1] ? '' : style[1];
       zxEditor.cursor.setRange();
+      zxEditor.$content.trigger('input');
     }); // color
 
     var $colorsParent = $panelBody.find('.__color-wrapper');
@@ -1937,6 +1939,7 @@
       }
 
       zxEditor.cursor.setRange();
+      zxEditor.$content.trigger('input');
     }); // tag
 
     var $tagsParent = $panelBody.find('.__tag-wrapper');
@@ -1958,6 +1961,8 @@
           $el.removeClass('active');
         }
       }
+
+      zxEditor.$content.trigger('input');
     });
 
     if (this.isIPhoneX) {
@@ -2093,9 +2098,9 @@
       handler: function handler() {
         input.value = '';
       },
-      capture: false // image section template
+      capture: false
+    }; // image section template
 
-    };
     var imageSectionTemplate = /^<\w+\b.*<\/\w+>$/.test(options.imageSectionTemp) ? options.imageSectionTemp : "<section><img src=\"{url}\"></section>"; // register selectPictureInputChange
 
     var imageOptions = Object.assign({}, _this.options, {
@@ -2454,13 +2459,12 @@
       $target: $window,
       type: 'resize',
       handler: windowResize.bind(this)
-      /**
-       * ****************************************************
-       * content on paste
-       * ****************************************************
-       */
-
     };
+    /**
+     * ****************************************************
+     * content on paste
+     * ****************************************************
+     */
 
     function contentPaste(e) {
       var _this = this;
@@ -2480,13 +2484,12 @@
       $target: $content,
       type: 'paste',
       handler: contentPaste.bind(this)
-      /**
-       * ****************************************************
-       * content on input
-       * ****************************************************
-       */
-
     };
+    /**
+     * ****************************************************
+     * content on input
+     * ****************************************************
+     */
 
     function contentInput(e) {
       this.emit('input', e, this); // check empty in content
@@ -2503,13 +2506,12 @@
       $target: $content,
       type: 'input',
       handler: contentInput.bind(this)
-      /**
-       * ****************************************************
-       * content on focus
-       * ****************************************************
-       */
-
     };
+    /**
+     * ****************************************************
+     * content on focus
+     * ****************************************************
+     */
 
     function contentFocus(e) {
       this.emit('focus', e, this); // console.error('contentFocus')
@@ -2528,13 +2530,12 @@
       $target: $content,
       type: 'focus',
       handler: contentFocus.bind(this)
-      /**
-       * ****************************************************
-       * content on blur
-       * ****************************************************
-       */
-
     };
+    /**
+     * ****************************************************
+     * content on blur
+     * ****************************************************
+     */
 
     function contentBlur(e) {
       this.emit('blur', e, this); // save $cursorNode
@@ -2554,13 +2555,12 @@
       $target: $content,
       type: 'blur',
       handler: contentBlur.bind(this)
-      /**
-       * ****************************************************
-       * content on click
-       * ****************************************************
-       */
-
     };
+    /**
+     * ****************************************************
+     * content on click
+     * ****************************************************
+     */
 
     function contentClick(e) {
       this.emit('click', e, this); // save $cursorNode
@@ -2577,13 +2577,12 @@
       $target: $content,
       type: 'click',
       handler: contentClick.bind(this)
-      /**
-       * ****************************************************
-       * content on keydown
-       * ****************************************************
-       */
-
     };
+    /**
+     * ****************************************************
+     * content on keydown
+     * ****************************************************
+     */
 
     function contentKeydown(e) {
       this.emit('keydown', e, this);
@@ -2593,13 +2592,12 @@
       $target: $content,
       type: 'keydown',
       handler: contentKeydown.bind(this)
-      /**
-       * ****************************************************
-       * content on keyup
-       * ****************************************************
-       */
-
     };
+    /**
+     * ****************************************************
+     * content on keyup
+     * ****************************************************
+     */
 
     function contentKeyup(e) {
       this.emit('keyup', e, this); // handle enter keyup
@@ -2619,13 +2617,13 @@
       $target: $content,
       type: 'keyup',
       handler: contentKeyup.bind(this)
-      /**
-       * ****************************************************
-       * register events
-       * ****************************************************
-       */
-
     };
+    /**
+     * ****************************************************
+     * register events
+     * ****************************************************
+     */
+
     var evt;
 
     for (var key in this.$eventHandlers) {
@@ -2891,13 +2889,12 @@
     imageMaxSize: null,
     ignoreGif: true,
     forceResize: false
-    /**
-     * base64 data to Blob
-     * @param base64Data
-     * @return {Blob}
-     */
-
   };
+  /**
+   * base64 data to Blob
+   * @param base64Data
+   * @return {Blob}
+   */
 
   function base64ToBlobData(base64Data) {
     // base64数据格式:
@@ -3189,7 +3186,7 @@
     } // version
 
 
-    this.version = '3.0.2'; // ZxQuery instance
+    this.version = '3.0.3-alpha'; // ZxQuery instance
 
     this.$ = $;
     this.ExpansionPanel = ExpansionPanel; // options
@@ -3335,8 +3332,8 @@
 
       this._checkChildSection();
 
-      this.$content.trigger('input');
-      console.log(newRangeEl, newRangeOffset);
+      this.$content.trigger('input'); // console.log(newRangeEl, newRangeOffset)
+
       this.cursor.setRange(newRangeEl, newRangeOffset);
     },
 
@@ -3479,9 +3476,8 @@
       var winHeight = window.innerHeight;
       var styles = {
         // 防止正文内容被键盘挡住，无法查看
-        marginBottom: winHeight + 'px' // check height
-
-      };
+        marginBottom: winHeight + 'px'
+      }; // check height
 
       if (data.height) {
         styles.height = typeof data.height === 'number' ? data.height + 'px' : data.height;
@@ -3582,4 +3578,4 @@
 
   return ZxEditor;
 
-}));
+})));

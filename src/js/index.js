@@ -246,7 +246,7 @@ ZxEditor.prototype = {
     }
     this._checkChildSection()
     this.$content.trigger('input')
-    console.log(newRangeEl, newRangeOffset)
+    // console.log(newRangeEl, newRangeOffset)
     this.cursor.setRange(newRangeEl, newRangeOffset)
   },
 

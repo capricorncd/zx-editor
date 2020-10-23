@@ -1,9 +1,9 @@
 /*!
- * zx-editor v3.0.2
+ * zx-editor v3.0.3-alpha
  * https://github.com/capricorncd/zx-editor
  * Copyright © 2018-present, capricorncd
  * Released under the MIT License
- * Released on: 2019-06-21 23:06:27
+ * Released on: 2020-10-23 17:51:36
  *//**
  * ******************************************
  * animation
@@ -11,49 +11,41 @@
  */
 @-webkit-keyframes zxEditorBottomIn {
   from {
-    -webkit-transform: translateY(0);
-            transform: translateY(0);
+    transform: translateY(0);
     opacity: 0;
   }
   to {
-    -webkit-transform: translateY(-100%);
-            transform: translateY(-100%);
+    transform: translateY(-100%);
     opacity: 1;
   }
 }
 @keyframes zxEditorBottomIn {
   from {
-    -webkit-transform: translateY(0);
-            transform: translateY(0);
+    transform: translateY(0);
     opacity: 0;
   }
   to {
-    -webkit-transform: translateY(-100%);
-            transform: translateY(-100%);
+    transform: translateY(-100%);
     opacity: 1;
   }
 }
 @-webkit-keyframes zxEditorBottomOut {
   from {
-    -webkit-transform: translateY(-100%);
-            transform: translateY(-100%);
+    transform: translateY(-100%);
     opacity: 1;
   }
   to {
-    -webkit-transform: translateY(0);
-            transform: translateY(0);
+    transform: translateY(0);
     opacity: 0;
   }
 }
 @keyframes zxEditorBottomOut {
   from {
-    -webkit-transform: translateY(-100%);
-            transform: translateY(-100%);
+    transform: translateY(-100%);
     opacity: 1;
   }
   to {
-    -webkit-transform: translateY(0);
-            transform: translateY(0);
+    transform: translateY(0);
     opacity: 0;
   }
 }
@@ -92,8 +84,7 @@
   left: 0;
   width: 100%;
   content: '';
-  -webkit-transform: scaleY(0.5);
-          transform: scaleY(0.5);
+  transform: scaleY(0.5);
   border-bottom: 1px solid #ddd;
 }
 .zx-editor .border-top:before {
@@ -102,8 +93,7 @@
   left: 0;
   width: 100%;
   content: '';
-  -webkit-transform: scaleY(0.5);
-          transform: scaleY(0.5);
+  transform: scaleY(0.5);
   border-top: 1px solid #ddd;
 }
 .zx-editor .zx-editor-content-wrapper {
@@ -167,8 +157,7 @@
   width: 100%;
   background-color: #fff;
   height: 250px;
-  -webkit-transform: translateY(0);
-          transform: translateY(0);
+  transform: translateY(0);
   opacity: 0;
 }
 .zx-editor .zx-editor-toolbar-wrapper .inner-wrapper {
@@ -230,8 +219,7 @@
   width: 100%;
   background-color: #fff;
   height: 260px;
-  -webkit-transform: translateY(0);
-          transform: translateY(0);
+  transform: translateY(0);
   opacity: 0;
   overflow: hidden;
   /**
@@ -261,12 +249,9 @@
   top: 0;
   width: 44px;
   height: 44px;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-align: center;
-          align-items: center;
-  -webkit-box-pack: center;
-          justify-content: center;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 .zx-editor .zx-editor-expansion-panel .head-wrapper .switch:after {
@@ -325,14 +310,12 @@
 }
 .zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__style-wrapper {
   position: relative;
-  display: -webkit-box;
   display: flex;
   height: 50px;
 }
 .zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__style-wrapper dd {
   position: relative;
-  -webkit-box-flex: 1;
-          flex: 1;
+  flex: 1;
   line-height: 50px;
   text-align: center;
   font-size: 1.5em;
@@ -343,8 +326,7 @@
   right: 0;
   height: 50px;
   content: '';
-  -webkit-transform: scaleX(0.5);
-          transform: scaleX(0.5);
+  transform: scaleX(0.5);
   border-right: 1px solid #ddd;
 }
 .zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__style-wrapper dd:last-child:after {
@@ -370,22 +352,17 @@
   text-indent: 8px;
 }
 .zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__color-wrapper {
-  display: -webkit-box;
   display: flex;
   position: relative;
   height: 50px;
 }
 .zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__color-wrapper dd {
-  -webkit-box-flex: 1;
-          flex: 1;
+  flex: 1;
   position: relative;
   height: 50px;
-  display: -webkit-box;
   display: flex;
-  -webkit-box-pack: center;
-          justify-content: center;
-  -webkit-box-align: center;
-          align-items: center;
+  justify-content: center;
+  align-items: center;
 }
 .zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__color-wrapper dd i {
   position: relative;
@@ -432,8 +409,7 @@
   width: 100%;
   content: '';
   border-top: 1px solid #ddd;
-  -webkit-transform: scaleY(0.5);
-          transform: scaleY(0.5);
+  transform: scaleY(0.5);
 }
 .zx-editor .zx-editor-expansion-panel .body-wrapper .text-style-outer-wrapper .__tag-wrapper dd:last-child:after {
   border-top: 0;
@@ -467,8 +443,7 @@
   right: 30px;
   width: 14px;
   height: 8px;
-  -webkit-transform: rotate(-45deg);
-          transform: rotate(-45deg);
+  transform: rotate(-45deg);
   border-left: 2px solid #00c1b7;
   border-bottom: 2px solid #00c1b7;
 }

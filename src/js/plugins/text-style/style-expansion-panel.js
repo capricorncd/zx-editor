@@ -217,6 +217,7 @@ export function styleExpansionPanel (options) {
     let cursorNode = zxEditor.$cursorNode[0]
     cursorNode.style[key] = cursorNode.style[key] === style[1] ? '' : style[1]
     zxEditor.cursor.setRange()
+    zxEditor.$content.trigger('input')
   })
 
   // color
@@ -234,6 +235,7 @@ export function styleExpansionPanel (options) {
       }
     }
     zxEditor.cursor.setRange()
+    zxEditor.$content.trigger('input')
   })
 
   // tag
@@ -254,6 +256,7 @@ export function styleExpansionPanel (options) {
         $el.removeClass('active')
       }
     }
+    zxEditor.$content.trigger('input')
   })
 
   if (this.isIPhoneX) {
