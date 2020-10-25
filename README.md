@@ -60,6 +60,8 @@ yarn add zx-editor
 ```javascript
 import { ZxEditor } from 'zx-editor'
 // import { ZxEditor } from './src/js/zx-editor/index.js'
+// import css
+import 'zx-editor/dist/css/zx-editor.min.css'
 ```
 
 ## Copyright and license
