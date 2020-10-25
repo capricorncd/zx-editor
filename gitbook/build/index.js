@@ -6,6 +6,7 @@
 const fs = require('fs-extra')
 const path = require('path')
 
+console.log('docs move start =========')
 try {
   const src = path.resolve(__dirname, '../_book')
   const dest = path.resolve(__dirname, '../../docs')
@@ -18,3 +19,4 @@ try {
 } catch (e) {
   console.log(e)
 }
+console.log('docs move end =========')

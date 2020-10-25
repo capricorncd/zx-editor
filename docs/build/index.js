@@ -1,1 +1,1 @@
-const fs=require("fs-extra"),path=require("path");try{const e=path.resolve(__dirname,"../_book"),s=path.resolve(__dirname,"../../docs");fs.existsSync(e)&&fs.removeSync(s),fs.moveSync(e,s)}catch(e){console.log(e)}
+const fs=require("fs-extra"),path=require("path");console.log("docs move start =========");try{const o=path.resolve(__dirname,"../_book"),e=path.resolve(__dirname,"../../docs");fs.existsSync(e)&&fs.removeSync(e),fs.moveSync(o,e)}catch(o){console.log(o)}console.log("docs move end =========");

@@ -32,15 +32,10 @@ function html1 () {
         .pipe(htmlmin(htmlMinOptions))
         // 去除powered by Gitbook
         .pipe(replace(/ all right reserved&#xFF0C;powered by Gitbook/ig, '.'))
+        .pipe(replace(
+            '<a href="https://www.gitbook.com" target="blank" class="gitbook-link">Published with GitBook</a><', 
+            '<a href="https://github.com/capricorncd/zx-editor" target="blank" class="gitbook-link">Github</a><'))
         .pipe(gulp.dest('./_book'))
-}
-
-function html2 () {
-    return gulp.src('./_book/pages/**/*.html')
-        .pipe(htmlmin(htmlMinOptions))
-        // 去除powered by Gitbook
-        .pipe(replace(/ all right reserved&#xFF0C;powered by Gitbook/ig, '.'))
-        .pipe(gulp.dest('./_book/pages'))
 }
 
 /**
@@ -72,4 +67,4 @@ function js () {
         .pipe(gulp.dest('./_book'))
 }
 
-gulp.task('default', gulp.series(html1, html2, css, js))
+gulp.task('default', gulp.series(html1, css, js))
