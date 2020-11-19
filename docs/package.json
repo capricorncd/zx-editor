@@ -25,7 +25,7 @@
   "devDependencies": {
     "bash-color": "^0.0.4",
     "fs-extra": "^7.0.1",
-    "gitbook": "^2.6.9",
+    "gitbook": ">=3.2.2",
     "gitbook-cli": "^2.3.2",
     "gitbook-plugin-back-to-top-button": "^0.1.4",
     "gitbook-plugin-chapter-fold": "^0.0.4",
