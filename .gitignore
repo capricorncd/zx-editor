@@ -7,7 +7,4 @@ __psd/
 cache/
 src/js/dom/
 
-package-lock.json
-yarn.lock
-
 _book/
