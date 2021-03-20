@@ -1,9 +1,9 @@
 /*!
- * zx-editor v3.0.3-alpha
+ * zx-editor v3.0.4-alpha
  * https://github.com/capricorncd/zx-editor
  * Copyright © 2018-present, capricorncd
  * Released under the MIT License
- * Released on: 2020-10-23 17:51:36
+ * Released on: 2021-03-20 19:17:57
  */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
@@ -322,7 +322,7 @@
 
 
   function isObject(obj, isAbsolute) {
-    var isObj = obj && _typeof(obj) === 'object';
+    var isObj = obj && _typeof(obj) === 'object' && !Array.isArray(obj);
     return isAbsolute ? isObj && obj.toString() === '[object Object]' : isObj;
   }
 
@@ -1347,7 +1347,7 @@
      */
     scrollTop: function scrollTop(value) {
       if (!this.length) return;
-      var hasScrollTop = 'scrollTop' in this[0];
+      var hasScrollTop = ('scrollTop' in this[0]);
       if (value === undefined) return hasScrollTop ? this[0].scrollTop : this[0].pageYOffset;
       return this.each(hasScrollTop ? function () {
         this.scrollTop = value;
@@ -3186,7 +3186,7 @@
     } // version
 
 
-    this.version = '3.0.3-alpha'; // ZxQuery instance
+    this.version = '3.0.4-alpha'; // ZxQuery instance
 
     this.$ = $;
     this.ExpansionPanel = ExpansionPanel; // options

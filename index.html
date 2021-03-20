@@ -35,7 +35,31 @@
     // lineHeight: 1,
     // padding: '0 0 30px',
     // placeholderColor: 'red',
-    cursorColor: 'red'
+    cursorColor: 'red',
+    // toolbarBtns: ['select-picture', 'text-style']
+  })
+
+  // Custom button for the toolbar
+  // zxEditor.toolbar.addButton(buttonOptions, index);
+  zxEditor.toolbar.addButton({
+    name: 'custom-button',
+    // button className
+    className: '',
+    // ElementHTML or $()
+    el: null,
+    // innerHTML
+    innerHtml: '自定义<br>按钮',
+    // style
+    style: 'background: green;',
+    // obj{type: 'click', handler: fn, capture: false} or array[obj1, obj2]
+    events: [
+      {
+        type: 'click',
+        handler() {
+          alert('click 自定义按钮')
+        }
+      }
+    ]
   })
 
   // 实例化 VConsole

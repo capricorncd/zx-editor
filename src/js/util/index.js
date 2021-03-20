@@ -74,7 +74,7 @@ function isElement (el) {
  * @return {*|boolean}
  */
 function isObject (obj, isAbsolute) {
-  let isObj = obj && typeof obj === 'object'
+  let isObj = obj && typeof obj === 'object' && !Array.isArray(obj)
   return isAbsolute ? isObj && obj.toString() === '[object Object]' : isObj
 }
 

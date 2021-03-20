@@ -1,9 +1,9 @@
 /*!
- * zx-editor v3.0.3-alpha
+ * zx-editor v3.0.4-alpha
  * https://github.com/capricorncd/zx-editor
  * Copyright © 2018-present, capricorncd
  * Released under the MIT License
- * Released on: 2020-10-23 17:51:36
+ * Released on: 2021-03-20 19:17:57
  *//**
  * ******************************************
  * animation
@@ -176,6 +176,7 @@
   width: 50px;
   height: 50px;
   cursor: pointer;
+  vertical-align: top;
 }
 .zx-editor .zx-editor-toolbar-wrapper .inner-wrapper .toolbar-icon-pic {
   background: url('data:image/png;base64,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') no-repeat center center;
