@@ -40,8 +40,6 @@ export class ZxEditor extends EventEmitter {
     // version
     this.version = '__VERSION__'
 
-    console.log(this.version)
-
     this.options = {
       ...DEF_OPTIONS,
       ...options,

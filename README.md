@@ -10,9 +10,7 @@
 
 可用于独立web项目开发，也可以用于与原生App混合(hybrid)开发。
 
-旧版请见：[v2.x.x](https://github.com/capricorncd/zx-editor/tree/v2.x.x)
-
-## 本地运行 Build Setup
+## Build Setup
 
 ``` bash
 # 安装依赖
@@ -38,11 +36,11 @@ yarn add zx-editor
 #### # browser
 
 ```html
-<link rel="stylesheet" href="./dist/css/zx-editor.min.css">
+<!--<link rel="stylesheet" href="./dist/zx-editor.min.css">-->
 <div id="editorContainer">
   <!-- 编辑器容器 -->
 </div>
-<script src="./dist/js/zx-editor.min.js"></script>
+<script src="./dist/zx-editor.min.js"></script>
 <script>
   // 初始化ZX编辑器
   const zxEditor = new ZxEditor('#editorContainer', {
@@ -52,20 +50,19 @@ yarn add zx-editor
 </script>
 ```
 
-注意：添加照片时，判断照片方向，并自动旋转需要依赖插件 exif.js
-
 #### # ES6+
 
 ```javascript
 import { ZxEditor } from 'zx-editor'
 // import { ZxEditor } from './src/js/zx-editor/index.js'
 // import css
-import 'zx-editor/dist/css/zx-editor.min.css'
+// import 'zx-editor/dist/css/zx-editor.min.css'
+const zxEditor = new ZxEditor(document.querySelector('#app'), {})
 ```
 
 ## Options
 
-```ts
+```typescript
 {
   editable?: boolean
   placeholder?: string
@@ -81,7 +78,7 @@ import 'zx-editor/dist/css/zx-editor.min.css'
   // 光标所在行距页面顶部的距离30px
   cursorOffsetTop?: number
   // 自定义粘贴处理函数
-  customPasteHandler?: () => void
+  // customPasteHandler?: () => void
   styles?: Record<string, any>
 }
 ```
@@ -89,14 +86,44 @@ import 'zx-editor/dist/css/zx-editor.min.css'
 ## Methods
 
 ### `insert(input: string | HTMLElement): void`
+
+```typescript
+zxEditor.insert('text<p>paragraph</p><img src="image.jpe"/>...')
+```
+
 ### `setHtml(html: string): void`
+
+```typescript
+zxEditor.setHtml('text<p>paragraph</p><img src="image.jpe"/>...')
+```
+
 ### `getHtml(): string`
 
-### use(plugin: Types.Plugin): void
+```typescript
+zxEditor.getHtml()
+```
+
+### `use(plugin: Types.Plugin): void`
+
+```typescript
+import { ZxEditor } from 'zx-editor'
+
+class CustomPlugin {
+  constructor() {
+    // ...
+  }
+
+  install(zxEditor: ZxEditor) {
+    // ...
+  }
+}
+
+zxEditor.use(CustomPlugin)
+```
 
 ## Copyright and license
 
-Code and documentation copyright 2018. capricorncd. Code released under the MIT License.
+Code and documentation copyright 2018-2022. capricorncd. Code released under the MIT License.
 
 
 
