@@ -5,45 +5,68 @@
  */
 export class CursorClass {
   private readonly rootElement: HTMLDivElement
-  private readonly selection: Selection | null
-  private range: Range
   private timer: number | null
 
   constructor(rootElement: HTMLDivElement) {
     this.rootElement = rootElement
-    this.selection = window.getSelection()
-    this.range = this.selection ? this.selection.getRangeAt(0) : new Range()
     this.timer = null
-    
+
     // init range
     const el = rootElement.lastElementChild as HTMLElement
-    if (el) {
-      this.setRange(el, el.textContent?.length)
-    }
+    if (el) this.setRange(el, el.textContent?.length)
   }
 
-  setRange(el: HTMLElement, offset = 0) {
-    // remove all range object
-    if (this.selection) this.selection.removeAllRanges()
+  getRange(): Range {
+    try {
+      // @ts-ignore
+      return window.getSelection()?.getRangeAt(0)
+    } catch (e) {
+      // ..
+    }
+    return new Range()
+  }
 
-      // el: '<section>inner text.</section>'
-      let targetNode = el.childNodes[el.childNodes.length - 1] || el
-      // check img/video/audio
-      // console.log(targetNode.nodeName, this.offset)
-      if (/IMG|VIDEO|AUDIO/.test(targetNode.nodeName)) {
-        offset = 1
-        // get parentNode, can't set offset = 1 of IMG node.
-        targetNode = targetNode.parentNode as HTMLElement
-      }
-      this.range.setStart(targetNode, offset)
+  /**
+   * 获取当前元素的最后一个无子节点的节点
+   * @param el
+   * @private
+   */
+  private _getLastNode(el: HTMLElement | Node): Node {
+    let node = el
+    while (node.lastChild) {
+      node = node.lastChild
+    }
+    return node
+  }
+
+  setRange(el: HTMLElement, offset?: number) {
+    const range = this.getRange()
+    // remove all range object
+    const selection = window.getSelection()
+    if (selection) selection.removeAllRanges()
+
+    // el: '<section>inner text.</section>'
+    // let targetNode = el.childNodes[el.childNodes.length - 1] || el
+    // // check img/video/audio
+    // if (/IMG|VIDEO|AUDIO/.test(targetNode.nodeName)) {
+    //   offset = 1
+    //   // get parentNode, can't set offset = 1 of IMG node.
+    //   targetNode = targetNode.parentNode as HTMLElement
+    // }
+    const targetNode = this._getLastNode(el)
+    if (typeof offset === 'undefined') {
+      offset = targetNode.textContent?.length ?? 0
+    }
+    range.setStart(targetNode, offset)
     // cursor start and end position is collapse
-    this.range.collapse(true)
+    range.collapse(true)
 
     this._clearTimeout()
     // 延时执行，键盘自动收起后再触发focus
+    // @ts-ignore
     this.timer = setTimeout(() => {
       // 插入新的光标对象
-      this.selection?.addRange(this.range)
+      selection?.addRange(range)
     }, 100)
   }
 
@@ -55,9 +78,13 @@ export class CursorClass {
   }
 
   getCurrentNode(): HTMLElement | null {
-    this.range = this.selection ? this.selection.getRangeAt(0) : new Range()
-    let currentNode = this.range.endContainer
-    while (this.rootElement !== currentNode) {
+    const range = this.getRange()
+    let currentNode = range.endContainer
+    while (currentNode && this.rootElement !== currentNode) {
+      // li元素判断
+      if (currentNode.nodeName === 'LI' && currentNode.parentElement?.parentElement === this.rootElement) {
+        return currentNode as HTMLElement
+      }
       if (currentNode.parentElement === this.rootElement) {
         return currentNode as HTMLElement
       } else {

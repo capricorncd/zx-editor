@@ -26,7 +26,9 @@ module.exports = {
     'arrow-spacing': 2,
     'block-spacing': 2,
     'key-spacing': 2,
-    'brace-style': 2,
+    // if else换行
+    'brace-style': 'off',
+    // 'brace-style': 2,
     camelcase: 2,
     'comma-dangle': [2, 'always-multiline'],
     eqeqeq: [2, 'always', { null: 'ignore' }],

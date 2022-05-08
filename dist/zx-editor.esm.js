@@ -2,7 +2,7 @@
  * zx-editor v3.1.0
  * https://github.com/capricorncd/zx-editor
  * Released under the MIT License
- * Released on: Sun May 08 2022 17:06:00 GMT+0900 (Japan Standard Time)
+ * Released on: Sun May 08 2022 21:21:44 GMT+0900 (Japan Standard Time)
  * Copyright © 2018-present, capricorncd
  */
 /**
@@ -43,6 +43,7 @@ const slice = (arrLike, offset = 0) => {
 const CLASS_NAME_EDITOR = 'zx-editor';
 const CLASS_NAME_CONTENT = 'zx-editor-content-wrapper';
 
+const ALLOWED_NODE_NAMES = ['SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'BLOCKQUOTE', 'UL', 'OL'];
 const DEF_OPTIONS = {
     // 内容是否可以被编辑
     editable: true,
@@ -54,6 +55,7 @@ const DEF_OPTIONS = {
     placeholder: 'Enter...',
     placeholderColor: '',
     lineHeight: 1.5,
+    allowedNodeNames: ALLOWED_NODE_NAMES,
     // paragraph tail spacing, default 10px
     // paragraphTailSpacing: '',
     caretColor: '',
@@ -125,9 +127,24 @@ const NODE_NAME_BR = 'BR';
  * Date: 2022/05/05 10:55:25 (GMT+0900)
  */
 const REPLACE_NODE_LIST = [
-    'DIV', 'P', 'ARTICLE', 'ASIDE', 'DETAILS',
-    // 'SUMMARY',
-    'FOOTER', 'HEADER', 'MAIN', 'NAV',
+    'DIV',
+    'P',
+    'ARTICLE',
+    'ASIDE',
+    'DETAILS',
+    'SUMMARY',
+    'FOOTER',
+    'HEADER',
+    'MAIN',
+    'NAV',
+    'SECTION',
+    'H1',
+    'H2',
+    'H3',
+    'H4',
+    'H5',
+    'H6',
+    'BLOCKQUOTE',
 ];
 const $ = (selector, doc = document) => {
     if (selector instanceof HTMLElement)
@@ -156,6 +173,9 @@ const createStyles = (data) => {
 const replace = (input, oldNodeName, newNodeName) => {
     return input.replace(RegExp("(^<" + oldNodeName + ")|(" + oldNodeName + ">$)", "gi"), (match) => match.toUpperCase().replace(oldNodeName, newNodeName.toLowerCase()));
 };
+const isUlElement = (el) => {
+    return /UL|OL/.test(el.nodeName);
+};
 /**
  *
  * @param input
@@ -168,10 +188,97 @@ const changeNodeName = (input, tagName = NODE_NAME_SECTION) => {
         return input;
     const el = createElement(tagName);
     const parent = input.parentElement;
-    if (REPLACE_NODE_LIST.includes(oldNodeName)) {
+    let newEl;
+    // LI元素处理：被修改的元素为UL/OL的内部元素
+    if (oldNodeName === 'LI' && isUlElement(parent)) {
+        // 替换当前LI元素标签为新元素标签
         el.innerHTML = replace(input.outerHTML, oldNodeName, newNodeName);
-        parent?.replaceChild(el.firstChild, input);
-        return el.firstChild;
+        // 获取新元素
+        newEl = el.firstChild;
+        // 有多个LI元素
+        if (parent.childElementCount > 1) {
+            // 当前LI元素为UL的第一个元素
+            if (parent.firstElementChild === input) {
+                // 将新元素移动至UL/OL前面
+                parent.parentElement?.insertBefore(newEl, parent);
+            }
+            // 当前LI元素为UL的最后一个元素
+            else if (parent.lastElementChild === input) {
+                const parentNext = parent.parentElement?.nextElementSibling;
+                // 下一个兄弟元素存在，添加至下一个兄弟元素前面
+                if (parentNext) {
+                    parentNext.parentElement?.insertBefore(newEl, parentNext);
+                }
+                else {
+                    // 下一个兄弟元素不存在，添加至内容尾部
+                    parent.parentElement?.append(newEl);
+                }
+            }
+            // 当前LI元素为UL中间的一个元素，拆分当前UL/OL
+            else {
+                const elList = slice(parent.children);
+                const prevEl = createElement(parent.nodeName);
+                let tempEl = elList.shift();
+                while (tempEl) {
+                    if (tempEl === input)
+                        break;
+                    prevEl.append(tempEl);
+                    tempEl = elList.shift();
+                }
+                parent.parentElement?.insertBefore(prevEl, parent);
+                // 将新元素插入到当前UL/OL元素前面
+                parent.parentElement?.insertBefore(newEl, parent);
+                // 删除被替换的对象元素
+                parent.removeChild(input);
+            }
+        }
+        // 只有一个LI元素
+        else {
+            // 将新元素移动至UL/OL前面
+            parent.parentElement?.insertBefore(newEl, parent);
+            // 移除UL/OL空元素
+            parent.parentElement?.removeChild(parent);
+        }
+        return newEl;
+    }
+    if (REPLACE_NODE_LIST.includes(oldNodeName)) {
+        // change to ul, ol
+        if (/UL|OL/.test(newNodeName)) {
+            const prev = input.previousElementSibling;
+            const next = input.nextElementSibling;
+            if (prev && isUlElement(prev)) {
+                el.innerHTML = replace(input.outerHTML, oldNodeName, 'li');
+                newEl = el.firstChild;
+                prev.append(newEl);
+                parent?.removeChild(input);
+                // parent的下一个元素也为UL/OL元素，将其合并
+                if (next && next.nodeName === prev.nodeName) {
+                    const nextEls = slice(next.children);
+                    prev.append(...nextEls);
+                    next.parentElement?.removeChild(next);
+                }
+            }
+            else if (next && isUlElement(next)) {
+                el.innerHTML = replace(input.outerHTML, oldNodeName, 'li');
+                newEl = el.firstChild;
+                next.insertBefore(newEl, next.firstElementChild);
+                parent?.removeChild(input);
+                // parent的上一个元素也为UL/OL元素，将其合并
+                // 不可能发生never
+            }
+            else {
+                // 替换当前元素为UL/OL
+                newEl = el;
+                el.innerHTML = replace(input.outerHTML, oldNodeName, 'li');
+                parent?.replaceChild(newEl, input);
+            }
+        }
+        else {
+            el.innerHTML = replace(input.outerHTML, oldNodeName, newNodeName);
+            newEl = el.firstChild;
+            parent?.replaceChild(newEl, input);
+        }
+        return newEl;
     }
     el.append(input.cloneNode(true));
     parent?.replaceChild(el, input);
@@ -196,41 +303,64 @@ const isBrSection = (el) => {
  */
 class CursorClass {
     rootElement;
-    selection;
-    range;
     timer;
     constructor(rootElement) {
         this.rootElement = rootElement;
-        this.selection = window.getSelection();
-        this.range = this.selection ? this.selection.getRangeAt(0) : new Range();
         this.timer = null;
         // init range
         const el = rootElement.lastElementChild;
-        if (el) {
+        if (el)
             this.setRange(el, el.textContent?.length);
-        }
     }
-    setRange(el, offset = 0) {
-        // remove all range object
-        if (this.selection)
-            this.selection.removeAllRanges();
-        // el: '<section>inner text.</section>'
-        let targetNode = el.childNodes[el.childNodes.length - 1] || el;
-        // check img/video/audio
-        // console.log(targetNode.nodeName, this.offset)
-        if (/IMG|VIDEO|AUDIO/.test(targetNode.nodeName)) {
-            offset = 1;
-            // get parentNode, can't set offset = 1 of IMG node.
-            targetNode = targetNode.parentNode;
+    getRange() {
+        try {
+            // @ts-ignore
+            return window.getSelection()?.getRangeAt(0);
         }
-        this.range.setStart(targetNode, offset);
+        catch (e) {
+            // ..
+        }
+        return new Range();
+    }
+    /**
+     * 获取当前元素的最后一个无子节点的节点
+     * @param el
+     * @private
+     */
+    _getLastNode(el) {
+        let node = el;
+        while (node.lastChild) {
+            node = node.lastChild;
+        }
+        return node;
+    }
+    setRange(el, offset) {
+        const range = this.getRange();
+        // remove all range object
+        const selection = window.getSelection();
+        if (selection)
+            selection.removeAllRanges();
+        // el: '<section>inner text.</section>'
+        // let targetNode = el.childNodes[el.childNodes.length - 1] || el
+        // // check img/video/audio
+        // if (/IMG|VIDEO|AUDIO/.test(targetNode.nodeName)) {
+        //   offset = 1
+        //   // get parentNode, can't set offset = 1 of IMG node.
+        //   targetNode = targetNode.parentNode as HTMLElement
+        // }
+        const targetNode = this._getLastNode(el);
+        if (typeof offset === 'undefined') {
+            offset = targetNode.textContent?.length ?? 0;
+        }
+        range.setStart(targetNode, offset);
         // cursor start and end position is collapse
-        this.range.collapse(true);
+        range.collapse(true);
         this._clearTimeout();
         // 延时执行，键盘自动收起后再触发focus
+        // @ts-ignore
         this.timer = setTimeout(() => {
             // 插入新的光标对象
-            this.selection?.addRange(this.range);
+            selection?.addRange(range);
         }, 100);
     }
     _clearTimeout() {
@@ -240,9 +370,13 @@ class CursorClass {
         }
     }
     getCurrentNode() {
-        this.range = this.selection ? this.selection.getRangeAt(0) : new Range();
-        let currentNode = this.range.endContainer;
-        while (this.rootElement !== currentNode) {
+        const range = this.getRange();
+        let currentNode = range.endContainer;
+        while (currentNode && this.rootElement !== currentNode) {
+            // li元素判断
+            if (currentNode.nodeName === 'LI' && currentNode.parentElement?.parentElement === this.rootElement) {
+                return currentNode;
+            }
             if (currentNode.parentElement === this.rootElement) {
                 return currentNode;
             }
@@ -381,6 +515,7 @@ class ZxEditor extends EventEmitter {
     $content;
     cursor;
     _contentEvent;
+    allowedNodeNames;
     constructor(selector, options) {
         super();
         if (!(this instanceof ZxEditor)) {
@@ -398,17 +533,17 @@ class ZxEditor extends EventEmitter {
         this.$wrapper = container;
         // version
         this.version = '3.1.0';
-        console.log(this.version);
-        this.options = {
-            ...DEF_OPTIONS,
-            ...options,
-        };
+        // options
+        this.options = { ...DEF_OPTIONS, ...options };
+        this.allowedNodeNames = (this.options.allowedNodeNames || ALLOWED_NODE_NAMES).map(item => item.toUpperCase());
+        // elements
         this.$content = initContentDom(this.options);
         this.$editor = initEditorDom();
         this.$editor.append(this.$content);
         this.$wrapper.append(this.$editor);
-        this.$content.focus();
+        // cursor
         this.cursor = new CursorClass(this.$content);
+        // content event handler
         this._contentEvent = (e) => {
             const type = e.type;
             if (type === 'blur')
@@ -417,6 +552,10 @@ class ZxEditor extends EventEmitter {
         };
         this._initEvents();
     }
+    /**
+     * init events
+     * @private
+     */
     _initEvents() {
         this.$content.addEventListener('focus', this._contentEvent);
         this.$content.addEventListener('blur', this._contentEvent);
@@ -439,36 +578,40 @@ class ZxEditor extends EventEmitter {
         if (typeof fn === 'function')
             fn.call(this);
     }
+    /**
+     * set html to the content element
+     * @param html
+     */
     setHtml(html) {
         this.$content.innerHTML = '';
         this.insert(html);
         this._lastLine();
     }
+    /**
+     * get html string from content element
+     * remove last line that `<section><br></section>`
+     * @return html string
+     */
     getHtml() {
         return this.$content.innerHTML.replace(/<section><br><\/section>$/, '');
     }
     /**
-     * Node.nodeType
-     * ELEMENT_NODE  1
-     * ATTRIBUTE_NODE  2
-     * TEXT_NODE  3
-     * CDATA_SECTION_NODE  4
-     * PROCESSING_INSTRUCTION_NODE  7
-     * COMMENT_NODE  8
-     * DOCUMENT_NODE  9
-     * DOCUMENT_TYPE_NODE  10
-     * DOCUMENT_FRAGMENT_NODE  11
+     * insert html or element to content element
      * @param input
      */
     insert(input) {
+        // insert HTMLElement
         if (input instanceof HTMLElement) {
             this._insert(input);
         }
+        // insert string
         else {
             const el = createElement('div');
             el.innerHTML = input;
             slice(el.childNodes).forEach((node) => {
+                // element node
                 if (node.nodeType === Node.ELEMENT_NODE) {
+                    // <br> element
                     if (node.nodeName === NODE_NAME_BR) {
                         this._insert(createElement(NODE_NAME_SECTION, {}, '<br/>'));
                     }
@@ -476,15 +619,21 @@ class ZxEditor extends EventEmitter {
                         this._insert(node);
                     }
                 }
+                // text
                 else if (node.textContent) {
                     this._insert(createElement(NODE_NAME_SECTION, {}, node.textContent));
                 }
             });
         }
     }
+    /**
+     * insert element to content element
+     * @param input
+     * @private
+     */
     _insert(input) {
-        console.log(input);
         const currentSection = this.cursor.getCurrentNode();
+        console.log(currentSection);
         if (currentSection) {
             if (isBrSection(currentSection)) {
                 this.$content.insertBefore(input, currentSection);
@@ -496,13 +645,36 @@ class ZxEditor extends EventEmitter {
         else {
             this.$content.append(input);
         }
-        changeNodeName(input, NODE_NAME_SECTION);
+        if (!this.allowedNodeNames.includes(input.nodeName)) {
+            input = changeNodeName(input, NODE_NAME_SECTION);
+        }
+        this.$content.dispatchEvent(new InputEvent('input'));
+        // 设置光标元素对象
+        this.cursor.setRange(input);
     }
+    /**
+     * append br section to content element when the lastElementChild is not a br section element
+     * @private
+     */
     _lastLine() {
         if (!isBrSection(this.$content.lastElementChild)) {
             this.$content.appendChild(createElement('section', {}, '<br>'));
         }
     }
+    /**
+     * 修改光标所在元素的标签
+     * @param nodeName
+     */
+    changeNodeName(nodeName) {
+        // 判断nodeName是否被允许设置
+        if (!this.allowedNodeNames.includes(nodeName.toUpperCase()))
+            return false;
+        const currentSection = this.cursor.getCurrentNode();
+        return !!(currentSection && changeNodeName(currentSection, nodeName));
+    }
+    /**
+     * destroy events
+     */
     destroy() {
         this.$content.removeEventListener('focus', this._contentEvent);
         this.$content.removeEventListener('blur', this._contentEvent);

@@ -5,7 +5,7 @@
  */
 import { $, createElement, changeNodeName, slice, isBrSection } from './helpers'
 import { CursorClass, EventEmitter } from './core'
-import { DEF_OPTIONS, NODE_NAME_SECTION, NODE_NAME_BR } from './const'
+import { DEF_OPTIONS, NODE_NAME_SECTION, NODE_NAME_BR, ALLOWED_NODE_NAMES } from './const'
 import * as Types from './types'
 import { initEditorDom, initContentDom } from './core'
 
@@ -17,6 +17,7 @@ export class ZxEditor extends EventEmitter {
   private readonly $content: HTMLDivElement
   private readonly cursor: CursorClass
   private readonly _contentEvent: <T extends Event>(e: T) => void
+  private allowedNodeNames: string[]
 
   constructor(selector: Types.Selector, options?: Types.Options) {
     super()
@@ -39,23 +40,17 @@ export class ZxEditor extends EventEmitter {
 
     // version
     this.version = '__VERSION__'
-
-    this.options = {
-      ...DEF_OPTIONS,
-      ...options,
-    }
-
+    // options
+    this.options = { ...DEF_OPTIONS, ...options }
+    this.allowedNodeNames = (this.options.allowedNodeNames || ALLOWED_NODE_NAMES).map(item => item.toUpperCase())
+    // elements
     this.$content = initContentDom(this.options)
-
     this.$editor = initEditorDom()
-
     this.$editor.append(this.$content)
     this.$wrapper.append(this.$editor)
-
-    this.$content.focus()
-
+    // cursor
     this.cursor = new CursorClass(this.$content)
-
+    // content event handler
     this._contentEvent = (e) => {
       const type = e.type
       if (type === 'blur') this._lastLine()
@@ -65,11 +60,13 @@ export class ZxEditor extends EventEmitter {
     this._initEvents()
   }
 
+  /**
+   * init events
+   * @private
+   */
   private _initEvents(): void {
     this.$content.addEventListener('focus', this._contentEvent)
-
     this.$content.addEventListener('blur', this._contentEvent)
-
     this.$content.addEventListener('input', this._contentEvent)
   }
 
@@ -91,52 +88,64 @@ export class ZxEditor extends EventEmitter {
     if (typeof fn === 'function') fn.call(this)
   }
 
+  /**
+   * set html to the content element
+   * @param html
+   */
   setHtml(html: string): void {
     this.$content.innerHTML = ''
     this.insert(html)
     this._lastLine()
   }
 
+  /**
+   * get html string from content element
+   * remove last line that `<section><br></section>`
+   * @return html string
+   */
   getHtml(): string {
     return this.$content.innerHTML.replace(/<section><br><\/section>$/, '')
   }
 
   /**
-   * Node.nodeType
-   * ELEMENT_NODE  1
-   * ATTRIBUTE_NODE  2
-   * TEXT_NODE  3
-   * CDATA_SECTION_NODE  4
-   * PROCESSING_INSTRUCTION_NODE  7
-   * COMMENT_NODE  8
-   * DOCUMENT_NODE  9
-   * DOCUMENT_TYPE_NODE  10
-   * DOCUMENT_FRAGMENT_NODE  11
+   * insert html or element to content element
    * @param input
    */
   insert(input: string | HTMLElement): void {
+    // insert HTMLElement
     if (input instanceof HTMLElement) {
       this._insert(input)
-    } else {
+    }
+    // insert string
+    else {
       const el = createElement<HTMLDivElement>('div')
       el.innerHTML = input
       slice<Node, NodeList>(el.childNodes).forEach((node) => {
+        // element node
         if (node.nodeType === Node.ELEMENT_NODE) {
+          // <br> element
           if (node.nodeName === NODE_NAME_BR) {
             this._insert(createElement(NODE_NAME_SECTION, {}, '<br/>'))
           } else {
             this._insert(node as HTMLElement)
           }
-        } else if (node.textContent) {
+        }
+        // text
+        else if (node.textContent) {
           this._insert(createElement(NODE_NAME_SECTION, {}, node.textContent))
         }
       })
     }
   }
 
+  /**
+   * insert element to content element
+   * @param input
+   * @private
+   */
   private _insert(input: HTMLElement): void {
-    console.log(input)
     const currentSection = this.cursor.getCurrentNode()
+    console.log(currentSection)
     if (currentSection) {
       if (isBrSection(currentSection)) {
         this.$content.insertBefore(input, currentSection)
@@ -146,23 +155,42 @@ export class ZxEditor extends EventEmitter {
     } else {
       this.$content.append(input)
     }
-
-    changeNodeName(input, NODE_NAME_SECTION)
+    if (!this.allowedNodeNames.includes(input.nodeName)) {
+      input = changeNodeName(input, NODE_NAME_SECTION)
+    }
+    this.$content.dispatchEvent(new InputEvent('input'))
+    // 设置光标元素对象
+    this.cursor.setRange(input)
   }
 
+  /**
+   * append br section to content element when the lastElementChild is not a br section element
+   * @private
+   */
   private _lastLine(): void {
     if (!isBrSection(this.$content.lastElementChild)) {
       this.$content.appendChild(createElement('section', {}, '<br>'))
     }
   }
 
+  /**
+   * 修改光标所在元素的标签
+   * @param nodeName
+   */
+  changeNodeName(nodeName: string): boolean {
+    // 判断nodeName是否被允许设置
+    if (!this.allowedNodeNames.includes(nodeName.toUpperCase())) return false
+    const currentSection = this.cursor.getCurrentNode()
+    return !!(currentSection && changeNodeName(currentSection, nodeName))
+  }
+
+  /**
+   * destroy events
+   */
   destroy(): void {
     this.$content.removeEventListener('focus', this._contentEvent)
-
     this.$content.removeEventListener('blur', this._contentEvent)
-
     this.$content.removeEventListener('input', this._contentEvent)
-
     this.destroyEventEmitter()
   }
 }

@@ -74,9 +74,12 @@ const zxEditor = new ZxEditor(document.querySelector('#app'), {})
   // 光标颜色
   caretColor?: string
   textColor?: string
+  // 编辑器内容中，允许使用的标签。
+  // 默认: ['SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'BLOCKQUOTE', 'UL', 'OL']
+  allowedNodeNames?: string[]
   // iphone会自动移动，难控制
   // 光标所在行距页面顶部的距离30px
-  cursorOffsetTop?: number
+  // cursorOffsetTop?: number
   // 自定义粘贴处理函数
   // customPasteHandler?: () => void
   styles?: Record<string, any>
@@ -85,16 +88,25 @@ const zxEditor = new ZxEditor(document.querySelector('#app'), {})
 
 ## Methods
 
+### `changeNodeName(nodeName: string): boolean`
+
+修改光标所在元素的标签名称
+
+```typescript
+// 比如`<section>Text</section>` => <h2>Text</h2>`
+zxEditor.changeNodeName('h2')
+```
+
 ### `insert(input: string | HTMLElement): void`
 
 ```typescript
-zxEditor.insert('text<p>paragraph</p><img src="image.jpe"/>...')
+zxEditor.insert('text<p>paragraph</p><img src="image.jpg"/>...')
 ```
 
 ### `setHtml(html: string): void`
 
 ```typescript
-zxEditor.setHtml('text<p>paragraph</p><img src="image.jpe"/>...')
+zxEditor.setHtml('text<p>paragraph</p><img src="image.jpg"/>...')
 ```
 
 ### `getHtml(): string`

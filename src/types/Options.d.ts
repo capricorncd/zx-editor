@@ -10,6 +10,8 @@ export interface Options {
   placeholderColor?: string
   lineHeight?: string | number
   minHeight?: string | number
+  // allowed node names
+  allowedNodeNames?: string[]
   // paragraph tail spacing, default 10px
   // paragraphTailSpacing?: string | number;
   // 光标颜色

@@ -22,3 +22,9 @@ const zxEditor = new ZxEditor('#app', {
 // @ts-ignore
 window.zxEditor = zxEditor
 console.log(zxEditor)
+
+zxEditor.on('change', e => {
+  console.log('change', e)
+})
+
+zxEditor.insert('Text<p>p</p>')
