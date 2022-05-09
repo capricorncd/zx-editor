@@ -88,7 +88,9 @@ const zxEditor = new ZxEditor(document.querySelector('#app'), {})
 
 ## Methods
 
-### `changeNodeName(nodeName: string): boolean`
+### changeNodeName
+
+`changeNodeName(nodeName: string): boolean`
 
 修改光标所在元素的标签名称
 
@@ -97,7 +99,9 @@ const zxEditor = new ZxEditor(document.querySelector('#app'), {})
 zxEditor.changeNodeName('h2')
 ```
 
-### `changeStyles(styles: Types.CSSProperties | string, value?: unkown): void`
+### changeStyles
+
+`changeStyles(styles: Types.CSSProperties | string, value?: unkown): void`
 
 ```typescript
 // set
@@ -111,25 +115,33 @@ zxEditor.changeStyles({'background-color': ''})
 zxEditor.changeStyles('backgroundColor')
 ```
 
-### `insert(input: string | HTMLElement): void`
+### insert
+
+`insert(input: string | HTMLElement): void`
 
 ```typescript
 zxEditor.insert('text<p>paragraph</p><img src="image.jpg"/>...')
 ```
 
-### `setHtml(html: string): void`
+### setHtml
+
+`setHtml(html: string): void`
 
 ```typescript
 zxEditor.setHtml('text<p>paragraph</p><img src="image.jpg"/>...')
 ```
 
-### `getHtml(): string`
+### getHtml
+
+`getHtml(): string`
 
 ```typescript
 zxEditor.getHtml()
 ```
 
-### `use(plugin: Types.Plugin): void`
+### use
+
+`use(plugin: Types.Plugin): void`
 
 ```typescript
 import { ZxEditor } from 'zx-editor'
