@@ -97,6 +97,20 @@ const zxEditor = new ZxEditor(document.querySelector('#app'), {})
 zxEditor.changeNodeName('h2')
 ```
 
+### `changeStyles(styles: Types.CSSProperties | string, value?: unkown): void`
+
+```typescript
+// set
+zxEditor.changeStyles({'backgroundColor': 'blue'})
+zxEditor.changeStyles({'background-color': 'blue'})
+zxEditor.changeStyles('backgroundColor', 'blue')
+
+// remove
+zxEditor.changeStyles({'backgroundColor': null})
+zxEditor.changeStyles({'background-color': ''})
+zxEditor.changeStyles('backgroundColor')
+```
+
 ### `insert(input: string | HTMLElement): void`
 
 ```typescript

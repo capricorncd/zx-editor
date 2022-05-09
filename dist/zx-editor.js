@@ -34,17 +34,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
   function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
-  function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
-
-  function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
-
   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
   function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
   function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-
-  function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
   function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
@@ -53,6 +47,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
 
   function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+  function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+  function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
+  function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
   function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
@@ -70,7 +70,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
    * zx-editor v3.1.0
    * https://github.com/capricorncd/zx-editor
    * Released under the MIT License
-   * Released on: Sun May 08 2022 21:21:44 GMT+0900 (Japan Standard Time)
+   * Released on: Mon May 09 2022 21:23:01 GMT+0900 (Japan Standard Time)
    * Copyright © 2018-present, capricorncd
    */
 
@@ -101,14 +101,118 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
    * hello world => helloWorld
    * @param str
    */
-  // export const toCamelCase = (str: string): string => {
-  //   return str.replace(/[-_\s](\w)/g, (_, s) => s.toUpperCase())
-  // }
 
+
+  var toCamelCase = function toCamelCase(str) {
+    return str.replace(/[-_\s](\w)/g, function (_, s) {
+      return s.toUpperCase();
+    });
+  };
 
   var slice = function slice(arrLike) {
     var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
     return Array.prototype.slice.call(arrLike, offset);
+  };
+  /**
+   * Created by Capricorncd.
+   * https://github.com/capricorncd
+   * Date: 2022/05/05 10:55:25 (GMT+0900)
+   */
+
+
+  var $ = function $(selector) {
+    var doc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
+    if (selector instanceof HTMLElement) return selector;
+    return doc.querySelector(selector);
+  }; // export const $$ = <T extends HTMLElement>(selector: string, doc: Document | HTMLElement = document): T[] => {
+  //   return Array.prototype.slice.call(doc.querySelectorAll(selector), 0)
+  // }
+
+
+  var createElement = function createElement(tag) {
+    var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var innerHTML = arguments.length > 2 ? arguments[2] : undefined;
+    var el = document.createElement(tag);
+
+    for (var _i = 0, _Object$entries = Object.entries(attrs); _i < _Object$entries.length; _i++) {
+      var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
+          key = _Object$entries$_i[0],
+          val = _Object$entries$_i[1];
+
+      el.setAttribute(key, val);
+    }
+
+    if (innerHTML) el.innerHTML = innerHTML;
+    return el;
+  };
+  /**
+   * 将样式对象转换为字符串
+   * {color: 'red', fontSize: '16px'} => 'color:red;font-size:16px'
+   * @param data
+   * @param extendStyles
+   */
+
+
+  var createStyles = function createStyles(data, extendStyles) {
+    if (extendStyles) {
+      // 防止extendStyles存在snake的属性，不能成功覆盖旧样式
+      // data['lineHeight'] = 1.5, extendStyles['line-height'] = ''
+      for (var _i2 = 0, _Object$entries2 = Object.entries(extendStyles); _i2 < _Object$entries2.length; _i2++) {
+        var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i2], 2),
+            key = _Object$entries2$_i[0],
+            value = _Object$entries2$_i[1];
+
+        data[toCamelCase(key)] = value;
+      }
+    }
+
+    var arr = [];
+
+    for (var _i3 = 0, _Object$entries3 = Object.entries(data); _i3 < _Object$entries3.length; _i3++) {
+      var _Object$entries3$_i = _slicedToArray(_Object$entries3[_i3], 2),
+          _key = _Object$entries3$_i[0],
+          _value = _Object$entries3$_i[1];
+
+      if (_value === '' || typeof _value === 'undefined' || _value === null) continue;
+      arr.push("".concat(toSnakeCase(_key), ":").concat(_value));
+    }
+
+    return arr.join(';');
+  };
+
+  var replaceHtmlTag = function replaceHtmlTag(input, oldNodeName, newNodeName) {
+    return input.replace(RegExp("(^<" + oldNodeName + ")|(" + oldNodeName + ">$)", "gi"), function (match) {
+      return match.toUpperCase().replace(oldNodeName, newNodeName.toLowerCase());
+    });
+  };
+
+  var isUlElement = function isUlElement(el) {
+    return /UL|OL/.test(el.nodeName);
+  };
+  /**
+   * is <br> section
+   * <section><br></section>
+   * @param el
+   */
+
+
+  var isBrSection = function isBrSection(el) {
+    if (!el) return false;
+    var nodes = slice(el.childNodes);
+    return nodes.length === 1 && nodes[0].nodeName === 'BR';
+  };
+
+  var getStyles = function getStyles(el) {
+    var style = el.getAttribute('style') || '';
+    return style.split(/\s?;\s?/).reduce(function (prev, s) {
+      var _s$split = s.split(/\s?:\s?/),
+          _s$split2 = _slicedToArray(_s$split, 2),
+          key = _s$split2[0],
+          val = _s$split2[1];
+
+      prev[toCamelCase(key)] = val;
+      return prev;
+    }, {});
   };
   /**
    * Created by Capricorncd.
@@ -120,6 +224,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   var CLASS_NAME_EDITOR = 'zx-editor';
   var CLASS_NAME_CONTENT = 'zx-editor-content-wrapper';
   var ALLOWED_NODE_NAMES = ['SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'BLOCKQUOTE', 'UL', 'OL'];
+  var REPLACE_NODE_LIST = ['DIV', 'P', 'ARTICLE', 'ASIDE', 'DETAILS', 'SUMMARY', 'FOOTER', 'HEADER', 'MAIN', 'NAV', 'SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'BLOCKQUOTE'];
   var DEF_OPTIONS = {
     // 内容是否可以被编辑
     editable: true,
@@ -203,59 +308,45 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   /**
    * Created by Capricorncd.
    * https://github.com/capricorncd
-   * Date: 2022/05/05 10:55:25 (GMT+0900)
+   * Date: 2022/05/09 21:12:46 (GMT+0900)
    */
 
-  var REPLACE_NODE_LIST = ['DIV', 'P', 'ARTICLE', 'ASIDE', 'DETAILS', 'SUMMARY', 'FOOTER', 'HEADER', 'MAIN', 'NAV', 'SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'BLOCKQUOTE'];
+  /**
+   * init editor dom
+   */
 
-  var $ = function $(selector) {
-    var doc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : document;
-    if (selector instanceof HTMLElement) return selector;
-    return doc.querySelector(selector);
-  }; // export const $$ = <T extends HTMLElement>(selector: string, doc: Document | HTMLElement = document): T[] => {
-  //   return Array.prototype.slice.call(doc.querySelectorAll(selector), 0)
-  // }
-
-
-  var createElement = function createElement(tag) {
-    var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var innerHTML = arguments.length > 2 ? arguments[2] : undefined;
-    var el = document.createElement(tag);
-
-    for (var _i = 0, _Object$entries = Object.entries(attrs); _i < _Object$entries.length; _i++) {
-      var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
-          key = _Object$entries$_i[0],
-          val = _Object$entries$_i[1];
-
-      el.setAttribute(key, val);
-    }
-
-    if (innerHTML) el.innerHTML = innerHTML;
+  var initEditorDom = function initEditorDom() {
+    var el = createElement('div', {
+      "class": CLASS_NAME_EDITOR
+    });
     return el;
   };
+  /**
+   * init content dom
+   * @param options
+   */
 
-  var createStyles = function createStyles(data) {
-    var arr = [];
 
-    for (var _i2 = 0, _Object$entries2 = Object.entries(data); _i2 < _Object$entries2.length; _i2++) {
-      var _Object$entries2$_i = _slicedToArray(_Object$entries2[_i2], 2),
-          key = _Object$entries2$_i[0],
-          value = _Object$entries2$_i[1];
+  var initContentDom = function initContentDom(options) {
+    var contentStyles = _objectSpread({
+      lineHeight: options.lineHeight,
+      minHeight: options.minHeight,
+      position: 'relative',
+      overflowY: 'scroll',
+      outline: 'none'
+    }, options.styles);
 
-      arr.push("".concat(toSnakeCase(key), ":").concat(value));
-    }
+    if (options.caretColor) contentStyles.caretColor = options.caretColor;
+    if (options.textColor) contentStyles.color = options.textColor;
+    var contentAttrs = {
+      "class": "".concat(CLASS_NAME_CONTENT, " is-empty"),
+      style: createStyles(contentStyles)
+    };
+    if (options.editable) contentAttrs.contenteditable = 'true';
+    var el = createElement('div', contentAttrs);
+    el.innerHTML = "<section><br></section>"; // return
 
-    return arr.join(';');
-  };
-
-  var replace = function replace(input, oldNodeName, newNodeName) {
-    return input.replace(RegExp("(^<" + oldNodeName + ")|(" + oldNodeName + ">$)", "gi"), function (match) {
-      return match.toUpperCase().replace(oldNodeName, newNodeName.toLowerCase());
-    });
-  };
-
-  var isUlElement = function isUlElement(el) {
-    return /UL|OL/.test(el.nodeName);
+    return el;
   };
   /**
    *
@@ -275,7 +366,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
     if (oldNodeName === 'LI' && isUlElement(parent)) {
       // 替换当前LI元素标签为新元素标签
-      el.innerHTML = replace(input.outerHTML, oldNodeName, newNodeName); // 获取新元素
+      el.innerHTML = replaceHtmlTag(input.outerHTML, oldNodeName, newNodeName); // 获取新元素
 
       newEl = el.firstChild; // 有多个LI元素
 
@@ -342,7 +433,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         var next = input.nextElementSibling;
 
         if (prev && isUlElement(prev)) {
-          el.innerHTML = replace(input.outerHTML, oldNodeName, 'li');
+          el.innerHTML = replaceHtmlTag(input.outerHTML, oldNodeName, 'li');
           newEl = el.firstChild;
           prev.append(newEl);
           parent === null || parent === void 0 ? void 0 : parent.removeChild(input); // parent的下一个元素也为UL/OL元素，将其合并
@@ -355,7 +446,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             (_next$parentElement = next.parentElement) === null || _next$parentElement === void 0 ? void 0 : _next$parentElement.removeChild(next);
           }
         } else if (next && isUlElement(next)) {
-          el.innerHTML = replace(input.outerHTML, oldNodeName, 'li');
+          el.innerHTML = replaceHtmlTag(input.outerHTML, oldNodeName, 'li');
           newEl = el.firstChild;
           next.insertBefore(newEl, next.firstElementChild);
           parent === null || parent === void 0 ? void 0 : parent.removeChild(input); // parent的上一个元素也为UL/OL元素，将其合并
@@ -363,11 +454,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         } else {
           // 替换当前元素为UL/OL
           newEl = el;
-          el.innerHTML = replace(input.outerHTML, oldNodeName, 'li');
+          el.innerHTML = replaceHtmlTag(input.outerHTML, oldNodeName, 'li');
           parent === null || parent === void 0 ? void 0 : parent.replaceChild(newEl, input);
         }
       } else {
-        el.innerHTML = replace(input.outerHTML, oldNodeName, newNodeName);
+        el.innerHTML = replaceHtmlTag(input.outerHTML, oldNodeName, newNodeName);
         newEl = el.firstChild;
         parent === null || parent === void 0 ? void 0 : parent.replaceChild(newEl, input);
       }
@@ -378,18 +469,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     el.append(input.cloneNode(true));
     parent === null || parent === void 0 ? void 0 : parent.replaceChild(el, input);
     return el;
-  };
-  /**
-   * is <br> section
-   * <section><br></section>
-   * @param el
-   */
-
-
-  var isBrSection = function isBrSection(el) {
-    if (!el) return false;
-    var nodes = slice(el.childNodes);
-    return nodes.length === 1 && nodes[0].nodeName === 'BR';
   };
   /**
    * Created by Capricorncd.
@@ -492,6 +571,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     }, {
       key: "getCurrentNode",
       value: function getCurrentNode() {
+        var isOnlyContentChild = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
         var range = this.getRange();
         var currentNode = range.endContainer;
 
@@ -499,7 +579,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
           var _currentNode$parentEl;
 
           // li元素判断
-          if (currentNode.nodeName === 'LI' && ((_currentNode$parentEl = currentNode.parentElement) === null || _currentNode$parentEl === void 0 ? void 0 : _currentNode$parentEl.parentElement) === this.rootElement) {
+          if (!isOnlyContentChild && currentNode.nodeName === 'LI' && ((_currentNode$parentEl = currentNode.parentElement) === null || _currentNode$parentEl === void 0 ? void 0 : _currentNode$parentEl.parentElement) === this.rootElement) {
             return currentNode;
           }
 
@@ -555,8 +635,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         var fnList = this.eventList[eventName];
         if (!fnList) return;
 
-        for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-          args[_key - 1] = arguments[_key];
+        for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key2 = 1; _key2 < _len; _key2++) {
+          args[_key2 - 1] = arguments[_key2];
         }
 
         for (var i = 0; i < fnList.length; i++) {
@@ -619,50 +699,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
   /**
    * Created by Capricorncd.
    * https://github.com/capricorncd
-   * Date: 2022/05/05 11:07:32 (GMT+0900)
-   */
-
-  /**
-   * init editor dom
-   */
-
-
-  var initEditorDom = function initEditorDom() {
-    var el = createElement('div', {
-      "class": CLASS_NAME_EDITOR
-    });
-    return el;
-  };
-  /**
-   * init content dom
-   * @param options
-   */
-
-
-  var initContentDom = function initContentDom(options) {
-    var contentStyles = _objectSpread({
-      lineHeight: options.lineHeight,
-      minHeight: options.minHeight,
-      position: 'relative',
-      overflowY: 'scroll',
-      outline: 'none'
-    }, options.styles);
-
-    if (options.caretColor) contentStyles.caretColor = options.caretColor;
-    if (options.textColor) contentStyles.color = options.textColor;
-    var contentAttrs = {
-      "class": "".concat(CLASS_NAME_CONTENT, " is-empty"),
-      style: createStyles(contentStyles)
-    };
-    if (options.editable) contentAttrs.contenteditable = 'true';
-    var el = createElement('div', contentAttrs);
-    el.innerHTML = "<section><br></section>"; // return
-
-    return el;
-  };
-  /**
-   * Created by Capricorncd.
-   * https://github.com/capricorncd
    * Date: 2022/05/05 10:29:43 (GMT+0900)
    */
 
@@ -672,6 +708,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
     var _super = _createSuper(ZxEditor);
 
+    // 编辑器外部容器HTML元素
+    // 版本
+    // 参数
+    // 编辑器HTML元素
+    // 编辑器内容区域HTML元素
+    // 光标处理对象
+    // 内容元素事件处理函数
+    // 内容中允许使用的元素标签
     function ZxEditor(selector, options) {
       var _this2;
 
@@ -755,7 +799,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         this.$content.addEventListener('input', this._contentEvent);
       }
       /**
-       * use
+       * 扩展插件
        * @param plugin
        */
 
@@ -777,6 +821,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         if (typeof fn === 'function') fn.call(this);
       }
       /**
+       * 设置编辑器内容，会覆盖之前内容
        * set html to the content element
        * @param html
        */
@@ -790,6 +835,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         this._lastLine();
       }
       /**
+       * 获取编辑器中的HTML代码，会自动去除结尾处的空行
        * get html string from content element
        * remove last line that `<section><br></section>`
        * @return html string
@@ -801,6 +847,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         return this.$content.innerHTML.replace(/<section><br><\/section>$/, '');
       }
       /**
+       * 向编辑器中插入内容/HTML代码/元素等
        * insert html or element to content element
        * @param input
        */
@@ -843,7 +890,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       key: "_insert",
       value: function _insert(input) {
         var currentSection = this.cursor.getCurrentNode();
-        console.log(currentSection);
 
         if (currentSection) {
           if (isBrSection(currentSection)) {
@@ -864,6 +910,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         this.cursor.setRange(input);
       }
       /**
+       * 检查编辑器最后一段是否为空行，非空行则插入
        * append br section to content element when the lastElementChild is not a br section element
        * @private
        */
@@ -889,6 +936,23 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         return !!(currentSection && _changeNodeName(currentSection, nodeName));
       }
       /**
+       * 修改光标所在元素的样式
+       * @param styles
+       * @param value
+       */
+
+    }, {
+      key: "changeStyles",
+      value: function changeStyles(styles, value) {
+        var current = this.cursor.getCurrentNode(true);
+
+        if (current) {
+          var s = typeof styles === 'string' ? _defineProperty({}, styles, value) : styles;
+          current.setAttribute('style', createStyles(getStyles(current), s));
+        }
+      }
+      /**
+       * 销毁事件
        * destroy events
        */
 

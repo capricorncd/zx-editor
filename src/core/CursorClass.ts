@@ -77,12 +77,12 @@ export class CursorClass {
     }
   }
 
-  getCurrentNode(): HTMLElement | null {
+  getCurrentNode(isOnlyContentChild = false): HTMLElement | null {
     const range = this.getRange()
     let currentNode = range.endContainer
     while (currentNode && this.rootElement !== currentNode) {
       // li元素判断
-      if (currentNode.nodeName === 'LI' && currentNode.parentElement?.parentElement === this.rootElement) {
+      if (!isOnlyContentChild && currentNode.nodeName === 'LI' && currentNode.parentElement?.parentElement === this.rootElement) {
         return currentNode as HTMLElement
       }
       if (currentNode.parentElement === this.rootElement) {

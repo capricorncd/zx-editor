@@ -12,3 +12,5 @@ export interface Plugin {
 }
 
 export type EventEmitterFn = (...args: any[]) => void;
+
+export type CSSProperties = Record<string, unknown>;

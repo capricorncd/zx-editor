@@ -2,7 +2,7 @@
  * zx-editor v3.1.0
  * https://github.com/capricorncd/zx-editor
  * Released under the MIT License
- * Released on: Sun May 08 2022 21:21:44 GMT+0900 (Japan Standard Time)
+ * Released on: Mon May 09 2022 21:23:01 GMT+0900 (Japan Standard Time)
  * Copyright © 2018-present, capricorncd
  */
 /**
@@ -28,11 +28,81 @@ const toSnakeCase = (str, connectSymbol = '-') => {
  * hello world => helloWorld
  * @param str
  */
-// export const toCamelCase = (str: string): string => {
-//   return str.replace(/[-_\s](\w)/g, (_, s) => s.toUpperCase())
-// }
+const toCamelCase = (str) => {
+    return str.replace(/[-_\s](\w)/g, (_, s) => s.toUpperCase());
+};
 const slice = (arrLike, offset = 0) => {
     return Array.prototype.slice.call(arrLike, offset);
+};
+
+/**
+ * Created by Capricorncd.
+ * https://github.com/capricorncd
+ * Date: 2022/05/05 10:55:25 (GMT+0900)
+ */
+const $ = (selector, doc = document) => {
+    if (selector instanceof HTMLElement)
+        return selector;
+    return doc.querySelector(selector);
+};
+// export const $$ = <T extends HTMLElement>(selector: string, doc: Document | HTMLElement = document): T[] => {
+//   return Array.prototype.slice.call(doc.querySelectorAll(selector), 0)
+// }
+const createElement = (tag, attrs = {}, innerHTML) => {
+    const el = document.createElement(tag);
+    for (const [key, val] of Object.entries(attrs)) {
+        el.setAttribute(key, val);
+    }
+    if (innerHTML)
+        el.innerHTML = innerHTML;
+    return el;
+};
+/**
+ * 将样式对象转换为字符串
+ * {color: 'red', fontSize: '16px'} => 'color:red;font-size:16px'
+ * @param data
+ * @param extendStyles
+ */
+const createStyles = (data, extendStyles) => {
+    if (extendStyles) {
+        // 防止extendStyles存在snake的属性，不能成功覆盖旧样式
+        // data['lineHeight'] = 1.5, extendStyles['line-height'] = ''
+        for (const [key, value] of Object.entries(extendStyles)) {
+            data[toCamelCase(key)] = value;
+        }
+    }
+    const arr = [];
+    for (const [key, value] of Object.entries(data)) {
+        if (value === '' || typeof value === 'undefined' || value === null)
+            continue;
+        arr.push(`${toSnakeCase(key)}:${value}`);
+    }
+    return arr.join(';');
+};
+const replaceHtmlTag = (input, oldNodeName, newNodeName) => {
+    return input.replace(RegExp("(^<" + oldNodeName + ")|(" + oldNodeName + ">$)", "gi"), (match) => match.toUpperCase().replace(oldNodeName, newNodeName.toLowerCase()));
+};
+const isUlElement = (el) => {
+    return /UL|OL/.test(el.nodeName);
+};
+/**
+ * is <br> section
+ * <section><br></section>
+ * @param el
+ */
+const isBrSection = (el) => {
+    if (!el)
+        return false;
+    const nodes = slice(el.childNodes);
+    return nodes.length === 1 && nodes[0].nodeName === 'BR';
+};
+const getStyles = (el) => {
+    const style = el.getAttribute('style') || '';
+    return style.split(/\s?;\s?/).reduce((prev, s) => {
+        const [key, val] = s.split(/\s?:\s?/);
+        prev[toCamelCase(key)] = val;
+        return prev;
+    }, {});
 };
 
 /**
@@ -44,6 +114,26 @@ const CLASS_NAME_EDITOR = 'zx-editor';
 const CLASS_NAME_CONTENT = 'zx-editor-content-wrapper';
 
 const ALLOWED_NODE_NAMES = ['SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'BLOCKQUOTE', 'UL', 'OL'];
+const REPLACE_NODE_LIST = [
+    'DIV',
+    'P',
+    'ARTICLE',
+    'ASIDE',
+    'DETAILS',
+    'SUMMARY',
+    'FOOTER',
+    'HEADER',
+    'MAIN',
+    'NAV',
+    'SECTION',
+    'H1',
+    'H2',
+    'H3',
+    'H4',
+    'H5',
+    'H6',
+    'BLOCKQUOTE',
+];
 const DEF_OPTIONS = {
     // 内容是否可以被编辑
     editable: true,
@@ -124,57 +214,45 @@ const NODE_NAME_BR = 'BR';
 /**
  * Created by Capricorncd.
  * https://github.com/capricorncd
- * Date: 2022/05/05 10:55:25 (GMT+0900)
+ * Date: 2022/05/09 21:12:46 (GMT+0900)
  */
-const REPLACE_NODE_LIST = [
-    'DIV',
-    'P',
-    'ARTICLE',
-    'ASIDE',
-    'DETAILS',
-    'SUMMARY',
-    'FOOTER',
-    'HEADER',
-    'MAIN',
-    'NAV',
-    'SECTION',
-    'H1',
-    'H2',
-    'H3',
-    'H4',
-    'H5',
-    'H6',
-    'BLOCKQUOTE',
-];
-const $ = (selector, doc = document) => {
-    if (selector instanceof HTMLElement)
-        return selector;
-    return doc.querySelector(selector);
-};
-// export const $$ = <T extends HTMLElement>(selector: string, doc: Document | HTMLElement = document): T[] => {
-//   return Array.prototype.slice.call(doc.querySelectorAll(selector), 0)
-// }
-const createElement = (tag, attrs = {}, innerHTML) => {
-    const el = document.createElement(tag);
-    for (const [key, val] of Object.entries(attrs)) {
-        el.setAttribute(key, val);
-    }
-    if (innerHTML)
-        el.innerHTML = innerHTML;
+/**
+ * init editor dom
+ */
+const initEditorDom = () => {
+    const el = createElement('div', {
+        class: CLASS_NAME_EDITOR,
+    });
     return el;
 };
-const createStyles = (data) => {
-    const arr = [];
-    for (const [key, value] of Object.entries(data)) {
-        arr.push(`${toSnakeCase(key)}:${value}`);
-    }
-    return arr.join(';');
-};
-const replace = (input, oldNodeName, newNodeName) => {
-    return input.replace(RegExp("(^<" + oldNodeName + ")|(" + oldNodeName + ">$)", "gi"), (match) => match.toUpperCase().replace(oldNodeName, newNodeName.toLowerCase()));
-};
-const isUlElement = (el) => {
-    return /UL|OL/.test(el.nodeName);
+/**
+ * init content dom
+ * @param options
+ */
+const initContentDom = (options) => {
+    const contentStyles = {
+        lineHeight: options.lineHeight,
+        minHeight: options.minHeight,
+        position: 'relative',
+        overflowY: 'scroll',
+        outline: 'none',
+        // 用户自定义样式优先
+        ...options.styles,
+    };
+    if (options.caretColor)
+        contentStyles.caretColor = options.caretColor;
+    if (options.textColor)
+        contentStyles.color = options.textColor;
+    const contentAttrs = {
+        class: `${CLASS_NAME_CONTENT} is-empty`,
+        style: createStyles(contentStyles),
+    };
+    if (options.editable)
+        contentAttrs.contenteditable = 'true';
+    const el = createElement('div', contentAttrs);
+    el.innerHTML = `<section><br></section>`;
+    // return
+    return el;
 };
 /**
  *
@@ -192,7 +270,7 @@ const changeNodeName = (input, tagName = NODE_NAME_SECTION) => {
     // LI元素处理：被修改的元素为UL/OL的内部元素
     if (oldNodeName === 'LI' && isUlElement(parent)) {
         // 替换当前LI元素标签为新元素标签
-        el.innerHTML = replace(input.outerHTML, oldNodeName, newNodeName);
+        el.innerHTML = replaceHtmlTag(input.outerHTML, oldNodeName, newNodeName);
         // 获取新元素
         newEl = el.firstChild;
         // 有多个LI元素
@@ -247,7 +325,7 @@ const changeNodeName = (input, tagName = NODE_NAME_SECTION) => {
             const prev = input.previousElementSibling;
             const next = input.nextElementSibling;
             if (prev && isUlElement(prev)) {
-                el.innerHTML = replace(input.outerHTML, oldNodeName, 'li');
+                el.innerHTML = replaceHtmlTag(input.outerHTML, oldNodeName, 'li');
                 newEl = el.firstChild;
                 prev.append(newEl);
                 parent?.removeChild(input);
@@ -259,7 +337,7 @@ const changeNodeName = (input, tagName = NODE_NAME_SECTION) => {
                 }
             }
             else if (next && isUlElement(next)) {
-                el.innerHTML = replace(input.outerHTML, oldNodeName, 'li');
+                el.innerHTML = replaceHtmlTag(input.outerHTML, oldNodeName, 'li');
                 newEl = el.firstChild;
                 next.insertBefore(newEl, next.firstElementChild);
                 parent?.removeChild(input);
@@ -269,12 +347,12 @@ const changeNodeName = (input, tagName = NODE_NAME_SECTION) => {
             else {
                 // 替换当前元素为UL/OL
                 newEl = el;
-                el.innerHTML = replace(input.outerHTML, oldNodeName, 'li');
+                el.innerHTML = replaceHtmlTag(input.outerHTML, oldNodeName, 'li');
                 parent?.replaceChild(newEl, input);
             }
         }
         else {
-            el.innerHTML = replace(input.outerHTML, oldNodeName, newNodeName);
+            el.innerHTML = replaceHtmlTag(input.outerHTML, oldNodeName, newNodeName);
             newEl = el.firstChild;
             parent?.replaceChild(newEl, input);
         }
@@ -283,17 +361,6 @@ const changeNodeName = (input, tagName = NODE_NAME_SECTION) => {
     el.append(input.cloneNode(true));
     parent?.replaceChild(el, input);
     return el;
-};
-/**
- * is <br> section
- * <section><br></section>
- * @param el
- */
-const isBrSection = (el) => {
-    if (!el)
-        return false;
-    const nodes = slice(el.childNodes);
-    return nodes.length === 1 && nodes[0].nodeName === 'BR';
 };
 
 /**
@@ -369,12 +436,12 @@ class CursorClass {
             this.timer = null;
         }
     }
-    getCurrentNode() {
+    getCurrentNode(isOnlyContentChild = false) {
         const range = this.getRange();
         let currentNode = range.endContainer;
         while (currentNode && this.rootElement !== currentNode) {
             // li元素判断
-            if (currentNode.nodeName === 'LI' && currentNode.parentElement?.parentElement === this.rootElement) {
+            if (!isOnlyContentChild && currentNode.nodeName === 'LI' && currentNode.parentElement?.parentElement === this.rootElement) {
                 return currentNode;
             }
             if (currentNode.parentElement === this.rootElement) {
@@ -461,60 +528,24 @@ class EventEmitter {
 /**
  * Created by Capricorncd.
  * https://github.com/capricorncd
- * Date: 2022/05/05 11:07:32 (GMT+0900)
- */
-/**
- * init editor dom
- */
-const initEditorDom = () => {
-    const el = createElement('div', {
-        class: CLASS_NAME_EDITOR,
-    });
-    return el;
-};
-/**
- * init content dom
- * @param options
- */
-const initContentDom = (options) => {
-    const contentStyles = {
-        lineHeight: options.lineHeight,
-        minHeight: options.minHeight,
-        position: 'relative',
-        overflowY: 'scroll',
-        outline: 'none',
-        // 用户自定义样式优先
-        ...options.styles,
-    };
-    if (options.caretColor)
-        contentStyles.caretColor = options.caretColor;
-    if (options.textColor)
-        contentStyles.color = options.textColor;
-    const contentAttrs = {
-        class: `${CLASS_NAME_CONTENT} is-empty`,
-        style: createStyles(contentStyles),
-    };
-    if (options.editable)
-        contentAttrs.contenteditable = 'true';
-    const el = createElement('div', contentAttrs);
-    el.innerHTML = `<section><br></section>`;
-    // return
-    return el;
-};
-
-/**
- * Created by Capricorncd.
- * https://github.com/capricorncd
  * Date: 2022/05/05 10:29:43 (GMT+0900)
  */
 class ZxEditor extends EventEmitter {
+    // 编辑器外部容器HTML元素
     $wrapper;
+    // 版本
     version;
+    // 参数
     options;
+    // 编辑器HTML元素
     $editor;
+    // 编辑器内容区域HTML元素
     $content;
+    // 光标处理对象
     cursor;
+    // 内容元素事件处理函数
     _contentEvent;
+    // 内容中允许使用的元素标签
     allowedNodeNames;
     constructor(selector, options) {
         super();
@@ -562,7 +593,7 @@ class ZxEditor extends EventEmitter {
         this.$content.addEventListener('input', this._contentEvent);
     }
     /**
-     * use
+     * 扩展插件
      * @param plugin
      */
     use(plugin) {
@@ -579,6 +610,7 @@ class ZxEditor extends EventEmitter {
             fn.call(this);
     }
     /**
+     * 设置编辑器内容，会覆盖之前内容
      * set html to the content element
      * @param html
      */
@@ -588,6 +620,7 @@ class ZxEditor extends EventEmitter {
         this._lastLine();
     }
     /**
+     * 获取编辑器中的HTML代码，会自动去除结尾处的空行
      * get html string from content element
      * remove last line that `<section><br></section>`
      * @return html string
@@ -596,6 +629,7 @@ class ZxEditor extends EventEmitter {
         return this.$content.innerHTML.replace(/<section><br><\/section>$/, '');
     }
     /**
+     * 向编辑器中插入内容/HTML代码/元素等
      * insert html or element to content element
      * @param input
      */
@@ -633,7 +667,6 @@ class ZxEditor extends EventEmitter {
      */
     _insert(input) {
         const currentSection = this.cursor.getCurrentNode();
-        console.log(currentSection);
         if (currentSection) {
             if (isBrSection(currentSection)) {
                 this.$content.insertBefore(input, currentSection);
@@ -653,6 +686,7 @@ class ZxEditor extends EventEmitter {
         this.cursor.setRange(input);
     }
     /**
+     * 检查编辑器最后一段是否为空行，非空行则插入
      * append br section to content element when the lastElementChild is not a br section element
      * @private
      */
@@ -673,6 +707,19 @@ class ZxEditor extends EventEmitter {
         return !!(currentSection && changeNodeName(currentSection, nodeName));
     }
     /**
+     * 修改光标所在元素的样式
+     * @param styles
+     * @param value
+     */
+    changeStyles(styles, value) {
+        const current = this.cursor.getCurrentNode(true);
+        if (current) {
+            const s = typeof styles === 'string' ? { [styles]: value } : styles;
+            current.setAttribute('style', createStyles(getStyles(current), s));
+        }
+    }
+    /**
+     * 销毁事件
      * destroy events
      */
     destroy() {

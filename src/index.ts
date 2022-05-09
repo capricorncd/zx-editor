@@ -3,20 +3,27 @@
  * https://github.com/capricorncd
  * Date: 2022/05/05 10:29:43 (GMT+0900)
  */
-import { $, createElement, changeNodeName, slice, isBrSection } from './helpers'
-import { CursorClass, EventEmitter } from './core'
+import { $, createElement, slice, isBrSection, getStyles, createStyles } from './helpers'
+import { CursorClass, EventEmitter, changeNodeName, initEditorDom, initContentDom } from './core'
 import { DEF_OPTIONS, NODE_NAME_SECTION, NODE_NAME_BR, ALLOWED_NODE_NAMES } from './const'
 import * as Types from './types'
-import { initEditorDom, initContentDom } from './core'
 
 export class ZxEditor extends EventEmitter {
+  // 编辑器外部容器HTML元素
   private readonly $wrapper: HTMLElement
+  // 版本
   public readonly version: string
+  // 参数
   private readonly options: Types.Options
+  // 编辑器HTML元素
   private readonly $editor: HTMLDivElement
+  // 编辑器内容区域HTML元素
   private readonly $content: HTMLDivElement
+  // 光标处理对象
   private readonly cursor: CursorClass
+  // 内容元素事件处理函数
   private readonly _contentEvent: <T extends Event>(e: T) => void
+  // 内容中允许使用的元素标签
   private allowedNodeNames: string[]
 
   constructor(selector: Types.Selector, options?: Types.Options) {
@@ -71,7 +78,7 @@ export class ZxEditor extends EventEmitter {
   }
 
   /**
-   * use
+   * 扩展插件
    * @param plugin
    */
   use(plugin: Types.Plugin): void {
@@ -89,6 +96,7 @@ export class ZxEditor extends EventEmitter {
   }
 
   /**
+   * 设置编辑器内容，会覆盖之前内容
    * set html to the content element
    * @param html
    */
@@ -99,6 +107,7 @@ export class ZxEditor extends EventEmitter {
   }
 
   /**
+   * 获取编辑器中的HTML代码，会自动去除结尾处的空行
    * get html string from content element
    * remove last line that `<section><br></section>`
    * @return html string
@@ -108,6 +117,7 @@ export class ZxEditor extends EventEmitter {
   }
 
   /**
+   * 向编辑器中插入内容/HTML代码/元素等
    * insert html or element to content element
    * @param input
    */
@@ -145,7 +155,6 @@ export class ZxEditor extends EventEmitter {
    */
   private _insert(input: HTMLElement): void {
     const currentSection = this.cursor.getCurrentNode()
-    console.log(currentSection)
     if (currentSection) {
       if (isBrSection(currentSection)) {
         this.$content.insertBefore(input, currentSection)
@@ -164,6 +173,7 @@ export class ZxEditor extends EventEmitter {
   }
 
   /**
+   * 检查编辑器最后一段是否为空行，非空行则插入
    * append br section to content element when the lastElementChild is not a br section element
    * @private
    */
@@ -185,6 +195,20 @@ export class ZxEditor extends EventEmitter {
   }
 
   /**
+   * 修改光标所在元素的样式
+   * @param styles
+   * @param value
+   */
+  changeStyles(styles: Types.CSSProperties | string, value?: unknown): void {
+    const current = this.cursor.getCurrentNode(true)
+    if (current) {
+      const s: Types.CSSProperties = typeof styles === 'string' ? { [styles]: value } : styles
+      current.setAttribute('style', createStyles(getStyles(current), s))
+    }
+  }
+
+  /**
+   * 销毁事件
    * destroy events
    */
   destroy(): void {

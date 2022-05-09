@@ -23,9 +23,9 @@ export const toSnakeCase = (str: string, connectSymbol = '-'): string => {
  * hello world => helloWorld
  * @param str
  */
-// export const toCamelCase = (str: string): string => {
-//   return str.replace(/[-_\s](\w)/g, (_, s) => s.toUpperCase())
-// }
+export const toCamelCase = (str: string): string => {
+  return str.replace(/[-_\s](\w)/g, (_, s) => s.toUpperCase())
+}
 
 export const slice = <T, P>(arrLike: P, offset = 0): T[] => {
   return Array.prototype.slice.call(arrLike, offset)
