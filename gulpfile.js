@@ -10,6 +10,8 @@ const rollupTypescript = require('@rollup/plugin-typescript')
 const rollupReplace = require('@rollup/plugin-replace')
 const { getBabelOutputPlugin } = require('@rollup/plugin-babel')
 const { terser } = require('rollup-plugin-terser')
+// https://www.npmjs.com/package/rollup-plugin-scss
+const rollupScss = require('rollup-plugin-scss')
 const banner = require('./scripts/build-banner')
 const pkg = require('./package.json')
 
@@ -24,7 +26,14 @@ gulp.task('build', async function() {
     input: './src/index.ts',
     plugins: [
       rollupTypescript(),
-      rollupReplace({ '__VERSION__': pkg.version }),
+      rollupReplace({
+        values: { '__VERSION__': pkg.version },
+        preventAssignment: false,
+      }),
+      rollupScss({
+        // outputStyle: 'compressed',
+        output: './dist/zx-editor.css',
+      }),
     ],
   })
 

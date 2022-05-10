@@ -70,7 +70,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
    * zx-editor v3.1.0
    * https://github.com/capricorncd/zx-editor
    * Released under the MIT License
-   * Released on: Mon May 09 2022 21:23:01 GMT+0900 (Japan Standard Time)
+   * Released on: Tue May 10 2022 22:22:39 GMT+0900 (Japan Standard Time)
    * Copyright © 2018-present, capricorncd
    */
 
@@ -222,7 +222,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
 
   var CLASS_NAME_EDITOR = 'zx-editor';
-  var CLASS_NAME_CONTENT = 'zx-editor-content-wrapper';
+  var CLASS_NAME_CONTENT = "".concat(CLASS_NAME_EDITOR, "__content-wrapper");
   var ALLOWED_NODE_NAMES = ['SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'BLOCKQUOTE', 'UL', 'OL'];
   var REPLACE_NODE_LIST = ['DIV', 'P', 'ARTICLE', 'ASIDE', 'DETAILS', 'SUMMARY', 'FOOTER', 'HEADER', 'MAIN', 'NAV', 'SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'BLOCKQUOTE'];
   var DEF_OPTIONS = {
@@ -321,6 +321,17 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     });
     return el;
   };
+
+  var createPseudoClassBefore = function createPseudoClassBefore(placeholder) {
+    var _$;
+
+    // 伪类content
+    var beforeStyle = ".".concat(CLASS_NAME_EDITOR, " .").concat(CLASS_NAME_CONTENT, ".is-empty:before{content:'").concat(placeholder, "' !important;");
+    var style = createElement('style', {
+      type: 'text/css'
+    }, beforeStyle);
+    (_$ = $('head')) === null || _$ === void 0 ? void 0 : _$.append(style);
+  };
   /**
    * init content dom
    * @param options
@@ -328,14 +339,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
 
   var initContentDom = function initContentDom(options) {
-    var contentStyles = _objectSpread({
+    var contentStyles = _objectSpread(_objectSpread({
       lineHeight: options.lineHeight,
       minHeight: options.minHeight,
       position: 'relative',
       overflowY: 'scroll',
       outline: 'none'
-    }, options.styles);
+    }, options.styles), {}, {
+      // placeholder
+      '--placeholder-color': options.placeholderColor,
+      '--line-height': options.lineHeight
+    });
 
+    createPseudoClassBefore(options.placeholder);
     if (options.caretColor) contentStyles.caretColor = options.caretColor;
     if (options.textColor) contentStyles.color = options.textColor;
     var contentAttrs = {
@@ -469,6 +485,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     el.append(input.cloneNode(true));
     parent === null || parent === void 0 ? void 0 : parent.replaceChild(el, input);
     return el;
+  };
+
+  var checkIsEmpty = function checkIsEmpty(el) {
+    if (el.children.length <= 1 && isBrSection(el.children[0])) {
+      el.classList.add('is-empty');
+    } else {
+      el.classList.remove('is-empty');
+    }
   };
   /**
    * Created by Capricorncd.
@@ -779,6 +803,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
         if (type === 'blur') _this2._lastLine();
 
         _this2.emit(type === 'input' ? 'change' : type, e);
+
+        checkIsEmpty(_this2.$content);
       };
 
       _this2._initEvents();

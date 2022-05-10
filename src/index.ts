@@ -4,9 +4,10 @@
  * Date: 2022/05/05 10:29:43 (GMT+0900)
  */
 import { $, createElement, slice, isBrSection, getStyles, createStyles } from './helpers'
-import { CursorClass, EventEmitter, changeNodeName, initEditorDom, initContentDom } from './core'
+import { CursorClass, EventEmitter, changeNodeName, initEditorDom, initContentDom, checkIsEmpty } from './core'
 import { DEF_OPTIONS, NODE_NAME_SECTION, NODE_NAME_BR, ALLOWED_NODE_NAMES } from './const'
 import * as Types from './types'
+import './scss/zx-editor.scss'
 
 export class ZxEditor extends EventEmitter {
   // 编辑器外部容器HTML元素
@@ -62,6 +63,7 @@ export class ZxEditor extends EventEmitter {
       const type = e.type
       if (type === 'blur') this._lastLine()
       this.emit(type === 'input' ? 'change' : type, e)
+      checkIsEmpty(this.$content)
     }
 
     this._initEvents()

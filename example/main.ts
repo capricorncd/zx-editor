@@ -18,6 +18,7 @@ new VConsole()
 const zxEditor = new ZxEditor('#app', {
   // caretColor: 'blue',
   // textColor: 'red',
+  placeholderColor: 'red',
 })
 // @ts-ignore
 window.zxEditor = zxEditor

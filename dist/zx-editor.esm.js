@@ -2,7 +2,7 @@
  * zx-editor v3.1.0
  * https://github.com/capricorncd/zx-editor
  * Released under the MIT License
- * Released on: Mon May 09 2022 21:23:01 GMT+0900 (Japan Standard Time)
+ * Released on: Tue May 10 2022 22:22:39 GMT+0900 (Japan Standard Time)
  * Copyright © 2018-present, capricorncd
  */
 /**
@@ -111,7 +111,7 @@ const getStyles = (el) => {
  * Date: 2022/05/05 11:55:07 (GMT+0900)
  */
 const CLASS_NAME_EDITOR = 'zx-editor';
-const CLASS_NAME_CONTENT = 'zx-editor-content-wrapper';
+const CLASS_NAME_CONTENT = `${CLASS_NAME_EDITOR}__content-wrapper`;
 
 const ALLOWED_NODE_NAMES = ['SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'BLOCKQUOTE', 'UL', 'OL'];
 const REPLACE_NODE_LIST = [
@@ -225,6 +225,12 @@ const initEditorDom = () => {
     });
     return el;
 };
+const createPseudoClassBefore = (placeholder) => {
+    // 伪类content
+    const beforeStyle = `.${CLASS_NAME_EDITOR} .${CLASS_NAME_CONTENT}.is-empty:before{content:'${placeholder}' !important;`;
+    const style = createElement('style', { type: 'text/css' }, beforeStyle);
+    $('head')?.append(style);
+};
 /**
  * init content dom
  * @param options
@@ -238,7 +244,11 @@ const initContentDom = (options) => {
         outline: 'none',
         // 用户自定义样式优先
         ...options.styles,
+        // placeholder
+        '--placeholder-color': options.placeholderColor,
+        '--line-height': options.lineHeight,
     };
+    createPseudoClassBefore(options.placeholder);
     if (options.caretColor)
         contentStyles.caretColor = options.caretColor;
     if (options.textColor)
@@ -361,6 +371,14 @@ const changeNodeName = (input, tagName = NODE_NAME_SECTION) => {
     el.append(input.cloneNode(true));
     parent?.replaceChild(el, input);
     return el;
+};
+const checkIsEmpty = (el) => {
+    if (el.children.length <= 1 && isBrSection(el.children[0])) {
+        el.classList.add('is-empty');
+    }
+    else {
+        el.classList.remove('is-empty');
+    }
 };
 
 /**
@@ -580,6 +598,7 @@ class ZxEditor extends EventEmitter {
             if (type === 'blur')
                 this._lastLine();
             this.emit(type === 'input' ? 'change' : type, e);
+            checkIsEmpty(this.$content);
         };
         this._initEvents();
     }

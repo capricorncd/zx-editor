@@ -3,7 +3,7 @@
  * https://github.com/capricorncd
  * Date: 2022/05/09 21:12:46 (GMT+0900)
  */
-import { createElement, createStyles, isUlElement, replaceHtmlTag, slice } from "../helpers"
+import { $, createElement, createStyles, isBrSection, isUlElement, replaceHtmlTag, slice } from "../helpers"
 import { CLASS_NAME_CONTENT, CLASS_NAME_EDITOR, NODE_NAME_SECTION, REPLACE_NODE_LIST } from "../const"
 import * as Types from "../types"
 
@@ -15,6 +15,13 @@ export const initEditorDom = (): HTMLDivElement => {
     class: CLASS_NAME_EDITOR,
   })
   return el
+}
+
+const createPseudoClassBefore = (placeholder: string): void => {
+  // 伪类content
+  const beforeStyle = `.${CLASS_NAME_EDITOR} .${CLASS_NAME_CONTENT}.is-empty:before{content:'${placeholder}' !important;`
+  const style = createElement('style', { type: 'text/css' }, beforeStyle)
+  $('head')?.append(style)
 }
 
 /**
@@ -30,7 +37,13 @@ export const initContentDom = (options: Types.Options): HTMLDivElement => {
     outline: 'none',
     // 用户自定义样式优先
     ...options.styles,
+    // placeholder
+    '--placeholder-color': options.placeholderColor,
+    '--line-height': options.lineHeight,
   }
+
+  createPseudoClassBefore(options.placeholder as string)
+
   if (options.caretColor) contentStyles.caretColor = options.caretColor
   if (options.textColor) contentStyles.color = options.textColor
 
@@ -153,4 +166,12 @@ export const changeNodeName = (input: HTMLElement, tagName = NODE_NAME_SECTION):
   el.append(input.cloneNode(true))
   parent?.replaceChild(el, input)
   return el
+}
+
+export const checkIsEmpty = (el: HTMLElement): void => {
+  if (el.children.length <= 1 && isBrSection(el.children[0])) {
+    el.classList.add('is-empty')
+  } else {
+    el.classList.remove('is-empty')
+  }
 }
