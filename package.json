@@ -14,7 +14,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "lint": "eslint --fix --ext .js,.ts src example test ./*.js ./*.ts"
+    "lint": "eslint --fix --ext .js,.ts src example test scripts ./*.js ./*.ts"
   },
   "dependencies": {},
   "devDependencies": {
