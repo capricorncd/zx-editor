@@ -3,40 +3,40 @@
  * https://github.com/capricorncd
  * Date: 2022/05/05 11:56:04 (GMT+0900)
  */
-import * as Types from "../types";
+import * as Types from '../types'
 
 export const ALLOWED_NODE_NAMES = [
-  "SECTION",
-  "H1",
-  "H2",
-  "H3",
-  "H4",
-  "H5",
-  "BLOCKQUOTE",
-  "UL",
-  "OL",
-];
+  'SECTION',
+  'H1',
+  'H2',
+  'H3',
+  'H4',
+  'H5',
+  'BLOCKQUOTE',
+  'UL',
+  'OL',
+]
 
 export const REPLACE_NODE_LIST = [
-  "DIV",
-  "P",
-  "ARTICLE",
-  "ASIDE",
-  "DETAILS",
-  "SUMMARY",
-  "FOOTER",
-  "HEADER",
-  "MAIN",
-  "NAV",
-  "SECTION",
-  "H1",
-  "H2",
-  "H3",
-  "H4",
-  "H5",
-  "H6",
-  "BLOCKQUOTE",
-];
+  'DIV',
+  'P',
+  'ARTICLE',
+  'ASIDE',
+  'DETAILS',
+  'SUMMARY',
+  'FOOTER',
+  'HEADER',
+  'MAIN',
+  'NAV',
+  'SECTION',
+  'H1',
+  'H2',
+  'H3',
+  'H4',
+  'H5',
+  'H6',
+  'BLOCKQUOTE',
+]
 
 export const DEF_OPTIONS: Types.Options = {
   // 内容是否可以被编辑
@@ -44,16 +44,16 @@ export const DEF_OPTIONS: Types.Options = {
   // 编辑器输入内容绝对定位
   // fixed: false,
   // editor min height
-  minHeight: "50vh",
+  minHeight: '50vh',
   // style
-  placeholder: "Enter...",
-  placeholderColor: "",
+  placeholder: 'Enter...',
+  placeholderColor: '',
   lineHeight: 1.5,
   allowedNodeNames: ALLOWED_NODE_NAMES,
   // paragraph tail spacing, default 10px
   // paragraphTailSpacing: '',
-  caretColor: "",
-  textColor: "",
+  caretColor: '',
+  textColor: '',
   // iphone会自动移动，难控制
   // 光标所在行距页面顶部的距离30px
   cursorOffsetTop: 30,
@@ -68,7 +68,7 @@ export const DEF_OPTIONS: Types.Options = {
   toolbarBeenFixed: true,
   toolbarHeight: 50,
   // buttons name, and order
-  toolbarButtons: ["select-picture", "text-style"],
+  toolbarButtons: ['select-picture', 'text-style'],
   /**
    * ******************************
    * image options
@@ -95,15 +95,15 @@ export const DEF_OPTIONS: Types.Options = {
    */
   // text style, value ['#333', '#f00', ...]
   // textStyleColors: undefined,
-  textStyleTitle: "Set Style",
-  textStyleHeadLeftBtnText: "Clear style",
-  textStyleHeadAlign: "center",
+  textStyleTitle: 'Set Style',
+  textStyleHeadLeftBtnText: 'Clear style',
+  textStyleHeadAlign: 'center',
   /**
    * ******************************
    * color options
    * ******************************
    */
-  mainColor: "",
+  mainColor: '',
   // border color
-  borderColor: "",
-};
+  borderColor: '',
+}

@@ -4,7 +4,7 @@
  * Date: 2022/05/08 16:37:46 (GMT+0900)
  */
 /* eslint-disable @typescript-eslint/no-var-requires */
-const pkg = require("../package.json");
+const pkg = require('../package.json')
 
 module.exports = `/*!
  * ${pkg.name} v${pkg.version}
@@ -12,4 +12,4 @@ module.exports = `/*!
  * Released under the ${pkg.license} License
  * Released on: ${new Date().toString()}
  * Copyright © 2018-present, ${pkg.author}
- */`;
+ */`
