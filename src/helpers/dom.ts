@@ -6,10 +6,7 @@
 import { slice, toSnakeCase, toCamelCase } from './format'
 import { CSSProperties } from '../types'
 
-export const $ = <T extends HTMLElement>(
-  selector: string | T,
-  doc: Document | HTMLElement = document
-): T | null => {
+export const $ = <T extends HTMLElement>(selector: string | T, doc: Document | HTMLElement = document): T | null => {
   if (selector instanceof HTMLElement) return selector
   return doc.querySelector(selector)
 }
@@ -37,10 +34,7 @@ export const createElement = <T extends HTMLElement>(
  * @param data
  * @param extendStyles
  */
-export const createStyles = (
-  data: CSSProperties,
-  extendStyles?: CSSProperties
-): string => {
+export const createStyles = (data: CSSProperties, extendStyles?: CSSProperties): string => {
   if (extendStyles) {
     // 防止extendStyles存在snake的属性，不能成功覆盖旧样式
     // data['lineHeight'] = 1.5, extendStyles['line-height'] = ''
@@ -56,15 +50,9 @@ export const createStyles = (
   return arr.join(';')
 }
 
-export const replaceHtmlTag = (
-  input: string,
-  oldNodeName: string,
-  newNodeName: string
-): string => {
-  return input.replace(
-    RegExp('(^<' + oldNodeName + ')|(' + oldNodeName + '>$)', 'gi'),
-    (match) =>
-      match.toUpperCase().replace(oldNodeName, newNodeName.toLowerCase())
+export const replaceHtmlTag = (input: string, oldNodeName: string, newNodeName: string): string => {
+  return input.replace(RegExp('(^<' + oldNodeName + ')|(' + oldNodeName + '>$)', 'gi'), (match) =>
+    match.toUpperCase().replace(oldNodeName, newNodeName.toLowerCase())
   )
 }
 
@@ -83,7 +71,12 @@ export const isBrSection = (el: HTMLElement | Element | null): boolean => {
   return nodes.length === 1 && nodes[0].nodeName === 'BR'
 }
 
-export const getStyles = (el: HTMLElement): CSSProperties => {
+/**
+ * 获取元素styles对象
+ * @param el
+ */
+export const getStyles = (el: HTMLElement | null): CSSProperties => {
+  if (!el) return {}
   const style = el.getAttribute('style') || ''
   return style.split(/\s?;\s?/).reduce<CSSProperties>((prev, s) => {
     const [key, val] = s.split(/\s?:\s?/)

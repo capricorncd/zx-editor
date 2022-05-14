@@ -50,7 +50,7 @@ export class ZxEditor extends EventEmitter {
     this.version = '__VERSION__'
     // options
     this.options = { ...DEF_OPTIONS, ...options }
-    this.allowedNodeNames = (this.options.allowedNodeNames || ALLOWED_NODE_NAMES).map(item => item.toUpperCase())
+    this.allowedNodeNames = (this.options.allowedNodeNames || ALLOWED_NODE_NAMES).map((item) => item.toUpperCase())
     // elements
     this.$content = initContentDom(this.options)
     this.$editor = initEditorDom()
@@ -148,6 +148,7 @@ export class ZxEditor extends EventEmitter {
         }
       })
     }
+    this._dispatchChange()
   }
 
   /**
@@ -156,7 +157,7 @@ export class ZxEditor extends EventEmitter {
    * @private
    */
   private _insert(input: HTMLElement): void {
-    const currentSection = this.cursor.getCurrentNode()
+    const currentSection = this.getCurrentNode()
     if (currentSection) {
       if (isBrSection(currentSection)) {
         this.$content.insertBefore(input, currentSection)
@@ -169,7 +170,6 @@ export class ZxEditor extends EventEmitter {
     if (!this.allowedNodeNames.includes(input.nodeName)) {
       input = changeNodeName(input, NODE_NAME_SECTION)
     }
-    this.$content.dispatchEvent(new InputEvent('input'))
     // 设置光标元素对象
     this.cursor.setRange(input)
   }
@@ -192,8 +192,12 @@ export class ZxEditor extends EventEmitter {
   changeNodeName(nodeName: string): boolean {
     // 判断nodeName是否被允许设置
     if (!this.allowedNodeNames.includes(nodeName.toUpperCase())) return false
-    const currentSection = this.cursor.getCurrentNode()
-    return !!(currentSection && changeNodeName(currentSection, nodeName))
+    const currentSection = this.getCurrentNode()
+    if (currentSection && changeNodeName(currentSection, nodeName)) {
+      this._dispatchChange()
+      return true
+    }
+    return false
   }
 
   /**
@@ -202,11 +206,31 @@ export class ZxEditor extends EventEmitter {
    * @param value
    */
   changeStyles(styles: Types.CSSProperties | string, value?: unknown): void {
-    const current = this.cursor.getCurrentNode(true)
+    const current = this.getCurrentNode(true)
     if (current) {
       const s: Types.CSSProperties = typeof styles === 'string' ? { [styles]: value } : styles
       current.setAttribute('style', createStyles(getStyles(current), s))
+      this._dispatchChange()
     }
+  }
+
+  _dispatchChange(): void {
+    this.$content.dispatchEvent(new InputEvent('input'))
+  }
+
+  /**
+   * 获取光标所在的元素的style对象
+   */
+  getStyles(): Types.CSSProperties {
+    return getStyles(this.getCurrentNode())
+  }
+
+  /**
+   * 获取光标所在的元素
+   * @param isOnlyContentChild
+   */
+  getCurrentNode(isOnlyContentChild = false): HTMLElement | null {
+    return this.cursor.getCurrentNode(isOnlyContentChild)
   }
 
   /**

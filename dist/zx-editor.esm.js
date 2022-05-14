@@ -2,7 +2,7 @@
  * zx-editor v3.1.0
  * https://github.com/capricorncd/zx-editor
  * Released under the MIT License
- * Released on: Sat May 14 2022 11:26:51 GMT+0900 (Japan Standard Time)
+ * Released on: Sat May 14 2022 11:56:12 GMT+0900 (Japan Standard Time)
  * Copyright © 2018-present, capricorncd
  */
 /**
@@ -96,7 +96,13 @@ const isBrSection = (el) => {
     const nodes = slice(el.childNodes);
     return nodes.length === 1 && nodes[0].nodeName === 'BR';
 };
+/**
+ * 获取元素styles对象
+ * @param el
+ */
 const getStyles = (el) => {
+    if (!el)
+        return {};
     const style = el.getAttribute('style') || '';
     return style.split(/\s?;\s?/).reduce((prev, s) => {
         const [key, val] = s.split(/\s?:\s?/);
@@ -695,6 +701,7 @@ class ZxEditor extends EventEmitter {
                 }
             });
         }
+        this._dispatchChange();
     }
     /**
      * insert element to content element
@@ -702,7 +709,7 @@ class ZxEditor extends EventEmitter {
      * @private
      */
     _insert(input) {
-        const currentSection = this.cursor.getCurrentNode();
+        const currentSection = this.getCurrentNode();
         if (currentSection) {
             if (isBrSection(currentSection)) {
                 this.$content.insertBefore(input, currentSection);
@@ -717,7 +724,6 @@ class ZxEditor extends EventEmitter {
         if (!this.allowedNodeNames.includes(input.nodeName)) {
             input = changeNodeName(input, NODE_NAME_SECTION);
         }
-        this.$content.dispatchEvent(new InputEvent('input'));
         // 设置光标元素对象
         this.cursor.setRange(input);
     }
@@ -739,8 +745,12 @@ class ZxEditor extends EventEmitter {
         // 判断nodeName是否被允许设置
         if (!this.allowedNodeNames.includes(nodeName.toUpperCase()))
             return false;
-        const currentSection = this.cursor.getCurrentNode();
-        return !!(currentSection && changeNodeName(currentSection, nodeName));
+        const currentSection = this.getCurrentNode();
+        if (currentSection && changeNodeName(currentSection, nodeName)) {
+            this._dispatchChange();
+            return true;
+        }
+        return false;
     }
     /**
      * 修改光标所在元素的样式
@@ -748,11 +758,28 @@ class ZxEditor extends EventEmitter {
      * @param value
      */
     changeStyles(styles, value) {
-        const current = this.cursor.getCurrentNode(true);
+        const current = this.getCurrentNode(true);
         if (current) {
             const s = typeof styles === 'string' ? { [styles]: value } : styles;
             current.setAttribute('style', createStyles(getStyles(current), s));
+            this._dispatchChange();
         }
+    }
+    _dispatchChange() {
+        this.$content.dispatchEvent(new InputEvent('input'));
+    }
+    /**
+     * 获取光标所在的元素的style对象
+     */
+    getStyles() {
+        return getStyles(this.getCurrentNode());
+    }
+    /**
+     * 获取光标所在的元素
+     * @param isOnlyContentChild
+     */
+    getCurrentNode(isOnlyContentChild = false) {
+        return this.cursor.getCurrentNode(isOnlyContentChild);
     }
     /**
      * 销毁事件

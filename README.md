@@ -6,13 +6,13 @@
   <a href="https://www.npmjs.com/package/zx-editor"><img src="https://img.shields.io/npm/l/zx-editor.svg?sanitize=true" alt="License"></a>
 </p>
 
-移动端HTML文档（富文本）编辑器，支持图文混排、引用、大标题、无序列表，字体颜色、加粗、斜体。
+移动端 HTML 文档（富文本）编辑器，支持图文混排、引用、大标题、无序列表，字体颜色、加粗、斜体。
 
-可用于独立web项目开发，也可以用于与原生App混合(hybrid)开发。
+可用于独立 web 项目开发，也可以用于与原生 App 混合(hybrid)开发。
 
 ## Build Setup
 
-``` bash
+```bash
 # 安装依赖
 yarn
 
@@ -44,7 +44,7 @@ yarn add zx-editor
 <script>
   // 初始化ZX编辑器
   const zxEditor = new ZxEditor('#editorContainer', {
-    placeholder: '请输入内容'
+    placeholder: '请输入内容',
   })
   console.log(zxEditor)
 </script>
@@ -105,13 +105,13 @@ zxEditor.changeNodeName('h2')
 
 ```typescript
 // set
-zxEditor.changeStyles({'backgroundColor': 'blue'})
-zxEditor.changeStyles({'background-color': 'blue'})
+zxEditor.changeStyles({ backgroundColor: 'blue' })
+zxEditor.changeStyles({ 'background-color': 'blue' })
 zxEditor.changeStyles('backgroundColor', 'blue')
 
 // remove
-zxEditor.changeStyles({'backgroundColor': null})
-zxEditor.changeStyles({'background-color': ''})
+zxEditor.changeStyles({ backgroundColor: null })
+zxEditor.changeStyles({ 'background-color': '' })
 zxEditor.changeStyles('backgroundColor')
 ```
 
@@ -139,6 +139,14 @@ zxEditor.setHtml('text<p>paragraph</p><img src="image.jpg"/>...')
 zxEditor.getHtml()
 ```
 
+### getStyles
+
+`getStyles(): {key: value}`
+
+```typescript
+zxEditor.getStyles()
+```
+
 ### use
 
 `use(plugin: Types.Plugin): void`
@@ -162,6 +170,3 @@ zxEditor.use(CustomPlugin)
 ## Copyright and license
 
 Code and documentation copyright 2018-2022. capricorncd. Code released under the MIT License.
-
-
-

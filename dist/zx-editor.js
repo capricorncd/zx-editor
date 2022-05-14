@@ -70,7 +70,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
    * zx-editor v3.1.0
    * https://github.com/capricorncd/zx-editor
    * Released under the MIT License
-   * Released on: Sat May 14 2022 11:26:51 GMT+0900 (Japan Standard Time)
+   * Released on: Sat May 14 2022 11:56:12 GMT+0900 (Japan Standard Time)
    * Copyright © 2018-present, capricorncd
    */
 
@@ -201,8 +201,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     var nodes = slice(el.childNodes);
     return nodes.length === 1 && nodes[0].nodeName === 'BR';
   };
+  /**
+   * 获取元素styles对象
+   * @param el
+   */
 
-  var getStyles = function getStyles(el) {
+
+  var _getStyles = function getStyles(el) {
+    if (!el) return {};
     var style = el.getAttribute('style') || '';
     return style.split(/\s?;\s?/).reduce(function (prev, s) {
       var _s$split = s.split(/\s?:\s?/),
@@ -913,6 +919,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
             }
           });
         }
+
+        this._dispatchChange();
       }
       /**
        * insert element to content element
@@ -923,7 +931,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     }, {
       key: "_insert",
       value: function _insert(input) {
-        var currentSection = this.cursor.getCurrentNode();
+        var currentSection = this.getCurrentNode();
 
         if (currentSection) {
           if (isBrSection(currentSection)) {
@@ -937,9 +945,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 
         if (!this.allowedNodeNames.includes(input.nodeName)) {
           input = _changeNodeName(input, NODE_NAME_SECTION);
-        }
+        } // 设置光标元素对象
 
-        this.$content.dispatchEvent(new InputEvent('input')); // 设置光标元素对象
 
         this.cursor.setRange(input);
       }
@@ -966,8 +973,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
       value: function changeNodeName(nodeName) {
         // 判断nodeName是否被允许设置
         if (!this.allowedNodeNames.includes(nodeName.toUpperCase())) return false;
-        var currentSection = this.cursor.getCurrentNode();
-        return !!(currentSection && _changeNodeName(currentSection, nodeName));
+        var currentSection = this.getCurrentNode();
+
+        if (currentSection && _changeNodeName(currentSection, nodeName)) {
+          this._dispatchChange();
+
+          return true;
+        }
+
+        return false;
       }
       /**
        * 修改光标所在元素的样式
@@ -978,12 +992,39 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
     }, {
       key: "changeStyles",
       value: function changeStyles(styles, value) {
-        var current = this.cursor.getCurrentNode(true);
+        var current = this.getCurrentNode(true);
 
         if (current) {
           var s = typeof styles === 'string' ? _defineProperty({}, styles, value) : styles;
-          current.setAttribute('style', createStyles(getStyles(current), s));
+          current.setAttribute('style', createStyles(_getStyles(current), s));
+
+          this._dispatchChange();
         }
+      }
+    }, {
+      key: "_dispatchChange",
+      value: function _dispatchChange() {
+        this.$content.dispatchEvent(new InputEvent('input'));
+      }
+      /**
+       * 获取光标所在的元素的style对象
+       */
+
+    }, {
+      key: "getStyles",
+      value: function getStyles() {
+        return _getStyles(this.getCurrentNode());
+      }
+      /**
+       * 获取光标所在的元素
+       * @param isOnlyContentChild
+       */
+
+    }, {
+      key: "getCurrentNode",
+      value: function getCurrentNode() {
+        var isOnlyContentChild = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+        return this.cursor.getCurrentNode(isOnlyContentChild);
       }
       /**
        * 销毁事件
