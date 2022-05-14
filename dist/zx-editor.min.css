@@ -1,14 +1,1 @@
-:root {
-  --placeholder-color: #999;
-  --line-height: 1.5;
-}
-.zx-editor__content-wrapper.is-empty:before {
-  position: absolute;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  color: var(--placeholder-color);
-  line-height: var(--line-height);
-  content: '';
-}
+:root{--placeholder-color:#999;--line-height:1.5}.zx-editor__content-wrapper.is-empty:before{position:absolute;z-index:1;top:0;left:0;pointer-events:none;color:var(--placeholder-color);line-height:var(--line-height);content:""}

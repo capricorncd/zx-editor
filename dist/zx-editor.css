@@ -16,5 +16,5 @@
   pointer-events: none;
   color: var(--placeholder-color);
   line-height: var(--line-height);
-  content: '';
+  content: "";
 }
