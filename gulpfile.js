@@ -4,6 +4,7 @@
  * Date: 2022/05/08 15:04:45 (GMT+0900)
  */
 /* eslint-disable @typescript-eslint/no-var-requires */
+const { copyFileSync } = require('fs')
 const gulp = require('gulp')
 const { rollup } = require('rollup')
 const rollupTypescript = require('@rollup/plugin-typescript')
@@ -12,6 +13,7 @@ const { getBabelOutputPlugin } = require('@rollup/plugin-babel')
 const { terser } = require('rollup-plugin-terser')
 // https://www.npmjs.com/package/rollup-plugin-scss
 const rollupScss = require('rollup-plugin-scss')
+const cleanCSS = require('gulp-clean-css')
 const banner = require('./scripts/build-banner')
 const pkg = require('./package.json')
 
@@ -20,19 +22,21 @@ const bundleWriteOptions = {
   sourcemap: true,
 }
 
-gulp.task('build', async function() {
+gulp.task('build', async () => {
+  const cssFilePath = './dist/zx-editor.css'
+  const cssMinFilePath = cssFilePath.replace('.css', '.min.css')
   // ts -> esm
   const bundle = await rollup({
     input: './src/index.ts',
     plugins: [
       rollupTypescript(),
       rollupReplace({
-        values: { '__VERSION__': pkg.version },
+        values: { __VERSION__: pkg.version },
         preventAssignment: false,
       }),
       rollupScss({
         // outputStyle: 'compressed',
-        output: './dist/zx-editor.css',
+        output: cssFilePath,
       }),
     ],
   })
@@ -49,9 +53,7 @@ gulp.task('build', async function() {
     input: './dist/zx-editor.esm.js',
     plugins: [
       getBabelOutputPlugin({
-        presets: [
-          ['@babel/preset-env', { modules: 'umd' }],
-        ],
+        presets: [['@babel/preset-env', { modules: 'umd' }]],
       }),
     ],
   })
@@ -72,4 +74,8 @@ gulp.task('build', async function() {
     file: 'dist/zx-editor.min.js',
     // plugins: [terser()],
   })
+
+  // css minify
+  copyFileSync(cssFilePath, cssMinFilePath)
+  await gulp.src(cssMinFilePath).pipe(cleanCSS()).pipe(gulp.dest('dist'))
 })

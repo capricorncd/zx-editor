@@ -3,6 +3,10 @@
  * https://github.com/capricorncd
  * Date: 2022/05/10 21:27:03 (GMT+0900)
  */
+:root {
+  --placeholder-color: #999;
+  --line-height: 1.5;
+}
 .zx-editor {
   &__content-wrapper {
     &.is-empty:before {
