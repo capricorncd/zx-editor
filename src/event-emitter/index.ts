@@ -3,7 +3,7 @@
  * https://github.com/capricorncd
  * Date: 2022/05/05 16:08:30 (GMT+0900)
  */
-import { EventEmitterFn } from '../types'
+import { EventEmitterFn } from '@/types'
 
 export class EventEmitter {
   protected readonly eventList: Record<string, EventEmitterFn[]>
@@ -30,7 +30,7 @@ export class EventEmitter {
    * @param eventName
    * @param args
    */
-  emit<T>(eventName: string, ...args: T[]): void {
+  emit(eventName: string, ...args: any[]): void {
     const fnList = this.eventList[eventName]
     if (!fnList) return
     for (let i = 0; i < fnList.length; i++) {
@@ -52,7 +52,7 @@ export class EventEmitter {
 
     const eventList = this.eventList[eventName]
     if (typeof fn === 'function') {
-      const index = eventList.findIndex(item => item === fn)
+      const index = eventList.findIndex((item) => item === fn)
       if (index >= 0) eventList.splice(index, 1)
     } else {
       this.eventList[eventName].length = 0
@@ -72,6 +72,6 @@ export class EventEmitter {
   }
 
   destroyEventEmitter(): void {
-    Object.keys(this.eventList).forEach((key => this.off(key)))
+    Object.keys(this.eventList).forEach((key) => this.off(key))
   }
 }

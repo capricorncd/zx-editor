@@ -3,7 +3,8 @@
  * https://github.com/capricorncd
  * Date: 2022/05/05 11:34:18 (GMT+0900)
  */
-import { CSSProperties } from './Editor'
+import { CSSProperties } from './Common'
+
 export interface Options {
   // container: Selector;
   editable?: boolean

@@ -1,0 +1,48 @@
+$iconSize: 50px;
+
+.zx-editor-toolbar {
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #fff;
+  height: $iconSize + 200;
+  transform: translateY(-100%);
+  opacity: 0;
+  .inner-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: $iconSize;
+    overflow-y: hidden;
+    overflow-x: auto;
+    white-space: nowrap;
+    .icon-item {
+      position: relative;
+      display: inline-block;
+      width: $iconSize;
+      height: $iconSize;
+      cursor: pointer;
+      vertical-align: top;
+    }
+    // icons
+    .toolbar-icon-pic {
+      background: url('./camera.svg') no-repeat center center;
+    }
+    .toolbar-icon-pic {
+      background-size: 25px 25px;
+    }
+    .text-style-btn {
+      //.bgImage('../img/text', no-repeat center center);
+    }
+    .text-style-btn {
+      background-size: 25px 25px;
+    }
+  }
+  &.__fade-in {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

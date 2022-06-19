@@ -5,5 +5,3 @@
  */
 export * from './Core'
 export * from './CursorClass'
-export * from './EventEmitter'
-

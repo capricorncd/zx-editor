@@ -4,7 +4,7 @@
  * Date: 2022/05/07 21:29:54 (GMT+0900)
  */
 import { describe, assert, it, expect } from 'vitest'
-import { toSnakeCase, slice } from '../../src/helpers/format'
+import { toSnakeCase, toCamelCase, slice } from '../../src/helpers/format'
 
 describe('format', () => {
   it('toSnakeCase', () => {
@@ -12,6 +12,12 @@ describe('format', () => {
     assert.equal(toSnakeCase('helloWorld', '_'), 'hello_world')
     assert.equal(toSnakeCase('helloWorld', ' '), 'hello world')
     assert.equal(toSnakeCase('helloWorld', '@'), 'hello@world')
+  })
+
+  it('toCamelCase', () => {
+    assert.equal(toCamelCase('hello-world'), 'helloWorld')
+    assert.equal(toCamelCase('hello_world'), 'helloWorld')
+    assert.equal(toCamelCase('hello world'), 'helloWorld')
   })
 
   it('slice', () => {

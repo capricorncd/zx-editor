@@ -149,7 +149,7 @@ zxEditor.getStyles()
 
 ### use
 
-`use(plugin: Types.Plugin): void`
+`use(plugin: {install: (editor: Editor) => void}): void`
 
 ```typescript
 import { ZxEditor } from 'zx-editor'

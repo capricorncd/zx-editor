@@ -6,24 +6,18 @@
 export class CursorClass {
   private readonly rootElement: HTMLDivElement
   private timer: number | null
+  private selection: Selection | null
+  private range: Range = new Range()
 
   constructor(rootElement: HTMLDivElement) {
     this.rootElement = rootElement
     this.timer = null
 
+    this.selection = window.getSelection()
+
     // init range
     const el = rootElement.lastElementChild as HTMLElement
     if (el) this.setRange(el, el.textContent?.length)
-  }
-
-  getRange(): Range {
-    try {
-      // @ts-ignore
-      return window.getSelection()?.getRangeAt(0)
-    } catch (e) {
-      // ..
-    }
-    return new Range()
   }
 
   /**
@@ -39,11 +33,25 @@ export class CursorClass {
     return node
   }
 
-  setRange(el: HTMLElement, offset?: number) {
-    const range = this.getRange()
-    // remove all range object
-    const selection = window.getSelection()
-    if (selection) selection.removeAllRanges()
+  setRange(el?: HTMLElement, offset?: number) {
+    if (!this.selection) {
+      this.selection = window.getSelection()
+      try {
+        // @ts-ignore
+        this.range = this.selection?.getRangeAt(0)
+      } catch (e) {
+        this.range = new Range()
+      }
+    } else {
+      // remove all range object
+      this.selection.removeAllRanges()
+    }
+    let targetNode: Node
+    if (el) {
+      targetNode = this._getLastNode(el)
+    } else {
+      targetNode = this.range.endContainer
+    }
 
     // el: '<section>inner text.</section>'
     // let targetNode = el.childNodes[el.childNodes.length - 1] || el
@@ -53,20 +61,20 @@ export class CursorClass {
     //   // get parentNode, can't set offset = 1 of IMG node.
     //   targetNode = targetNode.parentNode as HTMLElement
     // }
-    const targetNode = this._getLastNode(el)
+    console.log(targetNode)
     if (typeof offset === 'undefined') {
       offset = targetNode.textContent?.length ?? 0
     }
-    range.setStart(targetNode, offset)
+    this.range.setStart(targetNode, offset)
     // cursor start and end position is collapse
-    range.collapse(true)
+    this.range.collapse(true)
 
     this._clearTimeout()
     // 延时执行，键盘自动收起后再触发focus
     // @ts-ignore
     this.timer = setTimeout(() => {
       // 插入新的光标对象
-      selection?.addRange(range)
+      this.selection?.addRange(this.range)
     }, 100)
   }
 
@@ -78,11 +86,14 @@ export class CursorClass {
   }
 
   getCurrentNode(isOnlyContentChild = false): HTMLElement | null {
-    const range = this.getRange()
-    let currentNode = range.endContainer
+    let currentNode = this.range.endContainer
     while (currentNode && this.rootElement !== currentNode) {
       // li元素判断
-      if (!isOnlyContentChild && currentNode.nodeName === 'LI' && currentNode.parentElement?.parentElement === this.rootElement) {
+      if (
+        !isOnlyContentChild &&
+        currentNode.nodeName === 'LI' &&
+        currentNode.parentElement?.parentElement === this.rootElement
+      ) {
         return currentNode as HTMLElement
       }
       if (currentNode.parentElement === this.rootElement) {

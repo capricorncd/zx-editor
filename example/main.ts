@@ -3,7 +3,7 @@
  * https://github.com/capricorncd
  * Date: 2022/05/04 23:07:37 (GMT+0900)
  */
-import { ZxEditor } from '../src'
+import { ZxEditor } from '@/zx-editor'
 import VConsole from 'vconsole'
 
 // const app = document.querySelector<HTMLDivElement>('#app')!
@@ -24,7 +24,7 @@ const zxEditor = new ZxEditor('#app', {
 window.zxEditor = zxEditor
 console.log(zxEditor)
 
-zxEditor.on('change', e => {
+zxEditor.on('change', (e) => {
   console.log('change', e)
 })
 

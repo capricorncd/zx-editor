@@ -3,52 +3,8 @@
  * https://github.com/capricorncd
  * Date: 2022/05/05 10:55:25 (GMT+0900)
  */
-import { slice, toSnakeCase, toCamelCase } from './format'
-import { CSSProperties } from '../types'
-
-export const $ = <T extends HTMLElement>(selector: string | T, doc: Document | HTMLElement = document): T | null => {
-  if (selector instanceof HTMLElement) return selector
-  return doc.querySelector(selector)
-}
-
-// export const $$ = <T extends HTMLElement>(selector: string, doc: Document | HTMLElement = document): T[] => {
-//   return Array.prototype.slice.call(doc.querySelectorAll(selector), 0)
-// }
-
-export const createElement = <T extends HTMLElement>(
-  tag: string,
-  attrs: Record<string, string> = {},
-  innerHTML?: string
-): T => {
-  const el = document.createElement(tag) as T
-  for (const [key, val] of Object.entries(attrs)) {
-    el.setAttribute(key, val)
-  }
-  if (innerHTML) el.innerHTML = innerHTML
-  return el
-}
-
-/**
- * 将样式对象转换为字符串
- * {color: 'red', fontSize: '16px'} => 'color:red;font-size:16px'
- * @param data
- * @param extendStyles
- */
-export const createStyles = (data: CSSProperties, extendStyles?: CSSProperties): string => {
-  if (extendStyles) {
-    // 防止extendStyles存在snake的属性，不能成功覆盖旧样式
-    // data['lineHeight'] = 1.5, extendStyles['line-height'] = ''
-    for (const [key, value] of Object.entries(extendStyles)) {
-      data[toCamelCase(key)] = value
-    }
-  }
-  const arr: string[] = []
-  for (const [key, value] of Object.entries(data)) {
-    if (value === '' || typeof value === 'undefined' || value === null) continue
-    arr.push(`${toSnakeCase(key)}:${value}`)
-  }
-  return arr.join(';')
-}
+import { slice, toCamelCase, createElement } from 'zx-sml'
+import { CSSProperties, VirtualNode } from '@/types'
 
 export const replaceHtmlTag = (input: string, oldNodeName: string, newNodeName: string): string => {
   return input.replace(RegExp('(^<' + oldNodeName + ')|(' + oldNodeName + '>$)', 'gi'), (match) =>
@@ -75,12 +31,53 @@ export const isBrSection = (el: HTMLElement | Element | null): boolean => {
  * 获取元素styles对象
  * @param el
  */
-export const getStyles = (el: HTMLElement | null): CSSProperties => {
+export const getStyles = (el: HTMLElement | null, attr = 'style'): CSSProperties => {
   if (!el) return {}
-  const style = el.getAttribute('style') || ''
+  const style = el.getAttribute(attr) || ''
   return style.split(/\s?;\s?/).reduce<CSSProperties>((prev, s) => {
     const [key, val] = s.split(/\s?:\s?/)
-    prev[toCamelCase(key)] = val
+    if (key) prev[toCamelCase(key)] = val
     return prev
   }, {})
+}
+
+const createTextNode = (str: string): Text => {
+  return document.createTextNode(str)
+}
+
+/**
+ * 创建HTML节点
+ * @param vNode
+ */
+export const createNode = (vNode: VirtualNode | string): HTMLElement | Text | null => {
+  if (!vNode) return null
+  if (typeof vNode === 'string') {
+    return createTextNode(vNode)
+  }
+  const { tag, attrs, child } = vNode
+  if (!tag && !attrs && !child) return null
+  // 创建dom
+  const el = createElement(tag || 'div', attrs)
+  if (Array.isArray(child) && child.length) {
+    let itemNode
+    child.forEach((item) => {
+      itemNode = createNode(item)
+      if (itemNode) el.appendChild(itemNode)
+    })
+  } else if (child && typeof child === 'string') {
+    el.appendChild(createTextNode(child))
+  }
+  return el
+}
+
+export const hasClass = <T extends HTMLElement>(el: T, className: string): boolean => {
+  return el.classList.contains(className)
+}
+
+export const addClass = <T extends HTMLElement>(el: T, className: string): void => {
+  el.classList.add(className)
+}
+
+export const removeClass = <T extends HTMLElement>(el: T, className: string): void => {
+  el.classList.remove(className)
 }

@@ -1,0 +1,42 @@
+/**
+ * Created by Capricorncd.
+ * https://github.com/capricorncd
+ * Date: 2022/05/15 19:44:25 (GMT+0900)
+ */
+$primaryColor: #00c1b7;
+$borderColor: #ddd;
+$iconColor: #999;
+$listHeight: 50px;
+$headHeight: 44px;
+
+.zx-editor {
+  * {
+    margin: 0;
+    padding: 0;
+    word-wrap: break-word;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  }
+  .border-bottom {
+    &:after {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      content: '';
+      transform: scaleY(0.5);
+      border-bottom: 1px solid $borderColor;
+    }
+  }
+  .border-top {
+    &:before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      content: '';
+      transform: scaleY(0.5);
+      border-top: 1px solid $borderColor;
+    }
+  }
+}

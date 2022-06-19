@@ -48,6 +48,8 @@ module.exports = {
     semi: [2, 'never'],
     // '@typescript-eslint/interface-name-prefix': [2, { prefixWithI: 'always' }],
     '@typescript-eslint/explicit-function-return-type': ['off'],
+    // `var!`
+    '@typescript-eslint/no-non-null-assertion': ['off'],
     // allow async-await
     'space-before-function-paren': [
       'error',

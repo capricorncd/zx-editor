@@ -4,7 +4,7 @@
  * Date: 2022/05/07 21:42:38 (GMT+0900)
  */
 import { describe, it, expect } from 'vitest'
-import { $, createElement, createStyles, changeNodeName, isBrSection } from '../../src/helpers/dom'
+import { $, createElement, createStyles, isBrSection } from '../../src/helpers/dom'
 
 describe('dom', () => {
   it('$', () => {
@@ -28,12 +28,12 @@ describe('dom', () => {
     expect(createStyles(styles)).toBe('line-height:1.5;align-items:center')
   })
 
-  it('changeNodeName', () => {
-    const el = createElement('div', { class: 'test' }, '1')
-    expect(changeNodeName(el).nodeName).toBe('SECTION')
-    expect(changeNodeName(el, 'p').nodeName).toBe('P')
-    expect(changeNodeName(el, 'span').nodeName).toBe('SPAN')
-  })
+  // it('changeNodeName', () => {
+  //   const el = createElement('div', { class: 'test' }, '1')
+  //   expect(changeNodeName(el).nodeName).toBe('SECTION')
+  //   expect(changeNodeName(el, 'p').nodeName).toBe('P')
+  //   expect(changeNodeName(el, 'span').nodeName).toBe('SPAN')
+  // })
 
   it('isBrSection', () => {
     expect(isBrSection(createElement('section', {}, '<br>'))).toBeTruthy()

@@ -3,32 +3,9 @@
  * https://github.com/capricorncd
  * Date: 2022/05/09 21:12:46 (GMT+0900)
  */
-import {
-  $,
-  createElement,
-  createStyles,
-  isBrSection,
-  isUlElement,
-  replaceHtmlTag,
-  slice,
-} from '../helpers'
-import {
-  CLASS_NAME_CONTENT,
-  CLASS_NAME_EDITOR,
-  NODE_NAME_SECTION,
-  REPLACE_NODE_LIST,
-} from '../const'
-import * as Types from '../types'
-
-/**
- * init editor dom
- */
-export const initEditorDom = (): HTMLDivElement => {
-  const el = createElement<HTMLDivElement>('div', {
-    class: CLASS_NAME_EDITOR,
-  })
-  return el
-}
+import { $, createElement, toStrStyles, isBrSection, isUlElement, replaceHtmlTag, slice } from '../../helpers'
+import { CLASS_NAME_EDITOR, NODE_NAME_SECTION, REPLACE_NODE_LIST } from '../const'
+import { EditorOptions, CSSProperties } from '../../types'
 
 /**
  * 设置编辑器$content伪元素before的content值，并将css style元素添加至head中
@@ -37,7 +14,7 @@ export const initEditorDom = (): HTMLDivElement => {
  */
 const setContentValueOfPseudoElementBefore = (placeholder: string): void => {
   // 为伪类content设值
-  const beforeStyle = `.${CLASS_NAME_EDITOR} .${CLASS_NAME_CONTENT}.is-empty:before{content:'${placeholder}' !important;`
+  const beforeStyle = `.${CLASS_NAME_EDITOR}.is-empty:before{content:'${placeholder}' !important;`
   // 生成style元素
   const style = createElement('style', { type: 'text/css' }, beforeStyle)
   // 将style元素添加值head中
@@ -48,8 +25,8 @@ const setContentValueOfPseudoElementBefore = (placeholder: string): void => {
  * init content dom
  * @param options
  */
-export const initContentDom = (options: Types.Options): HTMLDivElement => {
-  const contentStyles: Types.CSSProperties = {
+export const initContentDom = (options: EditorOptions): HTMLDivElement => {
+  const contentStyles: CSSProperties = {
     lineHeight: options.lineHeight,
     minHeight: options.minHeight,
     position: 'relative',
@@ -68,8 +45,8 @@ export const initContentDom = (options: Types.Options): HTMLDivElement => {
   if (options.textColor) contentStyles.color = options.textColor
 
   const contentAttrs: Record<string, string> = {
-    class: `${CLASS_NAME_CONTENT} is-empty`,
-    style: createStyles(contentStyles),
+    class: `${CLASS_NAME_EDITOR} is-empty`,
+    style: toStrStyles(contentStyles),
   }
   if (options.editable) contentAttrs.contenteditable = 'true'
 
@@ -85,10 +62,7 @@ export const initContentDom = (options: Types.Options): HTMLDivElement => {
  * @param input
  * @param tagName
  */
-export const changeNodeName = (
-  input: HTMLElement,
-  tagName = NODE_NAME_SECTION
-): HTMLElement => {
+export const changeNodeName = (input: HTMLElement, tagName = NODE_NAME_SECTION): HTMLElement => {
   const oldNodeName = input.nodeName
   const newNodeName = tagName.toUpperCase()
   if (oldNodeName === newNodeName) return input
