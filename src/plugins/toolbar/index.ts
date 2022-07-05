@@ -8,7 +8,7 @@ import { Editor } from '@/editor'
 import { DEF_OPTIONS } from './const'
 import { createElement } from 'zx-sml'
 import { AddButtonOptions, CSSProperties, EditorPlugin, ToolbarOptions } from '@/types'
-import { isIPhoneX, toStrStyles, addClass, removeClass, classNames, $$, $ } from '@/helpers'
+import { isIPhoneX, addClass, removeClass, classNames, $$, $ } from '@/helpers'
 import { IPHONEX_BOTTOM_OFFSET_HEIGHT } from '@/const'
 
 export class Toolbar implements EditorPlugin {
@@ -17,6 +17,7 @@ export class Toolbar implements EditorPlugin {
   private readonly options: ToolbarOptions
   private readonly height: number
   private readonly $el: HTMLDivElement
+  private readonly _btnClickHandler: (e: MouseEvent) => void
 
   constructor(options: ToolbarOptions) {
     // options
@@ -34,10 +35,20 @@ export class Toolbar implements EditorPlugin {
       'div',
       {
         class: 'zx-editor-toolbar border-top',
-        style: toStrStyles({ height: `${this.height + (isIPhoneX() ? IPHONEX_BOTTOM_OFFSET_HEIGHT : 0)}px` }),
+        style: { height: `${this.height + (isIPhoneX() ? IPHONEX_BOTTOM_OFFSET_HEIGHT : 0)}px` },
       },
       `<dl class="inner-wrapper" style="height:${this.height}px;"></dl>`
     )
+
+    this._btnClickHandler = (e: MouseEvent) => {
+      const el = e.currentTarget as HTMLElement
+      if (this.editorInstance && el) {
+        this.editorInstance.emit('toolbarButtonClick', el.getAttribute('data-name'))
+      }
+    }
+    ;(this.options.toolbarButtons || []).forEach((btn) => {
+      this.addButton({ name: btn })
+    })
   }
 
   install(editor: Editor, parentElement?: HTMLElement): void {
@@ -67,52 +78,36 @@ export class Toolbar implements EditorPlugin {
    * @param index Insert index
    */
   addButton(params: AddButtonOptions, index?: number) {
-    // name
-    if (!params.name) params.name = 'toolbar-btn-' + +new Date()
-
     // create $node
     const styles: CSSProperties = { ...params.style }
     if (this.options.toolbarHeight) {
       styles.width = styles.height = this.options.toolbarHeight + 'px'
     }
-    const $btn = createElement(
+    const btn = createElement(
       'dd',
       {
         class: classNames('icon-item', params.className),
         dataName: params.name,
-        style: toStrStyles(styles),
+        style: styles,
       },
-      params.el
+      params.innerHtml
     )
 
     // insert to document
-    const buttons = $$('dl > dd', this.$el)
+    const buttons = $$('dd', this.$el)
     const btnContainer = $('dl', this.$el) as HTMLDListElement
 
     if (typeof index === 'number' && index < buttons.length) {
-      btnContainer.insertBefore($btn, buttons[index])
+      btnContainer.insertBefore(btn, buttons[index])
     } else {
-      btnContainer.append($btn)
+      btnContainer.append(btn)
     }
+    btn.addEventListener('click', this._btnClickHandler)
+  }
 
-    // events
-    if (params.events) {
-      // const events = isObject(params.events) ? [params.events] : params.events
-      // register events
-      // events.forEach(item => {
-      //   if (item && typeof item.type === 'string' && typeof item.handler === 'function') {
-      //     eventHandlerKey = `toolbarBtnEvent_${item.name}`
-      //     $eventHandlers[eventHandlerKey] = {
-      //       $target: $btn,
-      //       type: item.type,
-      //       handler: item.handler.bind(this.editorInstance),
-      //       capture: typeof item.capture === 'boolean' ? item.capture : false,
-      //     }
-      //     $btn.on(item.type, $eventHandlers[eventHandlerKey].handler, $eventHandlers[eventHandlerKey].capture)
-      //   } else {
-      //     throw new TypeError('Function addButton(opts), opts.events\'s parameter error.')
-      //   }
-      // })
-    }
+  destroy() {
+    $$('.icon-item', this.$el).forEach((el) => {
+      el.removeEventListener('click', this._btnClickHandler)
+    })
   }
 }

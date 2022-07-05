@@ -21,24 +21,23 @@ $iconSize: 50px;
     white-space: nowrap;
     .icon-item {
       position: relative;
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       width: $iconSize;
       height: $iconSize;
       cursor: pointer;
       vertical-align: top;
-    }
-    // icons
-    .toolbar-icon-pic {
-      background: url('./camera.svg') no-repeat center center;
-    }
-    .toolbar-icon-pic {
-      background-size: 25px 25px;
-    }
-    .text-style-btn {
-      //.bgImage('../img/text', no-repeat center center);
-    }
-    .text-style-btn {
-      background-size: 25px 25px;
+      &[data-name='select-picture'] {
+        background: url('./camera.svg') no-repeat center center;
+        background-size: 60%;
+        opacity: 0.4;
+      }
+      &[data-name='text-style'] {
+        background: url('./style.svg') no-repeat center center;
+        background-size: 45%;
+        opacity: 0.4;
+      }
     }
   }
   &.__fade-in {

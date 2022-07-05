@@ -25,10 +25,8 @@ export interface AddButtonOptionEvent {
 }
 
 export interface AddButtonOptions {
-  el?: HTMLElement
-  name?: string
+  name: string
   className?: string
   innerHtml?: string | HTMLElement | Node
   style?: CSSProperties
-  events: AddButtonOptionEvent | AddButtonOptionEvent[]
 }

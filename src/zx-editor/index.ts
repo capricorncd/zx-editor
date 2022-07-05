@@ -40,11 +40,17 @@ export class ZxEditor extends Editor {
     this.toolbar = new Toolbar(options)
     this.use(this.toolbar, this.$el)
 
-    this.stylePanel.show()
+    this.on('toolbarButtonClick', (name) => {
+      console.log(name)
+      if (name === 'text-style') {
+        this.stylePanel.show()
+      }
+    })
   }
 
   destroy(): void {
     super.destroy()
     this.stylePanel.destroy()
+    this.toolbar.destroy()
   }
 }
