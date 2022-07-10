@@ -5,7 +5,6 @@
  */
 export type Selector = string | HTMLElement
 export type CSSProperties = Record<string, unknown>
-export type EventEmitterFn = (...args: any[]) => void
 
 export interface VirtualNode {
   tag: string

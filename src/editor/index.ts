@@ -2,6 +2,9 @@
  * Created by Capricorncd.
  * https://github.com/capricorncd
  * Date: 2022/05/05 10:29:43 (GMT+0900)
+ *
+ * @document Editor
+ * Editor, extends [EventEmitter](./EventEmitter.md)
  */
 import { EventEmitter } from '@/event-emitter'
 import { createElement, slice, isBrSection, getStyles, toStrStyles } from '@/helpers'
@@ -62,6 +65,7 @@ export class Editor extends EventEmitter {
   }
 
   /**
+   * @method use(plugin, parentElement?)
    * 扩展插件
    * @param plugin
    * @param parentElement `HTMLElement`
@@ -221,6 +225,6 @@ export class Editor extends EventEmitter {
     this.$editor.removeEventListener('focus', this._eventHandler)
     this.$editor.removeEventListener('blur', this._eventHandler)
     this.$editor.removeEventListener('input', this._eventHandler)
-    this.destroyEventEmitter()
+    this.removeAllListeners()
   }
 }
