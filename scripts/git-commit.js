@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+const { execSync } = require('child_process')
+const { writeFileSync, readFileSync } = require('fs')
 const {
   createPromptModule,
   ui: { Prompt },
 } = require('inquirer')
-const { writeFileSync, readFileSync } = require('fs')
-const { execSync } = require('child_process')
 
 const COMMIT_TYPES = {
   '新增功能(feat)': 'feat',
@@ -25,10 +25,7 @@ const COMMIT_TYPES = {
 function main() {
   return new Promise((resolve, reject) => {
     // 获取commit消息，并去除结尾的换行符
-    const msg = readFileSync(process.env.GIT_PARAMS, 'utf-8').replace(
-      /(\r|\n)$/,
-      ''
-    )
+    const msg = readFileSync(process.env.GIT_PARAMS, 'utf-8').replace(/(\r|\n)$/, '')
 
     const stdout = execSync('git branch --contains=HEAD').toString()
     const branch = stdout.match(/^\*? +([^\s]+)/, '')[1]
@@ -36,9 +33,7 @@ function main() {
     if (msg.match(mergeReg)) return Promise.resolve()
 
     const branchName = execSync('git branch --show-current').toString()
-    const ticketNo = branchName
-      ? `${branchName.replace(/\r?\n/g, '')}`.split('/')
-      : ['']
+    const ticketNo = branchName ? `${branchName.replace(/\r?\n/g, '')}`.split('/') : ['']
     // Ctrl+C中断事件处理
     const promptModule = createPromptModule()
     const ui = new Prompt(promptModule.prompts, {})
@@ -71,10 +66,7 @@ function main() {
 
     ui.run(stores)
       .then(({ branch, commitType, message }) => {
-        writeFileSync(
-          process.env.GIT_PARAMS,
-          `${COMMIT_TYPES[commitType]}: ${message}(${branch})`
-        )
+        writeFileSync(process.env.GIT_PARAMS, `${COMMIT_TYPES[commitType]}: ${message}(${branch})`)
         resolve()
       })
       .catch(reject)

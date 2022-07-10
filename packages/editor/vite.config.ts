@@ -9,16 +9,11 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   base: './',
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, './src'),
-    },
-  },
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'ZxEditor',
-      fileName: (format) => `zx-editor.${format}.js`,
+      name: 'Editor',
+      fileName: (format) => `editor.${format}.js`,
     },
   },
   test: {

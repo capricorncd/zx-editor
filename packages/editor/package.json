@@ -1,0 +1,23 @@
+{
+  "name": "editor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "vite --port 9000",
+    "build": "tsc && vite build && node scripts/after-build.js",
+    "test": "vitest",
+    "coverage": "vitest run --coverage",
+    "docs": "node scripts/docs.js"
+  },
+  "keywords": [],
+  "author": "Capricorncd",
+  "dependencies": {
+    "editor": "workspace:*",
+    "event-emitter": "workspace:*",
+    "helpers": "workspace:*",
+    "types": "workspace:*"
+  },
+  "homepage": "https://github.com/capricorncd/zx-editor",
+  "license": "MIT"
+}

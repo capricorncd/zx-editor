@@ -1,0 +1,20 @@
+{
+  "name": "zx-editor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "vitest"
+  },
+  "keywords": [],
+  "dependencies": {
+    "editor": "workspace:*",
+    "event-emitter": "workspace:*",
+    "helpers": "workspace:*",
+    "style-panel": "workspace:*",
+    "toolbar": "workspace:*",
+    "types": "workspace:*"
+  },
+  "author": "Capriocrncd",
+  "license": "MIT"
+}

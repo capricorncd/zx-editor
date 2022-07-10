@@ -9,8 +9,13 @@ module.exports = {
     node: true,
   },
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'prettier'],
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+  plugins: ['@typescript-eslint', 'prettier', 'import'],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
+  ],
   rules: {
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
@@ -57,6 +62,19 @@ module.exports = {
         anonymous: 'never',
         named: 'never',
         asyncArrow: 'always',
+      },
+    ],
+    // https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/order.md
+    'import/order': [
+      'error',
+      {
+        groups: ['builtin', 'external', 'internal', ['parent', 'sibling'], 'object', 'type', 'index'],
+        'newlines-between': 'never',
+        pathGroupsExcludedImportTypes: ['builtin'],
+        alphabetize: { order: 'asc', caseInsensitive: true }, // 大文字小文字関係なくアルファベット順にしたい
+        pathGroups: [
+          // { "pattern": "assets/**", "group": "internal", "position": "before" },
+        ],
       },
     ],
   },
