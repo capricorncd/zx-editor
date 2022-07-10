@@ -13,6 +13,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "coverage": "vitest run --coverage",
+    "docs": "node scripts/create-docs.js",
     "lint": "eslint . --fix --ext .js,.cjs,.ts"
   },
   "dependencies": {
