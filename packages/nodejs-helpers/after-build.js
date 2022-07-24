@@ -34,12 +34,13 @@ function addHeaderAndReplaceVersion(file, pkg) {
 }
 
 function main(distDir, pkg) {
+  // add info in header
   fs.readdirSync(distDir).forEach((file) => {
     if (/\.(js|css)$/.test(file)) {
       addHeaderAndReplaceVersion(path.join(distDir, file), pkg)
     }
   })
-  // rename style.css
+  // rename style.css to packageName.css
   const styleCss = path.join(distDir, 'style.css')
   if (fs.existsSync(styleCss)) {
     console.log('Rename:', styleCss)

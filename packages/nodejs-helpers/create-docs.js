@@ -20,8 +20,10 @@ const TYPES = {
 }
 
 function mkdirSync(dir) {
-  if (fs.existsSync(dir)) return
+  const stat = fs.statSync(dir)
+  if (!dir || stat.isFile() || fs.existsSync(dir)) return
   const index = dir.lastIndexOf('/')
+  if (index === -1) return
   const parent = dir.substring(0, index)
   if (fs.existsSync(parent)) {
     fs.mkdirSync(dir)
@@ -197,17 +199,17 @@ function handleOutput(arr, outputDir) {
 /**
  *
  * @param data
- * @param outputDir
+ * @param outputDirOrFile
  */
-function outputFile(data, outputDir) {
-  if (outputDir && !fs.existsSync(outputDir)) {
-    mkdirSync(outputDir)
+function outputFile(data, outputDirOrFile) {
+  if (outputDirOrFile && !fs.existsSync(outputDirOrFile)) {
+    mkdirSync(outputDirOrFile)
   }
   if (Array.isArray(data)) {
-    handleOutput(data, outputDir)
+    handleOutput(data, outputDirOrFile)
   } else {
     Object.keys(data).forEach((key) => {
-      handleOutput(toArray(data[key]), outputDir)
+      handleOutput(toArray(data[key]), outputDirOrFile)
     })
   }
 }
