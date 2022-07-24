@@ -5,13 +5,13 @@
  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
-const { getCommentsData, outputFile } = require('../../nodejs-helpers')
+const { getCommentsData, outputFile } = require('nodejs-helpers')
 
 function main() {
   const docsDir = path.resolve(__dirname, '../../../docs')
   const data = getCommentsData(path.resolve(__dirname, '../src'), 'packages', true)
-  outputFile(data, 'packages', docsDir)
-  outputFile(data, 'packages', path.resolve(__dirname, '../README.md'))
+  outputFile(data, docsDir)
+  outputFile(data, path.resolve(__dirname, '../README.md'))
 }
 
 main()

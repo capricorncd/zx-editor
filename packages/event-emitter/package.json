@@ -4,10 +4,13 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "build": "tsc && vite build && node scripts/after-build.js",
+    "build": "vite build && node scripts/after-build.js",
     "docs": "node scripts/docs.js"
   },
   "keywords": [],
+  "devDependencies": {
+    "nodejs-helpers": "workspace:*"
+  },
   "author": "Capricorncd",
   "homepage": "https://github.com/capricorncd/zx-editor",
   "license": "MIT"
