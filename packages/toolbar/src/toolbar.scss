@@ -1,0 +1,47 @@
+$iconSize: 50px;
+
+.zx-editor-toolbar {
+  position: fixed;
+  z-index: 999;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #fff;
+  height: $iconSize + 200;
+  transform: translateY(-100%);
+  opacity: 0;
+  .inner-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: $iconSize;
+    overflow-y: hidden;
+    overflow-x: auto;
+    white-space: nowrap;
+    .icon-item {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: $iconSize;
+      height: $iconSize;
+      cursor: pointer;
+      vertical-align: top;
+      &[data-name='select-picture'] {
+        background: url('./camera.svg') no-repeat center center;
+        background-size: 60%;
+        opacity: 0.4;
+      }
+      &[data-name='text-style'] {
+        background: url('./style.svg') no-repeat center center;
+        background-size: 45%;
+        opacity: 0.4;
+      }
+    }
+  }
+  &.__fade-in {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

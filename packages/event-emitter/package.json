@@ -1,0 +1,16 @@
+{
+  "name": "@zx-editor/event-emitter",
+  "version": "1.0.0",
+  "description": "event-emitter",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "vite build && node scripts/after-build.js",
+    "docs": "node scripts/docs.js"
+  },
+  "devDependencies": {
+    "@zx-editor/helpers-nodejs": "workspace:*"
+  },
+  "author": "Capricorncd",
+  "homepage": "https://github.com/capricorncd/zx-editor",
+  "license": "MIT"
+}

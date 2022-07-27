@@ -1,1 +1,0 @@
-require(["gitbook","jQuery"],function(e,n){var i="",r="";e.events.bind("start",function(e,o){i=o["insert-logo"].url,r=o["insert-logo"].style}),e.events.bind("page.change",function(){var e,o;e=i,o=r,n(".book-summary").children().eq(0).before('<div class="book-logo"><img src="'+e+'" style="'+o+'"></div>')})});

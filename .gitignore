@@ -3,8 +3,5 @@ node_modules/
 npm-debug.log
 .idea/
 .project
-__psd/
 cache/
-src/js/dom/
-
 _book/

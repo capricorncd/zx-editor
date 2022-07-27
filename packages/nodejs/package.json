@@ -1,0 +1,12 @@
+{
+  "name": "@zx-editor/helpers-nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest"
+  },
+  "keywords": [],
+  "author": "Capricorncd",
+  "license": "ISC"
+}

@@ -1,0 +1,11 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# 获取项目路径
+DIR=`pwd`
+
+# 启用CI。默认情况下，CI操作处于禁用状态
+exec < /dev/tty
+
+# 执行提交前的处理脚本
+GIT_PARAMS="$DIR/$1" node scripts/git-commit.js
