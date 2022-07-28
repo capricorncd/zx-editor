@@ -7,6 +7,7 @@
 const fs = require('fs')
 const { EOL } = require('os')
 const path = require('path')
+const { mkdirSync } = require('./helpers')
 
 // blank line
 const BLANK_LINE = ''
@@ -17,20 +18,6 @@ const TYPES = {
   TYPE: 'type',
   CLASS: 'class',
   DOCUMENT: 'document',
-}
-
-function mkdirSync(dir) {
-  const stat = fs.statSync(dir)
-  if (!dir || stat.isFile() || fs.existsSync(dir)) return
-  const index = dir.lastIndexOf('/')
-  if (index === -1) return
-  const parent = dir.substring(0, index)
-  if (fs.existsSync(parent)) {
-    fs.mkdirSync(dir)
-  } else {
-    mkdirSync(parent)
-    mkdirSync(dir)
-  }
 }
 
 /**
@@ -190,7 +177,7 @@ function handleOutput(arr, outputDir) {
       BLANK_LINE,
       '## License',
       BLANK_LINE,
-      `MIT License © 2018-Present [Capricorncd](https://github.com/capricorncd).`
+      'MIT License © 2018-Present [Capricorncd](https://github.com/capricorncd).'
     )
 
     // remove consecutive blank lines
@@ -291,5 +278,4 @@ function isFileLike(filePath) {
 module.exports = {
   getCommentsData,
   outputFile,
-  mkdirSync,
 }

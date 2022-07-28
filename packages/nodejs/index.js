@@ -5,7 +5,8 @@
  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { afterBuild } = require('./after-build')
-const { getCommentsData, outputFile, mkdirSync } = require('./create-docs')
+const { getCommentsData, outputFile } = require('./create-docs')
+const { mkdirSync } = require('./helpers')
 
 module.exports = {
   getCommentsData,
