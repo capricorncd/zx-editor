@@ -22,7 +22,6 @@ This module, in particular, offers the EventEmitter class, which we'll use to ha
 
 remove all listeners for an event.
 
-
 - @returns `void`
 
 ### emit(eventName, arg1, arg2, ..., argN)
@@ -63,10 +62,12 @@ remove an event listener from an event.
 
 ## Types
 
-
 ### EventEmitterCallback
-
 
 ```ts
  type EventEmitterCallback = (...args: any[]) => void
 ```
+
+## License
+
+MIT License © 2018-Present [Capricorncd](https://github.com/capricorncd).

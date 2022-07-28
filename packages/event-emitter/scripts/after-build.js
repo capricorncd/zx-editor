@@ -8,4 +8,4 @@ const path = require('path')
 const { afterBuild } = require('@zx-editor/helpers-nodejs')
 const pkg = require('../package.json')
 
-afterBuild(path.resolve(__dirname, '../dist'), pkg)
+afterBuild(path.resolve(__dirname, '../dist'), pkg, true)
