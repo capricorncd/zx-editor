@@ -97,8 +97,8 @@ function handleFile(filePath, data, fileName) {
         const temp = tempStr.trim()
         if (temp.startsWith('@param')) {
           data[typeName].params.push(temp.replace('@param', '').trim())
-        } else if (temp.startsWith('@returns')) {
-          data[typeName].returns.push(temp.replace('@returns', '').trim())
+        } else if (temp.startsWith('@return')) {
+          data[typeName].returns.push(temp.replace(/@returns?/, '').trim())
         } else if (temp.startsWith('@private')) {
           data[typeName].private = true
         } else if (isCode) {
@@ -115,6 +115,7 @@ function handleFile(filePath, data, fileName) {
 }
 
 function createMethodsDoc(item, lines) {
+  if (!item.returns.length) item.returns.push('`void`')
   lines.push(
     BLANK_LINE,
     `### ${item.fullName}`,
@@ -175,6 +176,7 @@ function handleOutput(arr, outputDir) {
     })
   }
 
+  // ## types
   if (types.length) {
     lines.push(BLANK_LINE, '## Types', BLANK_LINE)
     types.forEach((item) => {
@@ -183,26 +185,49 @@ function handleOutput(arr, outputDir) {
   }
 
   if (outputDir) {
-    const stat = fs.statSync(outputDir)
-    if (stat.isFile()) {
+    // ## License
+    lines.push(
+      BLANK_LINE,
+      '## License',
+      BLANK_LINE,
+      `MIT License © 2018-Present [Capricorncd](https://github.com/capricorncd).`
+    )
+
+    // remove consecutive blank lines
+    let blankLineCount = 0
+    const outputLines = []
+    lines.forEach((line) => {
+      if (line === BLANK_LINE) {
+        blankLineCount++
+      } else {
+        blankLineCount = 0
+      }
+      if (blankLineCount > 1) return
+      outputLines.push(line)
+    })
+
+    // file check
+    if (isFileLike(outputDir)) {
       outputFileName = outputDir
     } else if (outputFileName) {
       outputFileName = path.join(outputDir, outputFileName)
     }
 
-    if (outputFileName) fs.writeFileSync(outputFileName, lines.join(EOL), 'utf8')
+    // output file
+    if (outputFileName) fs.writeFileSync(outputFileName, outputLines.join(EOL), 'utf8')
+    return outputLines
   }
 
   return lines
 }
 
 /**
- *
+ * outputFile
  * @param data
  * @param outputDirOrFile
  */
 function outputFile(data, outputDirOrFile) {
-  if (outputDirOrFile && !fs.existsSync(outputDirOrFile)) {
+  if (outputDirOrFile && !fs.existsSync(outputDirOrFile) && !isFileLike(outputDirOrFile)) {
     mkdirSync(outputDirOrFile)
   }
   if (Array.isArray(data)) {
@@ -255,6 +280,13 @@ function toArray(data) {
 // }
 //
 // main()
+
+function isFileLike(filePath) {
+  if (typeof filePath === 'string') {
+    return /.+\.\w+$/.test(filePath)
+  }
+  return false
+}
 
 module.exports = {
   getCommentsData,
