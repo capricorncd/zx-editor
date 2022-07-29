@@ -1,7 +1,16 @@
+# node_modules
 node_modules/
+
+# mac os
 .DS_Store
-npm-debug.log
+
+# log
+*-debug.log
+
+# IDE
 .idea/
+
+# other
 .project
 cache/
 _book/
