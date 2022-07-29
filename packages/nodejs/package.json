@@ -1,12 +1,12 @@
 {
   "name": "@zx-editor/helpers-nodejs",
   "version": "1.0.0",
-  "description": "",
+  "description": "Some functions used in nodejs",
   "main": "index.js",
-  "scripts": {
-    "test": "vitest"
-  },
   "keywords": [],
+  "scripts": {
+    "docs": "node _docs.js"
+  },
   "author": "Capricorncd",
-  "license": "ISC"
+  "license": "MIT"
 }

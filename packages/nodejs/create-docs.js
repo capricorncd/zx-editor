@@ -8,6 +8,7 @@ const fs = require('fs')
 const { EOL } = require('os')
 const path = require('path')
 const { mkdirSync } = require('./helpers')
+const { log } = require('./log')
 
 // blank line
 const BLANK_LINE = ''
@@ -133,6 +134,7 @@ function createTypesDoc(item, lines) {
 }
 
 function handleOutput(arr, outputDir) {
+  console.log('Output file is start ...')
   // method|type|class|document
   const documents = []
   const types = []
@@ -202,30 +204,42 @@ function handleOutput(arr, outputDir) {
 
     // output file
     if (outputFileName) fs.writeFileSync(outputFileName, outputLines.join(EOL), 'utf8')
-    return outputLines
   }
 
-  return lines
+  log(outputFileName)
+  console.log('Output file is ended.')
+  return outputFileName
 }
 
 /**
- * outputFile
- * @param data
- * @param outputDirOrFile
+ * @method outputFile(data, outputDirOrFile)
+ * Output the obtained annotation content as a document.
+ * @param data `object | array` Annotation content obtained from the source.
+ * @param outputDirOrFile `string` The file or directory where the output will be written.
+ * @returns `string | null` output file name
  */
 function outputFile(data, outputDirOrFile) {
   if (outputDirOrFile && !fs.existsSync(outputDirOrFile) && !isFileLike(outputDirOrFile)) {
     mkdirSync(outputDirOrFile)
   }
   if (Array.isArray(data)) {
-    handleOutput(data, outputDirOrFile)
+    return handleOutput(data, outputDirOrFile)
   } else {
-    Object.keys(data).forEach((key) => {
-      handleOutput(toArray(data[key]), outputDirOrFile)
+    return Object.keys(data).map((key) => {
+      return handleOutput(toArray(data[key]), outputDirOrFile)
     })
   }
 }
 
+/**
+ * @method getCommentsData(input, rootDirName, needArray?, data?)
+ * Get comments from the `input` file or directory.
+ * @param input `string` The target file or directory.
+ * @param rootDirName `string` The name of the root directory.
+ * @param needArray `boolean` It's true will be returned an array.
+ * @param data `object` It's the returned data.
+ * @returns `object | array` It's an array if `needArray` is true.
+ */
 function getCommentsData(input, rootDirName, needArray = false, data = {}) {
   const stat = fs.statSync(input)
   if (stat.isDirectory()) {
