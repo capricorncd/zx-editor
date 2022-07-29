@@ -18,7 +18,7 @@ This module, in particular, offers the EventEmitter class, which we'll use to ha
 
 ## Methods
 
-### destroyEventEmitter
+### destroyEventEmitter()
 
 remove all listeners for an event.
 

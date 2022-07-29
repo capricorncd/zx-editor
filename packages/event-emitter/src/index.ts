@@ -118,7 +118,7 @@ export class EventEmitter {
   }
 
   /**
-   * @method destroyEventEmitter
+   * @method destroyEventEmitter()
    * remove all listeners for an event.
    * @returns `void`
    */
