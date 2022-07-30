@@ -115,7 +115,7 @@ function createMethodsDoc(item, lines) {
     ...item.params.map((param) => `- @param ${param}`),
     BLANK_LINE,
     ...item.returns.map((ret) => `- @returns ${ret}`),
-    ...item.codes
+    ...item.codes,
   )
 }
 
@@ -129,7 +129,7 @@ function createTypesDoc(item, lines) {
     '```ts',
     ...item.codes,
     '```',
-    BLANK_LINE
+    BLANK_LINE,
   )
 }
 
@@ -179,7 +179,7 @@ function handleOutput(arr, outputDir) {
       BLANK_LINE,
       '## License',
       BLANK_LINE,
-      'MIT License © 2018-Present [Capricorncd](https://github.com/capricorncd).'
+      'MIT License © 2018-Present [Capricorncd](https://github.com/capricorncd).',
     )
 
     // remove consecutive blank lines
