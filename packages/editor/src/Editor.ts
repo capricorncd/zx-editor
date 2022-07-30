@@ -2,30 +2,41 @@
  * Created by Capricorncd.
  * https://github.com/capricorncd
  * Date: 2022/05/05 10:29:43 (GMT+0900)
- *
- * @document Editor
- * Editor, extends [EventEmitter](./EventEmitter.md)
  */
 import { EventEmitter } from '@zx-editor/event-emitter'
-import { $, createElement, slice, isBrSection, getStyles, toStrStyles } from '@zx-editor/helpers'
 import { CSSProperties } from '@zx-editor/types'
+import { $, createElement, slice, toStrStyles } from 'zx-sml'
 import { NODE_NAME_SECTION, NODE_NAME_BR, ALLOWED_NODE_NAMES } from './const'
 import { CursorClass } from './CursorClass'
 import { changeNodeName, initContentDom, checkIsEmpty } from './dom'
+import { isBrSection, getStyles } from './helpers'
 import { DEF_OPTIONS, EditorOptions } from './options'
 import './editor.scss'
 
+/**
+ * @type EditorPlugin
+ */
 export interface EditorPlugin {
   install: (e: Editor, parentElement?: HTMLElement) => void
 }
 
+/**
+ * @document Editor
+ * `class` Editor, extends [EventEmitter](./EventEmitter.md)
+ *
+ * ```js
+ * const editor = new Editor({
+ *   container: `#container`
+ * })
+ * ```
+ */
 export class Editor extends EventEmitter {
   // 版本
   public readonly version: string
   // 参数
   private readonly options: EditorOptions
   // 编辑器内容区域HTML元素
-  private readonly $editor: HTMLDivElement
+  public readonly $editor: HTMLDivElement
   // 光标处理对象
   private readonly cursor: CursorClass
   // 内容元素事件处理函数
@@ -79,8 +90,8 @@ export class Editor extends EventEmitter {
 
   /**
    * @method use(plugin, parentElement?)
-   * 扩展插件
-   * @param plugin
+   * extension, 扩展插件
+   * @param plugin `EditorPlugin`
    * @param parentElement `HTMLElement`
    */
   use(plugin: EditorPlugin, parentElement?: HTMLElement): void {
@@ -90,9 +101,10 @@ export class Editor extends EventEmitter {
   }
 
   /**
+   * @method setHtml(html)
    * 设置编辑器内容，会覆盖之前内容
    * set html to the content element
-   * @param html
+   * @param html `string`
    */
   setHtml(html: string): void {
     this.$editor.innerHTML = ''
@@ -101,19 +113,21 @@ export class Editor extends EventEmitter {
   }
 
   /**
+   * @method getHtml()
    * 获取编辑器中的HTML代码，会自动去除结尾处的空行
    * get html string from content element
    * remove last line that `<section><br></section>`
-   * @return html string
+   * @return `string`
    */
   getHtml(): string {
     return this.$editor.innerHTML.replace(/<section><br><\/section>$/, '')
   }
 
   /**
+   * @method insert(input)
    * 向编辑器中插入内容/HTML代码/元素等
    * insert html or element to content element
-   * @param input
+   * @param input `string | HTMLElement`
    */
   insert(input: string | HTMLElement): void {
     // insert HTMLElement
@@ -178,14 +192,19 @@ export class Editor extends EventEmitter {
   }
 
   /**
+   * @method changeNodeName(nodeName)
    * 修改光标所在元素的标签
-   * @param nodeName
+   * Replace the tag of the element under the cursor
+   * @param nodeName `string` For example: `UL`, `SECTION` ...
+   * @return `boolean`
    */
   changeNodeName(nodeName: string): boolean {
     // 判断nodeName是否被允许设置
     if (!this.allowedNodeNames.includes(nodeName.toUpperCase())) return false
     const currentSection = this.getCurrentNode()
-    if (currentSection && changeNodeName(currentSection, nodeName)) {
+    const el = changeNodeName(currentSection, nodeName)
+    if (el) {
+      this.cursor.setRange(el)
       this._dispatchChange()
       return true
     }
@@ -193,9 +212,11 @@ export class Editor extends EventEmitter {
   }
 
   /**
+   * @method changeStyles(styles)
    * 修改光标所在元素的样式
-   * @param styles
-   * @param value
+   *  Change the style of the element where the cursor is located
+   * @param styles `CSSProperties | string`
+   * @param value `any`
    */
   changeStyles(styles: CSSProperties | string, value?: unknown): void {
     const current = this.getCurrentNode(true)
@@ -214,23 +235,28 @@ export class Editor extends EventEmitter {
   }
 
   /**
-   * 获取光标所在的元素的style对象
+   * @method getStyles()
+   * 获取光标所在的元素的`style`对象
+   * Get the `style` object of the element where the cursor is located
+   * @return `CSSProperties`
    */
   getStyles(): CSSProperties {
     return getStyles(this.getCurrentNode())
   }
 
   /**
+   * @method getCurrentNode(isOnlyContentChild?)
    * 获取光标所在的元素
-   * @param isOnlyContentChild 必须是编辑器content的子元素，
-   * 为false时，ul/ol中返回li元素
-   * 为true时，返回ul/ol元素
+   * Get the element where the cursor is located
+   * @param isOnlyContentChild `boolean` Must be a child element of editor content. For example: when it is `false`, the `li` element is returned in `ul/ol`, and when it is `true`, the `ul/ol` element is returned.
+   * @return `HTMLElement | null`
    */
   getCurrentNode(isOnlyContentChild = false): HTMLElement | null {
     return this.cursor.getCurrentNode(isOnlyContentChild)
   }
 
   /**
+   * @method destroy()
    * 销毁事件
    * destroy events
    */

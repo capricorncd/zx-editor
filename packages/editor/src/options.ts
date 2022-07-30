@@ -24,7 +24,7 @@ export interface EditorOptions {
   // allowed node names
   allowedNodeNames?: string[]
   // paragraph tail spacing, default 10px
-  // paragraphTailSpacing?: string | number;
+  paragraphTailSpacing?: string | number
   // 光标颜色
   caretColor?: string
   // 编辑器文本默认颜色
@@ -39,7 +39,6 @@ export const DEF_OPTIONS: EditorOptions = {
   // 内容是否可以被编辑
   editable: true,
   // 编辑器输入内容绝对定位
-  // fixed: false,
   // editor min height
   minHeight: '50vh',
   // style
@@ -48,12 +47,9 @@ export const DEF_OPTIONS: EditorOptions = {
   lineHeight: 1.5,
   allowedNodeNames: ALLOWED_NODE_NAMES,
   // paragraph tail spacing, default 10px
-  // paragraphTailSpacing: '',
+  paragraphTailSpacing: '10px',
   caretColor: '',
   textColor: '',
-  // iphone会自动移动，难控制
-  // 光标所在行距页面顶部的距离30px
-  // cursorOffsetTop: 30,
   // 自定义粘贴处理函数
   customPasteHandler: undefined,
   // /**

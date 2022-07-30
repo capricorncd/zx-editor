@@ -8,11 +8,10 @@ const path = require('path')
 const { getCommentsData, outputFile } = require('@zx-editor/helpers-nodejs')
 
 function main() {
-  // const docsDir = path.resolve(__dirname, '../../../docs')
+  const docsDir = path.resolve(__dirname, '../../../docs')
   const data = getCommentsData(path.resolve(__dirname, '../src'), 'packages', true)
-  // outputFile(data, 'packages', docsDir)
-  console.log(data)
-  outputFile(data, path.resolve(__dirname, '../README.md'))
+  // outputFile(data, path.resolve(__dirname, '../README.md'))
+  outputFile(data, path.join(docsDir, 'Editor.md'))
 }
 
 main()

@@ -9,7 +9,7 @@ const { afterBuild } = require('@zx-editor/helpers-nodejs')
 
 function main() {
   const distDir = path.resolve(__dirname, '../dist')
-  afterBuild(distDir, require('../package.json'))
+  afterBuild(distDir, require('../package.json'), true)
 }
 
 main()

@@ -3,9 +3,10 @@
  * https://github.com/capricorncd
  * Date: 2022/05/09 21:12:46 (GMT+0900)
  */
-import { $, createElement, toStrStyles, isBrSection, isUlElement, replaceHtmlTag, slice } from '@zx-editor/helpers'
 import { CSSProperties } from '@zx-editor/types'
+import { $, createElement, toStrStyles, slice } from 'zx-sml'
 import { ROOT_CLASS_NAME, NODE_NAME_SECTION, REPLACE_NODE_LIST } from './const'
+import { isBrSection, isUlElement, replaceHtmlTag } from './helpers'
 import { EditorOptions } from './options'
 
 /**
@@ -59,11 +60,12 @@ export const initContentDom = (options: EditorOptions): HTMLDivElement => {
 }
 
 /**
- *
+ * changeNodeName
  * @param input
  * @param tagName
  */
-export const changeNodeName = (input: HTMLElement, tagName = NODE_NAME_SECTION): HTMLElement => {
+export const changeNodeName = (input: HTMLElement | null, tagName = NODE_NAME_SECTION): HTMLElement | null => {
+  if (!input) return null
   const oldNodeName = input.nodeName
   const newNodeName = tagName.toUpperCase()
   if (oldNodeName === newNodeName) return input
