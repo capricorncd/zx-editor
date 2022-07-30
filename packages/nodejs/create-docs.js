@@ -71,7 +71,7 @@ function handleFile(filePath, data, fileName) {
       if (!isTargetComment || !typeName) {
         // type codes
         if (typeName && type === TYPES.TYPE && line) {
-          data[typeName].codes.push(originalLine.replace(/^export( default)?/, ''))
+          data[typeName].codes.push(originalLine.replace(/^export( default)?\s*/, ''))
         }
         return
       }
