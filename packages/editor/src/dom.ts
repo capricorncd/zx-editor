@@ -10,38 +10,21 @@ import { isBrSection, isUlElement, replaceHtmlTag } from './helpers'
 import { EditorOptions } from './options'
 
 /**
- * 设置编辑器$content伪元素before的content值，并将css style元素添加至head中
- * Set the content value of pseudo-element :before
- * @param placeholder
- */
-const setContentValueOfPseudoElementBefore = (placeholder: string): void => {
-  // 为伪类content设值
-  const beforeStyle = `.${ROOT_CLASS_NAME}.is-empty:before{content:'${placeholder}' !important;`
-  // 生成style元素
-  const style = createElement('style', { type: 'text/css' }, beforeStyle)
-  // 将style元素添加值head中
-  $('head')?.append(style)
-}
-
-/**
  * init content dom
  * @param options
  */
 export const initContentDom = (options: EditorOptions): HTMLDivElement => {
   const contentStyles: CSSProperties = {
-    lineHeight: options.lineHeight,
     minHeight: options.minHeight,
-    position: 'relative',
-    overflowY: 'scroll',
-    outline: 'none',
-    // 用户自定义样式优先
-    ...options.styles,
     // placeholder
+    '--placeholder': JSON.stringify(options.placeholder),
     '--placeholder-color': options.placeholderColor,
     '--line-height': options.lineHeight,
+    // paragraphTailSpacing
+    '--paragraph-spacing': options.paragraphTailSpacing,
+    // 用户自定义样式优先
+    ...options.styles,
   }
-
-  setContentValueOfPseudoElementBefore(options.placeholder as string)
 
   if (options.caretColor) contentStyles.caretColor = options.caretColor
   if (options.textColor) contentStyles.color = options.textColor
@@ -52,11 +35,7 @@ export const initContentDom = (options: EditorOptions): HTMLDivElement => {
   }
   if (options.editable) contentAttrs.contenteditable = 'true'
 
-  const el = createElement<HTMLDivElement>('div', contentAttrs)
-  el.innerHTML = '<section><br></section>'
-
-  // return
-  return el
+  return createElement<HTMLDivElement>('div', contentAttrs, '<section><br></section>')
 }
 
 /**

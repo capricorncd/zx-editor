@@ -6,22 +6,26 @@
 import { CSSProperties } from '@zx-editor/types'
 import { ALLOWED_NODE_NAMES } from './const'
 
+/**
+ * @type EditorOptions
+ * Editor initialization parameters
+ */
 export interface EditorOptions {
-  // 编辑器外容器，默认为`.zx-editor`
+  // container that Editor parent HTMLElement
   container?: string | HTMLElement
-  // 内容是否可编辑，默认为`true`
+  // The `contenteditable` global attribute is an enumerated attribute indicating if the element should be editable by the user. If so, the browser modifies its widget to allow editing. default `true`.
   editable?: boolean
-  // 编辑器内容为空是的提示内容，默认为`请在此输入内容..`
+  // 编辑器内容为空是的提示内容，default `请在此输入内容..`
   placeholder?: string
-  // 提示内容的颜色，默认为`#999`
+  // placeholder color, default `#999`
   placeholderColor?: string
-  // 编辑器内容行高，默认为`1.5`
+  // 编辑器内容行高，default `1.5`
   lineHeight?: string | number
-  // 编辑器内容区域最小高度，默认`50vh`
+  // min height, default `50vh`
   minHeight?: string | number
   // 允许使用的编辑器子元素节点名称，
-  // 默认为`['SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'BLOCKQUOTE', 'UL', 'OL']`
-  // allowed node names
+  // default `['SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'BLOCKQUOTE', 'UL', 'OL']`
+  // allowed Node names
   allowedNodeNames?: string[]
   // paragraph tail spacing, default 10px
   paragraphTailSpacing?: string | number
@@ -30,11 +34,14 @@ export interface EditorOptions {
   // 编辑器文本默认颜色
   textColor?: string
   // 自定义用户粘贴处理函数
-  customPasteHandler?: () => void
+  customPasteHandler?: (e: ClipboardEvent) => void
   // 编辑器自定义样式
   styles?: CSSProperties
 }
 
+/**
+ * default options
+ */
 export const DEF_OPTIONS: EditorOptions = {
   // 内容是否可以被编辑
   editable: true,

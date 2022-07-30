@@ -4,6 +4,16 @@
  * Date: 2022/05/10 21:27:03 (GMT+0900)
  */
 .zx-editor__editor {
+  position: relative;
+  overflow-y: auto;
+  line-height: var(--line-height);
+  outline: none;
+  > * {
+    margin-top: var(--paragraph-spacing);
+    &:first-child {
+      margin-top: 0;
+    }
+  }
   &.is-empty:before {
     position: absolute;
     z-index: 1;
@@ -12,6 +22,6 @@
     pointer-events: none;
     color: var(--placeholder-color);
     line-height: var(--line-height);
-    content: '';
+    content: var(--placeholder);
   }
 }

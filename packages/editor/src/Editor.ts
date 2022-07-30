@@ -11,7 +11,7 @@ import { CursorClass } from './CursorClass'
 import { changeNodeName, initContentDom, checkIsEmpty } from './dom'
 import { isBrSection, getStyles } from './helpers'
 import { DEF_OPTIONS, EditorOptions } from './options'
-import './editor.scss'
+import './style.scss'
 
 /**
  * @type EditorPlugin
@@ -22,7 +22,12 @@ export interface EditorPlugin {
 
 /**
  * @document Editor
- * `class` Editor, extends [EventEmitter](./EventEmitter.md)
+ *
+ * Editor extends [EventEmitter](./EventEmitter.md). The parameter of `Editor` is [EditorOptions](#EditorOptions)
+ *
+ * instance `new Editor(EditorOptions)`
+ *
+ * For example:
  *
  * ```js
  * const editor = new Editor({
@@ -43,6 +48,8 @@ export class Editor extends EventEmitter {
   private readonly _eventHandler: <T extends Event>(e: T) => void
   // 内容中允许使用的元素标签
   private allowedNodeNames: string[]
+
+  private _pasteHandler: (e: ClipboardEvent) => void
 
   constructor(options: EditorOptions) {
     super()
@@ -74,6 +81,20 @@ export class Editor extends EventEmitter {
       }
     }
 
+    // paste handler
+    this._pasteHandler = (e: ClipboardEvent) => {
+      // use custom paste handler
+      if (typeof this.options.customPasteHandler === 'function') {
+        return this.options.customPasteHandler(e)
+      }
+      e.stopPropagation()
+      let paste = e.clipboardData?.getData('text')
+      const selection = window.getSelection()
+      if (!paste || !selection?.rangeCount) return
+      selection.deleteFromDocument()
+      selection.getRangeAt(0).insertNode(document.createTextNode(paste))
+    }
+
     this._initEvents()
   }
 
@@ -86,6 +107,7 @@ export class Editor extends EventEmitter {
     this.$editor.addEventListener('blur', this._eventHandler)
     this.$editor.addEventListener('input', this._eventHandler)
     this.$editor.addEventListener('click', this._eventHandler)
+    this.$editor.addEventListener('paste', this._pasteHandler)
   }
 
   /**
@@ -264,6 +286,7 @@ export class Editor extends EventEmitter {
     this.$editor.removeEventListener('focus', this._eventHandler)
     this.$editor.removeEventListener('blur', this._eventHandler)
     this.$editor.removeEventListener('input', this._eventHandler)
+    this.$editor.removeEventListener('paste', this._pasteHandler)
     this.removeAllListeners()
   }
 }

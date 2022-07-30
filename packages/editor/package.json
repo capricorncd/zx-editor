@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
+    "dev": "vite --port=9000",
     "build": "vite build && node scripts/after-build.js",
     "test": "vitest",
     "coverage": "vitest run --coverage",
