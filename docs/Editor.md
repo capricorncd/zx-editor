@@ -13,9 +13,9 @@
 ### changeNodeName(nodeName)
 
 修改光标所在元素的标签
-Replace the label of the element under the cursor
+Replace the tag of the element under the cursor
 
-- @param nodeName `string`
+- @param nodeName `string` For example: `UL`, `SECTION` ...
 
 - @returns `boolean`
 
@@ -92,7 +92,7 @@ extension, 扩展插件
 ### EditorPlugin
 
 ```ts
- interface EditorPlugin {
+interface EditorPlugin {
   install: (e: Editor, parentElement?: HTMLElement) => void
 }
 ```
