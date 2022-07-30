@@ -5,7 +5,7 @@
  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
-const { getCommentsData, outputFile, log } = require('./index')
+const { getCommentsData, outputFile } = require('./index')
 
 function main() {
   const data = getCommentsData(path.resolve(__dirname, './'), 'packages', true)
