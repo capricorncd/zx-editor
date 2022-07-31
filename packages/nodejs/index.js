@@ -7,7 +7,7 @@
  * Some tool functions used in the Nodejs environment
  *
  * ```js
- * const { mkdirSync } = require('zx-editor/packages/nodejs')
+ * const { mkdirSync } = require('zx-editor/nodejs-helpers')
  *
  * mkdirSync('./a/b/c')
  * ```

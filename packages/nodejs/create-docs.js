@@ -216,7 +216,7 @@ function handleOutput(arr, outputDir) {
  * Output the obtained annotation content as a document.
  * @param data `object | array` Annotation content obtained from the source.
  * @param outputDirOrFile `string` The file or directory where the output will be written.
- * @returns `string | null` output file name
+ * @returns `string | null` output file path
  */
 function outputFile(data, outputDirOrFile) {
   if (outputDirOrFile && !fs.existsSync(outputDirOrFile) && !isFileLike(outputDirOrFile)) {
