@@ -40,14 +40,14 @@ destroy events
 
 - @returns `void`
 
-### getCurrentNode(isOnlyContentChild?)
+### getCursorElement(isOnlyEditorChild?)
 
 获取光标所在的元素
 Get the element where the cursor is located
 
-- @param isOnlyContentChild `boolean` Must be a child element of editor content. For example: when it is `false`, the `li` element is returned in `ul/ol`, and when it is `true`, the `ul/ol` element is returned.
+- @param isOnlyEditorChild `boolean` Must be a child element of editor `HTMLElement`. For example: when it is `false`, the `li` element is returned in `ul/ol`, and when it is `true`, the `ul/ol` element is returned.
 
-- @returns `HTMLElement | null`
+- @returns `HTMLElement`
 
 ### getHtml()
 
@@ -64,12 +64,13 @@ Get the `style` object of the element where the cursor is located
 
 - @returns `CSSProperties`
 
-### insert(input)
+### insert(input, toNewParagraph?)
 
 向编辑器中插入内容/HTML代码/元素等
 insert html or element to content element
 
 - @param input `string | HTMLElement`
+- @param toNewParagraph `boolean` Insert text to new paragraph, default `false`
 
 - @returns `void`
 
@@ -125,6 +126,8 @@ interface EditorOptions {
   customPasteHandler?: (e: ClipboardEvent) => void
   // 编辑器自定义样式
   styles?: CSSProperties
+  // insert text to new paragraph, default `false`
+  insertTextToNewParagraph?: boolean
 }
 ```
 

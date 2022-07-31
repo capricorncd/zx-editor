@@ -3,53 +3,53 @@
  * Author: Capricorncd
  * Released under the MIT License
  * Repository: https://github.com/capricorncd/zx-editor
- * Released on: 2022-07-30 16:59:22 (GMT+0900)
+ * Released on: 2022-07-31 16:38:07 (GMT+0900)
  * Copyright © 2018-present, Capricorncd
  */
 var k = Object.defineProperty;
-var F = (t, r, e) => r in t ? k(t, r, { enumerable: !0, configurable: !0, writable: !0, value: e }) : t[r] = e;
-var p = (t, r, e) => (F(t, typeof r != "symbol" ? r + "" : r, e), e);
-class V {
+var F = (t, n, e) => n in t ? k(t, n, { enumerable: !0, configurable: !0, writable: !0, value: e }) : t[n] = e;
+var E = (t, n, e) => (F(t, typeof n != "symbol" ? n + "" : n, e), e);
+class K {
   constructor() {
     this._events = {};
   }
-  on(r, e) {
-    return !r || !e || typeof e != "function" ? this : (this._events[r] || (this._events[r] = []), this._events[r].push(e), this);
+  on(n, e) {
+    return !n || !e || typeof e != "function" ? this : (this._events[n] || (this._events[n] = []), this._events[n].push(e), this);
   }
-  once(r, e) {
-    const i = (...s) => {
-      e.apply(this, s), this.off(r, i);
+  once(n, e) {
+    const s = (...i) => {
+      e.apply(this, i), this.off(n, s);
     };
-    return this.on(r, i);
+    return this.on(n, s);
   }
-  emit(r, ...e) {
-    const i = this._events[r];
-    if (!i)
+  emit(n, ...e) {
+    const s = this._events[n];
+    if (!s)
       return this;
-    for (let s = 0; s < i.length; s++)
+    for (let i = 0; i < s.length; i++)
       try {
-        i[s].apply(this, e);
-      } catch (n) {
-        this.emit("error", n, "emit");
+        s[i].apply(this, e);
+      } catch (r) {
+        this.emit("error", r, "emit");
       }
     return this;
   }
-  off(r, e) {
-    if (!this._events[r])
+  off(n, e) {
+    if (!this._events[n])
       return this;
-    const i = this._events[r];
+    const s = this._events[n];
     if (typeof e == "function") {
-      const s = i.findIndex((n) => n === e);
-      s >= 0 && i.splice(s, 1);
+      const i = s.findIndex((r) => r === e);
+      i >= 0 && s.splice(i, 1);
     } else
-      this._events[r].length = 0;
-    return this._removeEmpty(r), this;
+      this._events[n].length = 0;
+    return this._removeEmpty(n), this;
   }
-  _removeEmpty(r) {
-    this._events[r].length || delete this._events[r];
+  _removeEmpty(n) {
+    this._events[n].length || delete this._events[n];
   }
   removeAllListeners() {
-    Object.keys(this._events).forEach((r) => this.off(r));
+    Object.keys(this._events).forEach((n) => this.off(n));
   }
 }
 /*!
@@ -58,131 +58,131 @@ class V {
  * Repository: https://github.com/capricorncd/zx-sml
  * Released on: 2022-07-24 15:34:05 (GMT+0900)
  */
-var Y = Object.defineProperty, O = Object.getOwnPropertySymbols, K = Object.prototype.hasOwnProperty, W = Object.prototype.propertyIsEnumerable, $ = (t, r, e) => r in t ? Y(t, r, { enumerable: !0, configurable: !0, writable: !0, value: e }) : t[r] = e, S = (t, r) => {
-  for (var e in r || (r = {}))
-    K.call(r, e) && $(t, e, r[e]);
-  if (O)
-    for (var e of O(r))
-      W.call(r, e) && $(t, e, r[e]);
+var V = Object.defineProperty, x = Object.getOwnPropertySymbols, W = Object.prototype.hasOwnProperty, Y = Object.prototype.propertyIsEnumerable, O = (t, n, e) => n in t ? V(t, n, { enumerable: !0, configurable: !0, writable: !0, value: e }) : t[n] = e, D = (t, n) => {
+  for (var e in n || (n = {}))
+    W.call(n, e) && O(t, e, n[e]);
+  if (x)
+    for (var e of x(n))
+      Y.call(n, e) && O(t, e, n[e]);
   return t;
 };
 function Q(t) {
   return Array.isArray(t);
 }
-function A(t) {
+function M(t) {
   return t !== null && !Q(t) && typeof t == "object";
 }
-var q = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : typeof global < "u" ? global : typeof self < "u" ? self : {}, N = { exports: {} };
+var q = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : typeof global < "u" ? global : typeof self < "u" ? self : {}, L = { exports: {} };
 /*! For license information please see date-utils-2020.js.LICENSE.txt */
-(function(t, r) {
-  (function(e, i) {
-    t.exports = i();
+(function(t, n) {
+  (function(e, s) {
+    t.exports = s();
   })(typeof self < "u" ? self : q, function() {
     return (() => {
-      var e = { 949: (s, n) => {
-        Object.defineProperty(n, "__esModule", { value: !0 }), n.toTwoDigits = void 0, n.toTwoDigits = function(o) {
+      var e = { 949: (i, r) => {
+        Object.defineProperty(r, "__esModule", { value: !0 }), r.toTwoDigits = void 0, r.toTwoDigits = function(o) {
           return o[1] ? o : "0" + o;
         };
-      }, 607: (s, n, o) => {
-        Object.defineProperty(n, "__esModule", { value: !0 }), n.toTwoDigits = n.toDate = n.formatDate = void 0;
-        var g = o(949);
-        Object.defineProperty(n, "toTwoDigits", { enumerable: !0, get: function() {
-          return g.toTwoDigits;
+      }, 607: (i, r, o) => {
+        Object.defineProperty(r, "__esModule", { value: !0 }), r.toTwoDigits = r.toDate = r.formatDate = void 0;
+        var m = o(949);
+        Object.defineProperty(r, "toTwoDigits", { enumerable: !0, get: function() {
+          return m.toTwoDigits;
         } });
         var C = { weeks: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] };
-        function v(h) {
-          if (h instanceof Date)
-            return h;
-          if (typeof h == "number")
-            return new Date(h);
-          if (typeof h == "string") {
-            var l = h.trim();
-            if (/^\d+$/.test(l)) {
-              var f = l.length;
-              return f === 8 ? new Date([l.substr(0, 4), l.substr(4, 2), l.substr(6, 2)].join("/")) : f === 6 ? new Date([l.substr(0, 4), l.substr(4, 2), "01"].join("/")) : f === 4 ? new Date(l + "/01/01") : new Date(parseInt(h));
+        function _(f) {
+          if (f instanceof Date)
+            return f;
+          if (typeof f == "number")
+            return new Date(f);
+          if (typeof f == "string") {
+            var a = f.trim();
+            if (/^\d+$/.test(a)) {
+              var h = a.length;
+              return h === 8 ? new Date([a.substr(0, 4), a.substr(4, 2), a.substr(6, 2)].join("/")) : h === 6 ? new Date([a.substr(0, 4), a.substr(4, 2), "01"].join("/")) : h === 4 ? new Date(a + "/01/01") : new Date(parseInt(f));
             }
-            if (l = l.replace(/[年月日]/g, function(a) {
-              return a === "\u65E5" ? "" : "/";
-            }).replace(/[(（（].*?[)））]/g, " ").replace(/\bam|pm\b/gi, " ").replace(/\s+/g, " "), /^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/.test(l))
+            if (a = a.replace(/[年月日]/g, function(l) {
+              return l === "\u65E5" ? "" : "/";
+            }).replace(/[(（（].*?[)））]/g, " ").replace(/\bam|pm\b/gi, " ").replace(/\s+/g, " "), /^(\d{4})[-/](\d{1,2})[-/](\d{1,2})$/.test(a))
               return new Date([RegExp.$1, RegExp.$2, RegExp.$3].join("/"));
-            if (/^(\d{4})[-/](\d{1,2})$/.test(l))
+            if (/^(\d{4})[-/](\d{1,2})$/.test(a))
               return new Date([RegExp.$1, RegExp.$2, "01"].join("/"));
-            var u = new Date(l);
+            var u = new Date(a);
             return isNaN(u.getFullYear()) ? null : u;
           }
           return null;
         }
-        n.formatDate = function(h, l, f) {
-          var u, a = v(h);
-          if (!a || !l)
-            return h + "";
-          if (l === "timestamp")
-            return a.getTime().toString();
-          /(y+)/i.test(l) && (u = RegExp.$1, l = l.replace(u, (a.getFullYear() + "").substr(4 - u.length))), f && Array.isArray(f.weeks) || (f = C);
-          var _ = { "M+": a.getMonth() + 1, "d+": a.getDate(), "h+": a.getHours(), "m+": a.getMinutes(), "s+": a.getSeconds(), "w+": a.getDay(), "W+": f.weeks[a.getDay()], "a+": a.getHours() < 12 ? "am" : "pm", "A+": a.getHours() < 12 ? "AM" : "PM" };
-          for (var c in _)
-            if (new RegExp("(" + c + ")").test(l)) {
+        r.formatDate = function(f, a, h) {
+          var u, l = _(f);
+          if (!l || !a)
+            return f + "";
+          if (a === "timestamp")
+            return l.getTime().toString();
+          /(y+)/i.test(a) && (u = RegExp.$1, a = a.replace(u, (l.getFullYear() + "").substr(4 - u.length))), h && Array.isArray(h.weeks) || (h = C);
+          var v = { "M+": l.getMonth() + 1, "d+": l.getDate(), "h+": l.getHours(), "m+": l.getMinutes(), "s+": l.getSeconds(), "w+": l.getDay(), "W+": h.weeks[l.getDay()], "a+": l.getHours() < 12 ? "am" : "pm", "A+": l.getHours() < 12 ? "AM" : "PM" };
+          for (var c in v)
+            if (new RegExp("(" + c + ")").test(a)) {
               u = RegExp.$1;
-              var d = _[c] + "";
-              l = l.replace(u, u.length === 1 ? d : g.toTwoDigits(d));
+              var d = v[c] + "";
+              a = a.replace(u, u.length === 1 ? d : m.toTwoDigits(d));
             }
-          if (/(g)/i.test(l)) {
-            var m = a.toString().split(/\s+/).slice(5), U = l.includes("g");
-            l = l.replace(/g/i, U ? m[0] : m.join(" "));
+          if (/(g)/i.test(a)) {
+            var p = l.toString().split(/\s+/).slice(5), U = a.includes("g");
+            a = a.replace(/g/i, U ? p[0] : p.join(" "));
           }
-          return l;
-        }, n.toDate = v;
-      } }, i = {};
-      return function s(n) {
-        if (i[n])
-          return i[n].exports;
-        var o = i[n] = { exports: {} };
-        return e[n](o, o.exports, s), o.exports;
+          return a;
+        }, r.toDate = _;
+      } }, s = {};
+      return function i(r) {
+        if (s[r])
+          return s[r].exports;
+        var o = s[r] = { exports: {} };
+        return e[r](o, o.exports, i), o.exports;
       }(607);
     })();
   });
-})(N);
-function M(t = "", r = "-") {
-  return t.replace(/[A-Z]/g, (e, i) => `${i > 0 ? r : ""}${e.toLowerCase()}`);
+})(L);
+function R(t = "", n = "-") {
+  return t.replace(/[A-Z]/g, (e, s) => `${s > 0 ? n : ""}${e.toLowerCase()}`);
 }
-function R(t = "", r = !1) {
-  const e = t.replace(/[-_\s](\w)/g, (i, s) => s.toUpperCase());
-  return r ? e.replace(/^\w/, (i) => i.toUpperCase()) : e;
+function I(t = "", n = !1) {
+  const e = t.replace(/[-_\s](\w)/g, (s, i) => i.toUpperCase());
+  return n ? e.replace(/^\w/, (s) => s.toUpperCase()) : e;
 }
-function L(t, r = 0) {
-  return Array.prototype.slice.call(t, r);
+function T(t, n = 0) {
+  return Array.prototype.slice.call(t, n);
 }
-function I(t = {}, r = !1) {
-  const e = r ? R : M, i = {};
-  for (const [s, n] of Object.entries(t))
-    i[e(s)] = A(n) ? I(n, r) : n;
-  return i;
+function P(t = {}, n = !1) {
+  const e = n ? I : R, s = {};
+  for (const [i, r] of Object.entries(t))
+    s[e(i)] = M(r) ? P(r, n) : r;
+  return s;
 }
-function B(t, r = document) {
-  return t ? t instanceof HTMLElement ? t : r.querySelector(t) : null;
+function z(t, n = document) {
+  return t ? t instanceof HTMLElement ? t : n.querySelector(t) : null;
 }
-function E(t, r = {}, e) {
-  const i = document.createElement(t);
-  for (const [s, n] of Object.entries(r))
-    i.setAttribute(M(s), s === "style" && A(n) ? b(n) : n);
-  return e && (Array.isArray(e) || (e = [e]), e.forEach((s) => {
-    if (typeof s == "string") {
-      const n = E("div");
-      n.innerHTML = s, i.append(...n.childNodes);
+function g(t, n = {}, e) {
+  const s = document.createElement(t);
+  for (const [i, r] of Object.entries(n))
+    s.setAttribute(R(i), i === "style" && M(r) ? b(r) : r);
+  return e && (Array.isArray(e) || (e = [e]), e.forEach((i) => {
+    if (typeof i == "string") {
+      const r = g("div");
+      r.innerHTML = i, s.append(...r.childNodes);
     } else
-      i.append(s);
-  })), i;
+      s.append(i);
+  })), s;
 }
 function b(...t) {
-  const r = t.reduce((i, s) => S(S({}, i), I(s)), {}), e = [];
-  for (const [i, s] of Object.entries(r))
-    s === "" || typeof s > "u" || s === null || e.push(`${i}:${s}`);
+  const n = t.reduce((s, i) => D(D({}, s), P(i)), {}), e = [];
+  for (const [s, i] of Object.entries(n))
+    i === "" || typeof i > "u" || i === null || e.push(`${s}:${i}`);
   return e.join(";");
 }
-N.exports.formatDate;
-N.exports.toDate;
-N.exports.toTwoDigits;
-const j = "zx-editor__editor", w = "SECTION", z = "BR", P = ["SECTION", "H1", "H2", "H3", "H4", "H5", "BLOCKQUOTE", "UL", "OL"], G = [
+L.exports.formatDate;
+L.exports.toDate;
+L.exports.toTwoDigits;
+const G = "zx-editor__editor", N = "SECTION", J = "BR", B = ["SECTION", "H1", "H2", "H3", "H4", "H5", "BLOCKQUOTE", "UL", "OL"], X = [
   "DIV",
   "P",
   "ARTICLE",
@@ -201,226 +201,213 @@ const j = "zx-editor__editor", w = "SECTION", z = "BR", P = ["SECTION", "H1", "H
   "H5",
   "H6",
   "BLOCKQUOTE"
-];
-class Z {
-  constructor(r) {
-    p(this, "rootElement");
-    p(this, "timer");
-    p(this, "selection");
-    p(this, "range", new Range());
-    var i;
-    this.rootElement = r, this.timer = null, this.selection = window.getSelection();
-    const e = r.lastElementChild;
-    e && this.setRange(e, (i = e.textContent) == null ? void 0 : i.length);
-  }
-  _getLastNode(r) {
-    let e = r;
-    for (; e.lastChild; )
-      e = e.lastChild;
-    return e;
-  }
-  setRange(r, e) {
-    var s, n, o;
-    if (this.selection)
-      this.selection.removeAllRanges();
-    else {
-      this.selection = window.getSelection();
-      try {
-        this.range = (s = this.selection) == null ? void 0 : s.getRangeAt(0);
-      } catch {
-        this.range = new Range();
-      }
-    }
-    let i;
-    r ? i = this._getLastNode(r) : i = this.range.endContainer, console.log(i), typeof e > "u" && (e = (o = (n = i.textContent) == null ? void 0 : n.length) != null ? o : 0), this.range.setStart(i, e), this.range.collapse(!0), this._clearTimeout(), this.timer = setTimeout(() => {
-      var g;
-      (g = this.selection) == null || g.addRange(this.range);
-    }, 100);
-  }
-  _clearTimeout() {
-    this.timer && (clearTimeout(this.timer), this.timer = null);
-  }
-  getCurrentNode(r = !1) {
-    var i;
-    let e = this.range.endContainer;
-    for (; e && this.rootElement !== e; ) {
-      if (!r && e.nodeName === "LI" && ((i = e.parentElement) == null ? void 0 : i.parentElement) === this.rootElement || e.parentElement === this.rootElement)
-        return e;
-      e = e.parentNode;
-    }
-    return this.rootElement.lastElementChild;
-  }
+], j = "<section><br></section>";
+function y(t, n, e) {
+  return t.replace(RegExp("(^<" + n + ")|(" + n + ">$)", "gi"), (s) => s.toUpperCase().replace(n, e.toLowerCase()));
 }
-function y(t, r, e) {
-  return t.replace(RegExp("(^<" + r + ")|(" + r + ">$)", "gi"), (i) => i.toUpperCase().replace(r, e.toLowerCase()));
+function w(t) {
+  return /^UL|OL$/.test(t.nodeName);
 }
 function H(t) {
-  return /UL|OL/.test(t.nodeName);
-}
-function T(t) {
   if (!t)
     return !1;
-  const r = L(t.childNodes);
-  return r.length === 1 && r[0].nodeName === "BR";
+  const n = T(t.childNodes);
+  return n.length === 1 && n[0].nodeName === "BR";
 }
-function x(t, r = "style") {
-  return t ? (t.getAttribute(r) || "").split(/\s?;\s?/).reduce((i, s) => {
-    const [n, o] = s.split(/\s?:\s?/);
-    return n && (i[R(n)] = o), i;
+function $(t, n = "style") {
+  return t ? (t.getAttribute(n) || "").split(/\s?;\s?/).reduce((s, i) => {
+    const [r, o] = i.split(/\s?:\s?/);
+    return r && (s[I(r)] = o), s;
   }, {}) : {};
 }
-const J = (t) => {
-  var i;
-  const r = `.${j}.is-empty:before{content:'${t}' !important;`, e = E("style", { type: "text/css" }, r);
-  (i = B("head")) == null || i.append(e);
-}, X = (t) => {
-  const r = {
-    lineHeight: t.lineHeight,
+function Z(t) {
+  return document.createTextNode(t);
+}
+const ee = (t) => {
+  const n = {
     minHeight: t.minHeight,
-    position: "relative",
-    overflowY: "scroll",
-    outline: "none",
-    ...t.styles,
+    "--placeholder": JSON.stringify(t.placeholder),
     "--placeholder-color": t.placeholderColor,
-    "--line-height": t.lineHeight
+    "--line-height": t.lineHeight,
+    "--paragraph-spacing": t.paragraphTailSpacing,
+    ...t.styles
   };
-  J(t.placeholder), t.caretColor && (r.caretColor = t.caretColor), t.textColor && (r.color = t.textColor);
+  t.caretColor && (n.caretColor = t.caretColor), t.textColor && (n.color = t.textColor);
   const e = {
-    class: `${j} is-empty`,
-    style: b(r)
+    class: `${G} is-empty`,
+    style: b(n)
   };
-  t.editable && (e.contenteditable = "true");
-  const i = E("div", e);
-  return i.innerHTML = "<section><br></section>", i;
-}, D = (t, r = w) => {
-  var g, C, v, h, l, f, u, a, _;
+  return t.editable && (e.contenteditable = "true"), g("div", e, j);
+}, S = (t, n = N) => {
+  var m, C, _, f, a, h, u, l, v;
   if (!t)
     return null;
-  const e = t.nodeName, i = r.toUpperCase();
-  if (e === i)
+  const e = t.nodeName, s = n.toUpperCase();
+  if (e === s)
     return t;
-  const s = E(r), n = t.parentElement;
+  const i = g(n), r = t.parentElement;
   let o;
-  if (e === "LI" && H(n)) {
-    if (s.innerHTML = y(t.outerHTML, e, i), o = s.firstChild, n.childElementCount > 1)
-      if (n.firstElementChild === t)
-        (g = n.parentElement) == null || g.insertBefore(o, n);
-      else if (n.lastElementChild === t) {
-        const c = (C = n.parentElement) == null ? void 0 : C.nextElementSibling;
-        c ? (v = c.parentElement) == null || v.insertBefore(o, c) : (h = n.parentElement) == null || h.append(o);
+  if (e === "LI" && w(r)) {
+    if (i.innerHTML = y(t.outerHTML, e, s), o = i.firstChild, r.childElementCount > 1)
+      if (r.firstElementChild === t)
+        (m = r.parentElement) == null || m.insertBefore(o, r);
+      else if (r.lastElementChild === t) {
+        const c = (C = r.parentElement) == null ? void 0 : C.nextElementSibling;
+        c ? (_ = c.parentElement) == null || _.insertBefore(o, c) : (f = r.parentElement) == null || f.append(o);
       } else {
-        const c = L(n.children), d = E(n.nodeName);
-        let m = c.shift();
-        for (; m && m !== t; )
-          d.append(m), m = c.shift();
-        (l = n.parentElement) == null || l.insertBefore(d, n), (f = n.parentElement) == null || f.insertBefore(o, n), n.removeChild(t);
+        const c = T(r.children), d = g(r.nodeName);
+        let p = c.shift();
+        for (; p && p !== t; )
+          d.append(p), p = c.shift();
+        (a = r.parentElement) == null || a.insertBefore(d, r), (h = r.parentElement) == null || h.insertBefore(o, r), r.removeChild(t);
       }
     else
-      (u = n.parentElement) == null || u.insertBefore(o, n), (a = n.parentElement) == null || a.removeChild(n);
+      (u = r.parentElement) == null || u.insertBefore(o, r), (l = r.parentElement) == null || l.removeChild(r);
     return o;
   }
-  if (G.includes(e)) {
-    if (/UL|OL/.test(i)) {
+  if (X.includes(e)) {
+    if (/UL|OL/.test(s)) {
       const c = t.previousElementSibling, d = t.nextElementSibling;
-      if (c && H(c)) {
-        if (s.innerHTML = y(t.outerHTML, e, "li"), o = s.firstChild, c.append(o), n == null || n.removeChild(t), d && d.nodeName === c.nodeName) {
-          const m = L(d.children);
-          c.append(...m), (_ = d.parentElement) == null || _.removeChild(d);
+      if (c && w(c)) {
+        if (i.innerHTML = y(t.outerHTML, e, "li"), o = i.firstChild, c.append(o), r == null || r.removeChild(t), d && d.nodeName === c.nodeName) {
+          const p = T(d.children);
+          c.append(...p), (v = d.parentElement) == null || v.removeChild(d);
         }
       } else
-        d && H(d) ? (s.innerHTML = y(t.outerHTML, e, "li"), o = s.firstChild, d.insertBefore(o, d.firstElementChild), n == null || n.removeChild(t)) : (o = s, s.innerHTML = y(t.outerHTML, e, "li"), n == null || n.replaceChild(o, t));
+        d && w(d) ? (i.innerHTML = y(t.outerHTML, e, "li"), o = i.firstChild, d.insertBefore(o, d.firstElementChild), r == null || r.removeChild(t)) : (o = i, i.innerHTML = y(t.outerHTML, e, "li"), r == null || r.replaceChild(o, t));
     } else
-      s.innerHTML = y(t.outerHTML, e, i), o = s.firstChild, n == null || n.replaceChild(o, t);
+      i.innerHTML = y(t.outerHTML, e, s), o = i.firstChild, r == null || r.replaceChild(o, t);
     return o;
   }
-  return s.append(t.cloneNode(!0)), n == null || n.replaceChild(s, t), s;
-}, ee = (t) => {
-  t.children.length <= 1 && T(t.children[0]) ? t.classList.add("is-empty") : t.classList.remove("is-empty");
-}, te = {
+  return i.append(t.cloneNode(!0)), r == null || r.replaceChild(i, t), i;
+}, A = (t) => {
+  t.children.length <= 1 && H(t.children[0]) ? t.classList.add("is-empty") : t.classList.remove("is-empty");
+};
+function te(t, n, e = !1) {
+  var s;
+  for (; t && n !== t; ) {
+    if (!e && t.nodeName === "LI" && ((s = t.parentElement) == null ? void 0 : s.parentElement) === n || t.parentElement === n)
+      return t;
+    t = t.parentElement;
+  }
+  return n.lastElementChild;
+}
+const re = {
   editable: !0,
   minHeight: "50vh",
   placeholder: "\u8BF7\u5728\u6B64\u8F93\u5165\u5185\u5BB9..",
   placeholderColor: "#999",
   lineHeight: 1.5,
-  allowedNodeNames: P,
+  allowedNodeNames: B,
   paragraphTailSpacing: "10px",
   caretColor: "",
   textColor: "",
-  customPasteHandler: void 0
+  customPasteHandler: void 0,
+  insertTextToNewParagraph: !1
 };
-class ne extends V {
+class se extends K {
   constructor(e) {
     super();
-    p(this, "version");
-    p(this, "options");
-    p(this, "$editor");
-    p(this, "cursor");
-    p(this, "_eventHandler");
-    p(this, "allowedNodeNames");
-    const i = typeof e.container == "string" ? B(e.container) : e.container;
-    if (!i)
+    E(this, "version");
+    E(this, "options");
+    E(this, "$editor");
+    E(this, "_cursorElement", null);
+    E(this, "_eventHandler");
+    E(this, "allowedNodeNames");
+    E(this, "_pasteHandler");
+    const s = typeof e.container == "string" ? z(e.container) : e.container;
+    if (!s)
       throw new Error(`Can't found '${e.container}' Node in document!`);
-    this.version = "1.0.0", this.options = { ...te, ...e }, this.allowedNodeNames = (this.options.allowedNodeNames || P).map((s) => s.toUpperCase()), this.$editor = X(this.options), i.append(this.$editor), this.cursor = new Z(this.$editor), this._eventHandler = (s) => {
-      const n = s.type;
-      n === "blur" && this._lastLine(), this.emit(n === "input" ? "change" : n, s), ee(this.$editor), n === "click" && this.cursor.setRange(s.target);
+    this.version = "1.0.0", this.options = { ...re, ...e }, this.allowedNodeNames = (this.options.allowedNodeNames || B).map((i) => i.toUpperCase()), this.$editor = ee(this.options), s.append(this.$editor), this._eventHandler = (i) => {
+      var o;
+      const r = i.type;
+      r === "blur" && (this._lastLine(), this.setCursorElement((o = window.getSelection()) == null ? void 0 : o.getRangeAt(0).endContainer)), this.emit(r === "input" ? "change" : r, i), A(this.$editor);
+    }, this._pasteHandler = (i) => {
+      var m;
+      if (typeof this.options.customPasteHandler == "function")
+        return this.options.customPasteHandler(i);
+      i.stopPropagation();
+      const r = (m = i.clipboardData) == null ? void 0 : m.getData("text"), o = window.getSelection();
+      this._insertText(r, o);
     }, this._initEvents();
   }
   _initEvents() {
-    this.$editor.addEventListener("focus", this._eventHandler), this.$editor.addEventListener("blur", this._eventHandler), this.$editor.addEventListener("input", this._eventHandler), this.$editor.addEventListener("click", this._eventHandler);
+    this.$editor.addEventListener("focus", this._eventHandler), this.$editor.addEventListener("blur", this._eventHandler), this.$editor.addEventListener("input", this._eventHandler), this.$editor.addEventListener("click", this._eventHandler), this.$editor.addEventListener("paste", this._pasteHandler);
   }
-  use(e, i) {
-    typeof e.install == "function" && e.install(this, i);
+  use(e, s) {
+    typeof e.install == "function" && e.install(this, s);
   }
   setHtml(e) {
-    this.$editor.innerHTML = "", this.insert(e), this._lastLine();
+    this.$editor.innerHTML = j, this.insert(e, !0), this._lastLine(), A(this.$editor);
   }
   getHtml() {
     return this.$editor.innerHTML.replace(/<section><br><\/section>$/, "");
   }
-  insert(e) {
+  insert(e, s = !1) {
     if (e instanceof HTMLElement)
       this._insert(e);
     else {
-      const i = E("div");
-      i.innerHTML = e, L(i.childNodes).forEach((s) => {
-        s.nodeType === Node.ELEMENT_NODE ? s.nodeName === z ? this._insert(E(w, {}, "<br/>")) : this._insert(s) : s.textContent && this._insert(E(w, {}, s.textContent));
+      const i = g("div", {}, e), r = T(i.childNodes);
+      if (!s && !this.options.insertTextToNewParagraph && r.every((o) => o.nodeType === Node.TEXT_NODE))
+        return this._insertText(e);
+      r.forEach((o) => {
+        o.nodeType === Node.ELEMENT_NODE ? o.nodeName === J ? this._insert(g(N, {}, "<br/>")) : this._insert(o) : o.textContent && this._insert(g(N, {}, o.textContent));
       });
     }
     this._dispatchChange();
   }
   _insert(e) {
-    const i = this.getCurrentNode();
-    i ? T(i) ? this.$editor.insertBefore(e, i) : this.$editor.insertBefore(e, i.nextElementSibling) : this.$editor.append(e), this.allowedNodeNames.includes(e.nodeName) || (e = D(e, w)), this.cursor.setRange(e);
+    const s = this.getCursorElement();
+    H(s) ? this.$editor.insertBefore(e, s) : this.$editor.insertBefore(e, s.nextElementSibling), this.allowedNodeNames.includes(e.nodeName) || (e = S(e, N)), this.setCursorElement(e);
+  }
+  _insertText(e, s) {
+    if (!!e) {
+      if (s = s != null ? s : window.getSelection(), !(s != null && s.rangeCount))
+        return this.insert(e, !0);
+      s.deleteFromDocument(), s.getRangeAt(0).insertNode(Z(e)), this.setCursorElement(s.getRangeAt(0).endContainer), this._dispatchChange();
+    }
   }
   _lastLine() {
-    T(this.$editor.lastElementChild) || this.$editor.appendChild(E("section", {}, "<br>"));
+    H(this.$editor.lastElementChild) || this.$editor.appendChild(g("section", {}, "<br>"));
   }
   changeNodeName(e) {
     if (!this.allowedNodeNames.includes(e.toUpperCase()))
       return !1;
-    const i = this.getCurrentNode(), s = D(i, e);
-    return s ? (this.cursor.setRange(s), this._dispatchChange(), !0) : !1;
+    const s = this.getCursorElement(), i = S(s, e);
+    return console.log(i), i ? (this.setCursorElement(i), this._dispatchChange(), !0) : !1;
   }
-  changeStyles(e, i) {
-    const s = this.getCurrentNode(!0);
-    if (s) {
-      const n = typeof e == "string" ? { [e]: i } : e;
-      s.setAttribute("style", b(x(s), n)), this._dispatchChange();
+  changeStyles(e, s) {
+    const i = this.getCursorElement(!0);
+    if (i) {
+      const r = typeof e == "string" ? { [e]: s } : e;
+      i.setAttribute("style", b($(i), r)), this._dispatchChange();
     }
   }
   _dispatchChange() {
     this.$editor.dispatchEvent(new InputEvent("input"));
   }
   getStyles() {
-    return x(this.getCurrentNode());
+    return $(this.getCursorElement());
   }
-  getCurrentNode(e = !1) {
-    return this.cursor.getCurrentNode(e);
+  setCursorElement(e) {
+    if (e instanceof Node)
+      for (; e; ) {
+        if (e.nodeType === Node.ELEMENT_NODE) {
+          this._cursorElement = e;
+          break;
+        }
+        e = e.parentElement;
+      }
+    else
+      e && (this._cursorElement = e);
+  }
+  getCursorElement(e = !1) {
+    return te(this._cursorElement, this.$editor, e);
   }
   destroy() {
-    this.$editor.removeEventListener("focus", this._eventHandler), this.$editor.removeEventListener("blur", this._eventHandler), this.$editor.removeEventListener("input", this._eventHandler), this.removeAllListeners();
+    this.$editor.removeEventListener("focus", this._eventHandler), this.$editor.removeEventListener("blur", this._eventHandler), this.$editor.removeEventListener("input", this._eventHandler), this.$editor.removeEventListener("paste", this._pasteHandler), this.removeAllListeners();
   }
 }
 export {
-  ne as Editor
+  se as Editor
 };

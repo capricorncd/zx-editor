@@ -25,7 +25,7 @@ export function replaceHtmlTag(input: string, oldNodeName: string, newNodeName: 
 }
 
 export function isUlElement(el: Element): boolean {
-  return /UL|OL/.test(el.nodeName)
+  return /^UL|OL$/.test(el.nodeName)
 }
 
 /**
@@ -53,7 +53,7 @@ export function getStyles(el: HTMLElement | null, attr = 'style'): CSSProperties
   }, {})
 }
 
-function createTextNode(str: string): Text {
+export function createTextNode(str: string): Text {
   return document.createTextNode(str)
 }
 

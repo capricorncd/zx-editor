@@ -6,10 +6,9 @@
 import { EventEmitter } from '@zx-editor/event-emitter'
 import { CSSProperties } from '@zx-editor/types'
 import { $, createElement, slice, toStrStyles } from 'zx-sml'
-import { NODE_NAME_SECTION, NODE_NAME_BR, ALLOWED_NODE_NAMES } from './const'
-import { CursorClass } from './CursorClass'
-import { changeNodeName, initContentDom, checkIsEmpty } from './dom'
-import { isBrSection, getStyles } from './helpers'
+import { NODE_NAME_SECTION, NODE_NAME_BR, ALLOWED_NODE_NAMES, BLANK_LINE } from './const'
+import { changeNodeName, initContentDom, checkIsEmpty, getCursorElement } from './dom'
+import { isBrSection, getStyles, createTextNode } from './helpers'
 import { DEF_OPTIONS, EditorOptions } from './options'
 import './style.scss'
 
@@ -42,8 +41,8 @@ export class Editor extends EventEmitter {
   private readonly options: EditorOptions
   // 编辑器内容区域HTML元素
   public readonly $editor: HTMLDivElement
-  // 光标处理对象
-  private readonly cursor: CursorClass
+  // current node
+  private _cursorElement: HTMLElement | null = null
   // 内容元素事件处理函数
   private readonly _eventHandler: <T extends Event>(e: T) => void
   // 内容中允许使用的元素标签
@@ -68,17 +67,16 @@ export class Editor extends EventEmitter {
     // elements
     this.$editor = initContentDom(this.options)
     container.append(this.$editor)
-    // cursor
-    this.cursor = new CursorClass(this.$editor)
+
     // content event handler
-    this._eventHandler = (e) => {
+    this._eventHandler = (e: Event) => {
       const type = e.type
-      if (type === 'blur') this._lastLine()
+      if (type === 'blur') {
+        this._lastLine()
+        this.setCursorElement(window.getSelection()?.getRangeAt(0).endContainer)
+      }
       this.emit(type === 'input' ? 'change' : type, e)
       checkIsEmpty(this.$editor)
-      if (type === 'click') {
-        this.cursor.setRange(e.target as HTMLElement)
-      }
     }
 
     // paste handler
@@ -88,11 +86,9 @@ export class Editor extends EventEmitter {
         return this.options.customPasteHandler(e)
       }
       e.stopPropagation()
-      let paste = e.clipboardData?.getData('text')
+      const paste = e.clipboardData?.getData('text')
       const selection = window.getSelection()
-      if (!paste || !selection?.rangeCount) return
-      selection.deleteFromDocument()
-      selection.getRangeAt(0).insertNode(document.createTextNode(paste))
+      this._insertText(paste, selection)
     }
 
     this._initEvents()
@@ -129,9 +125,10 @@ export class Editor extends EventEmitter {
    * @param html `string`
    */
   setHtml(html: string): void {
-    this.$editor.innerHTML = ''
-    this.insert(html)
+    this.$editor.innerHTML = BLANK_LINE
+    this.insert(html, true)
     this._lastLine()
+    checkIsEmpty(this.$editor)
   }
 
   /**
@@ -146,35 +143,47 @@ export class Editor extends EventEmitter {
   }
 
   /**
-   * @method insert(input)
+   * @method insert(input, toNewParagraph?)
    * 向编辑器中插入内容/HTML代码/元素等
    * insert html or element to content element
    * @param input `string | HTMLElement`
+   * @param toNewParagraph `boolean` Insert text to new paragraph, default `false`
    */
-  insert(input: string | HTMLElement): void {
+  insert(input: string | HTMLElement, toNewParagraph = false): void {
     // insert HTMLElement
     if (input instanceof HTMLElement) {
       this._insert(input)
     }
     // insert string
     else {
-      const el = createElement<HTMLDivElement>('div')
-      el.innerHTML = input
-      slice<Node, NodeList>(el.childNodes).forEach((node) => {
-        // element node
-        if (node.nodeType === Node.ELEMENT_NODE) {
-          // <br> element
-          if (node.nodeName === NODE_NAME_BR) {
-            this._insert(createElement(NODE_NAME_SECTION, {}, '<br/>'))
-          } else {
-            this._insert(node as HTMLElement)
+      const el = createElement<HTMLDivElement>('div', {}, input)
+      const childNodes = slice<Node, NodeList>(el.childNodes)
+      // Insert text content at the cursor position
+      if (
+        !toNewParagraph &&
+        !this.options.insertTextToNewParagraph &&
+        childNodes.every((node) => node.nodeType === Node.TEXT_NODE)
+      ) {
+        return this._insertText(input)
+      }
+      // Insert content into new paragraph
+      else {
+        childNodes.forEach((node) => {
+          // element node
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            // <br> element
+            if (node.nodeName === NODE_NAME_BR) {
+              this._insert(createElement(NODE_NAME_SECTION, {}, '<br/>'))
+            } else {
+              this._insert(node as HTMLElement)
+            }
           }
-        }
-        // text
-        else if (node.textContent) {
-          this._insert(createElement(NODE_NAME_SECTION, {}, node.textContent))
-        }
-      })
+          // text
+          else if (node.textContent) {
+            this._insert(createElement(NODE_NAME_SECTION, {}, node.textContent))
+          }
+        })
+      }
     }
     this._dispatchChange()
   }
@@ -185,21 +194,34 @@ export class Editor extends EventEmitter {
    * @private
    */
   private _insert(input: HTMLElement): void {
-    const currentSection = this.getCurrentNode()
-    if (currentSection) {
-      if (isBrSection(currentSection)) {
-        this.$editor.insertBefore(input, currentSection)
-      } else {
-        this.$editor.insertBefore(input, currentSection.nextElementSibling)
-      }
+    const currentSection = this.getCursorElement()
+    if (isBrSection(currentSection)) {
+      this.$editor.insertBefore(input, currentSection)
     } else {
-      this.$editor.append(input)
+      this.$editor.insertBefore(input, currentSection.nextElementSibling)
     }
+
     if (!this.allowedNodeNames.includes(input.nodeName)) {
-      input = changeNodeName(input, NODE_NAME_SECTION)
+      input = changeNodeName(input, NODE_NAME_SECTION)!
     }
     // 设置光标元素对象
-    this.cursor.setRange(input)
+    this.setCursorElement(input)
+  }
+
+  private _insertText(input?: string, selection?: Selection | null): void {
+    if (!input) return
+    selection = selection ?? window.getSelection()
+    // 编辑器未出发focus时，直接使用`insert(string)`时
+    // When the editor does not start focus, when using `insert(string)` directly
+    if (!selection?.rangeCount) {
+      return this.insert(input, true)
+    }
+    // 正常操作：光标在编辑器中，将文本插入至光标处
+    // Normal operate: cursor in editor, insert text at cursor
+    selection.deleteFromDocument()
+    selection.getRangeAt(0).insertNode(createTextNode(input))
+    this.setCursorElement(selection.getRangeAt(0).endContainer)
+    this._dispatchChange()
   }
 
   /**
@@ -208,6 +230,7 @@ export class Editor extends EventEmitter {
    * @private
    */
   private _lastLine(): void {
+    // if (e) {}
     if (!isBrSection(this.$editor.lastElementChild)) {
       this.$editor.appendChild(createElement('section', {}, '<br>'))
     }
@@ -223,10 +246,11 @@ export class Editor extends EventEmitter {
   changeNodeName(nodeName: string): boolean {
     // 判断nodeName是否被允许设置
     if (!this.allowedNodeNames.includes(nodeName.toUpperCase())) return false
-    const currentSection = this.getCurrentNode()
+    const currentSection = this.getCursorElement()
     const el = changeNodeName(currentSection, nodeName)
+    console.log(el)
     if (el) {
-      this.cursor.setRange(el)
+      this.setCursorElement(el)
       this._dispatchChange()
       return true
     }
@@ -241,7 +265,7 @@ export class Editor extends EventEmitter {
    * @param value `any`
    */
   changeStyles(styles: CSSProperties | string, value?: unknown): void {
-    const current = this.getCurrentNode(true)
+    const current = this.getCursorElement(true)
     if (current) {
       const s: CSSProperties = typeof styles === 'string' ? { [styles]: value } : styles
       current.setAttribute('style', toStrStyles(getStyles(current), s))
@@ -263,18 +287,32 @@ export class Editor extends EventEmitter {
    * @return `CSSProperties`
    */
   getStyles(): CSSProperties {
-    return getStyles(this.getCurrentNode())
+    return getStyles(this.getCursorElement())
+  }
+
+  setCursorElement(el?: Node | HTMLElement | null): void {
+    if (el instanceof Node) {
+      while (el) {
+        if (el.nodeType === Node.ELEMENT_NODE) {
+          this._cursorElement = el as HTMLElement
+          break
+        }
+        el = el.parentElement
+      }
+    } else if (el) {
+      this._cursorElement = el
+    }
   }
 
   /**
-   * @method getCurrentNode(isOnlyContentChild?)
+   * @method getCursorElement(isOnlyEditorChild?)
    * 获取光标所在的元素
    * Get the element where the cursor is located
-   * @param isOnlyContentChild `boolean` Must be a child element of editor content. For example: when it is `false`, the `li` element is returned in `ul/ol`, and when it is `true`, the `ul/ol` element is returned.
-   * @return `HTMLElement | null`
+   * @param isOnlyEditorChild `boolean` Must be a child element of editor `HTMLElement`. For example: when it is `false`, the `li` element is returned in `ul/ol`, and when it is `true`, the `ul/ol` element is returned.
+   * @return `HTMLElement`
    */
-  getCurrentNode(isOnlyContentChild = false): HTMLElement | null {
-    return this.cursor.getCurrentNode(isOnlyContentChild)
+  getCursorElement(isOnlyEditorChild = false): HTMLElement {
+    return getCursorElement(this._cursorElement, this.$editor, isOnlyEditorChild)
   }
 
   /**

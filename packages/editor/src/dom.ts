@@ -4,8 +4,8 @@
  * Date: 2022/05/09 21:12:46 (GMT+0900)
  */
 import { CSSProperties } from '@zx-editor/types'
-import { $, createElement, toStrStyles, slice } from 'zx-sml'
-import { ROOT_CLASS_NAME, NODE_NAME_SECTION, REPLACE_NODE_LIST } from './const'
+import { createElement, toStrStyles, slice } from 'zx-sml'
+import { ROOT_CLASS_NAME, NODE_NAME_SECTION, REPLACE_NODE_LIST, BLANK_LINE } from './const'
 import { isBrSection, isUlElement, replaceHtmlTag } from './helpers'
 import { EditorOptions } from './options'
 
@@ -35,7 +35,7 @@ export const initContentDom = (options: EditorOptions): HTMLDivElement => {
   }
   if (options.editable) contentAttrs.contenteditable = 'true'
 
-  return createElement<HTMLDivElement>('div', contentAttrs, '<section><br></section>')
+  return createElement<HTMLDivElement>('div', contentAttrs, BLANK_LINE)
 }
 
 /**
@@ -153,4 +153,20 @@ export const checkIsEmpty = (el: HTMLElement): void => {
   } else {
     el.classList.remove('is-empty')
   }
+}
+
+export function getCursorElement(
+  el: HTMLElement | null,
+  rootElement: HTMLElement,
+  isOnlyEditorChild = false,
+): HTMLElement {
+  while (el && rootElement !== el) {
+    // li元素判断
+    if (!isOnlyEditorChild && el.nodeName === 'LI' && el.parentElement?.parentElement === rootElement) {
+      return el
+    }
+    if (el.parentElement === rootElement) return el
+    el = el.parentElement
+  }
+  return rootElement.lastElementChild as HTMLElement
 }

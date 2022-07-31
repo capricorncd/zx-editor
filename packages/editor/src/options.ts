@@ -37,6 +37,8 @@ export interface EditorOptions {
   customPasteHandler?: (e: ClipboardEvent) => void
   // 编辑器自定义样式
   styles?: CSSProperties
+  // insert text to new paragraph, default `false`
+  insertTextToNewParagraph?: boolean
 }
 
 /**
@@ -59,51 +61,5 @@ export const DEF_OPTIONS: EditorOptions = {
   textColor: '',
   // 自定义粘贴处理函数
   customPasteHandler: undefined,
-  // /**
-  //  * ******************************
-  //  * toolbar options
-  //  * ******************************
-  //  */
-  // // Has the toolbar been fixed?
-  // toolbarBeenFixed: true,
-  // toolbarHeight: 50,
-  // // buttons name, and order
-  // toolbarButtons: ['select-picture', 'text-style'],
-  // /**
-  //  * ******************************
-  //  * image options
-  //  * ******************************
-  //  */
-  // // customize Picture Handler
-  // // customPictureHandler: undefined,
-  // // image max width
-  // imageMaxWidth: 720,
-  // // image max size, unit Kib, default 20M
-  // imageMaxSize: 20480,
-  // // template
-  // imageSectionTemp:
-  //   '<section class="child-is-picture"><img src="{url}" loading="lazy"></section>',
-  // // GIF pictures are not processed
-  // ignoreGif: true,
-  // // Force the width/height of the picture, even if the width/height of the picture
-  // // is smaller than the target width/height
-  // forceImageResize: false,
-  // /**
-  //  * ******************************
-  //  * text style options
-  //  * ******************************
-  //  */
-  // // text style, value ['#333', '#f00', ...]
-  // // textStyleColors: undefined,
-  // textStyleTitle: 'Set Style',
-  // textStyleHeadLeftBtnText: 'Clear style',
-  // textStyleHeadAlign: 'center',
-  // /**
-  //  * ******************************
-  //  * color options
-  //  * ******************************
-  //  */
-  // mainColor: '',
-  // // border color
-  // borderColor: '',
+  insertTextToNewParagraph: false,
 }

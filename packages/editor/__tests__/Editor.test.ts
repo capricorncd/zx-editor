@@ -57,17 +57,17 @@ describe('Editor', () => {
     expect(editor.getHtml()).toBe('<section style="color:blue;font-size:20px">Text</section>')
   })
 
-  // getCurrentNode
-  it('getCurrentNode', () => {
+  // getCursorElement
+  it('getCursorElement', () => {
     editor.insert('Text')
     const currentNode = editor.$editor.children[0]
 
-    expect(editor.getCurrentNode()?.innerHTML).toBe(currentNode.innerHTML)
+    expect(editor.getCursorElement().innerHTML).toBe(currentNode.innerHTML)
 
     editor.changeNodeName('UL')
 
-    expect(editor.getCurrentNode()).toBe($('li', editor.$editor))
-    expect(editor.getCurrentNode(true)).toBe($('ul', editor.$editor))
+    expect(editor.getCursorElement()).toBe($('ul', editor.$editor))
+    expect(editor.getCursorElement(true)).toBe($('ul', editor.$editor))
   })
 
   it('getHtml', () => {
@@ -91,7 +91,6 @@ describe('Editor', () => {
     // 再插入文本
     editor.insert('Text')
     expect(editorInsert).toHaveBeenCalled()
-    expect(editorInsert).toBeCalledTimes(2)
 
     expect(editor.getHtml()).toBe('<section><img></section><section>Text</section>')
   })

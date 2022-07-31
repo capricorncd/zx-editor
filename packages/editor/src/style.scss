@@ -24,4 +24,8 @@
     line-height: var(--line-height);
     content: var(--placeholder);
   }
+  img,
+  video {
+    max-width: 100%;
+  }
 }

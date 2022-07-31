@@ -31,3 +31,5 @@ export const REPLACE_NODE_LIST = [
   'H6',
   'BLOCKQUOTE',
 ]
+
+export const BLANK_LINE = '<section><br></section>'
