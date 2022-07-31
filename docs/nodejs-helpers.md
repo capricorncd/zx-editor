@@ -3,7 +3,7 @@
 Some tool functions used in the Nodejs environment
 
  ```js
- const { mkdirSync } = require('zx-editor/packages/nodejs')
+ const { mkdirSync } = require('zx-editor/nodejs-helpers')
 
  mkdirSync('./a/b/c')
  ```
@@ -34,8 +34,8 @@ Get comments from the `input` file or directory.
 
 - @param input `string` The target file or directory.
 - @param rootDirName `string` The name of the root directory.
-- @param needArray `boolean` It's true will be returned an array.
-- @param data `object` It's the returned data.
+- @param needArray `boolean` It's true will be returned an array. default `false`
+- @param data `object` It's the returned data. default `{}`
 
 - @returns `object | array` It's an array if `needArray` is true.
 
@@ -62,7 +62,7 @@ Output the obtained annotation content as a document.
 - @param data `object | array` Annotation content obtained from the source.
 - @param outputDirOrFile `string` The file or directory where the output will be written.
 
-- @returns `string | null` output file name
+- @returns `string | null` output file path
 
 ### warn(...args)
 
