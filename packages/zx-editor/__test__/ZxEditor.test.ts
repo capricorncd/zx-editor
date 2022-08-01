@@ -3,8 +3,8 @@
  * https://github.com/capricorncd
  * Date: 2022/05/07 22:08:45 (GMT+0900)
  */
-import { createElement } from '@zx-editor/helpers'
 import { describe, it, expect, beforeEach } from 'vitest'
+import { createElement } from 'zx-sml'
 import { ZxEditor } from '../src'
 
 describe('ZxEditor', () => {

@@ -5,8 +5,10 @@
  */
 export type CSSProperties = Record<string, any>
 
+export type AnyObject = Record<string, any>
+
 export interface VirtualNode {
   tag: string
-  attrs?: Record<string, any>
+  attrs?: AnyObject
   child?: (VirtualNode | string)[] | string
 }

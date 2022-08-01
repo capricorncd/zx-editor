@@ -102,7 +102,9 @@ Editor initialization parameters
 interface EditorOptions {
   // container that Editor parent HTMLElement
   container?: string | HTMLElement
-  // The `contenteditable` global attribute is an enumerated attribute indicating if the element should be editable by the user. If so, the browser modifies its widget to allow editing. default `true`.
+  // The `contenteditable` global attribute is an enumerated attribute indicating
+  // if the element should be editable by the user.
+  // If so, the browser modifies its widget to allow editing. default `true`.
   editable?: boolean
   // 编辑器内容为空是的提示内容，default `请在此输入内容..`
   placeholder?: string

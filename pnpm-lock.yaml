@@ -100,17 +100,19 @@ importers:
     specifiers:
       '@zx-editor/editor': workspace:*
       '@zx-editor/event-emitter': workspace:*
-      '@zx-editor/helpers': workspace:*
+      '@zx-editor/helpers-nodejs': workspace:*
       '@zx-editor/style-panel': workspace:*
       '@zx-editor/toolbar': workspace:*
       '@zx-editor/types': workspace:*
+      image-process: ^4.2.1
     dependencies:
       '@zx-editor/editor': link:../editor
       '@zx-editor/event-emitter': link:../event-emitter
-      '@zx-editor/helpers': link:../helpers
+      '@zx-editor/helpers-nodejs': link:../nodejs
       '@zx-editor/style-panel': link:../style-panel
       '@zx-editor/toolbar': link:../toolbar
       '@zx-editor/types': link:../types
+      image-process: 4.2.1
 
 packages:
   /@eslint/eslintrc/1.3.0:
@@ -1743,6 +1745,13 @@ packages:
       { integrity: sha512-CmxgYGiEPCLhfLnpPp1MoRmifwEIOgjcHXxOBjv7mY96c+eWScsOP9c112ZyLdWHi0FxHjI+4uVhKYp/gcdRmQ== }
     engines: { node: '>= 4' }
     dev: true
+
+  /image-process/4.2.1:
+    resolution:
+      { integrity: sha512-TipcuLO8vxUBfuH4TA+fvcnd1V/+KzqqPTdfa10CWE7pl5tg0P/Doo9aThsAyrrVJ4WacO3rfj/dnNSYb/2hdQ== }
+    dependencies:
+      zx-sml: 0.2.1
+    dev: false
 
   /immutable/4.1.0:
     resolution:

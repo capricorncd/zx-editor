@@ -4,8 +4,9 @@
  * Date: 2022/05/14 23:09:20 (GMT+0900)
  */
 import { Editor, EditorPlugin } from '@zx-editor/editor'
-import { $, $$, createElement, createNode, getStyles } from '@zx-editor/helpers'
+import { createNode, getStyles } from '@zx-editor/helpers'
 import { VirtualNode } from '@zx-editor/types'
+import { $, $$, createElement } from 'zx-sml'
 import { DEF_COLORS, DEF_OPTIONS, STYLE_NODE_DATA, TAG_NODE_DATA } from './const'
 import { createColorVNode } from './helpers'
 import { StylePanelOptions } from './options'
@@ -38,7 +39,7 @@ export class StylePanel implements EditorPlugin {
     const headerLeft = createElement(
       'div',
       { class: `${rootClassName}__header__left` },
-      options.textStyleHeadLeftBtnText
+      options.textStyleHeadLeftBtnText,
     )
     const headerSwitch = createElement('div', { class: `${rootClassName}__header__switch` })
     header.append(headerLeft, headerSwitch)

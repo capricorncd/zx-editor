@@ -1,6 +1,6 @@
 $iconSize: 50px;
 
-.zx-editor-toolbar {
+.zx-editor__toolbar {
   position: fixed;
   z-index: 999;
   left: 0;
@@ -15,7 +15,7 @@ $iconSize: 50px;
     top: 0;
     left: 0;
     width: 100%;
-    height: $iconSize;
+    height: var(--bar-height);
     overflow-y: hidden;
     overflow-x: auto;
     white-space: nowrap;
@@ -24,11 +24,10 @@ $iconSize: 50px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: $iconSize;
-      height: $iconSize;
+      width: var(--bar-height);
+      height: var(--bar-height);
       cursor: pointer;
-      vertical-align: top;
-      &[data-name='select-picture'] {
+      &[data-name='choose-picture'] {
         background: url('./camera.svg') no-repeat center center;
         background-size: 60%;
         opacity: 0.4;

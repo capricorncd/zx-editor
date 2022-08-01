@@ -3,7 +3,7 @@
  * Author: Capricorncd
  * Released under the MIT License
  * Repository: https://github.com/capricorncd/zx-editor
- * Released on: 2022-07-31 16:38:07 (GMT+0900)
+ * Released on: 2022-08-01 22:07:12 (GMT+0900)
  * Copyright © 2018-present, Capricorncd
  */
 var k = Object.defineProperty;
@@ -182,7 +182,10 @@ function b(...t) {
 L.exports.formatDate;
 L.exports.toDate;
 L.exports.toTwoDigits;
-const G = "zx-editor__editor", N = "SECTION", J = "BR", B = ["SECTION", "H1", "H2", "H3", "H4", "H5", "BLOCKQUOTE", "UL", "OL"], X = [
+const $ = (t, n = "style") => t ? (t.getAttribute(n) || "").split(/\s?;\s?/).reduce((s, i) => {
+  const [r, o] = i.split(/\s?:\s?/);
+  return r && (s[I(r)] = o), s;
+}, {}) : {}, G = (t) => document.createTextNode(t), J = "zx-editor__editor", N = "SECTION", X = "BR", B = ["SECTION", "H1", "H2", "H3", "H4", "H5", "BLOCKQUOTE", "UL", "OL"], Z = [
   "DIV",
   "P",
   "ARTICLE",
@@ -214,15 +217,6 @@ function H(t) {
   const n = T(t.childNodes);
   return n.length === 1 && n[0].nodeName === "BR";
 }
-function $(t, n = "style") {
-  return t ? (t.getAttribute(n) || "").split(/\s?;\s?/).reduce((s, i) => {
-    const [r, o] = i.split(/\s?:\s?/);
-    return r && (s[I(r)] = o), s;
-  }, {}) : {};
-}
-function Z(t) {
-  return document.createTextNode(t);
-}
 const ee = (t) => {
   const n = {
     minHeight: t.minHeight,
@@ -234,7 +228,7 @@ const ee = (t) => {
   };
   t.caretColor && (n.caretColor = t.caretColor), t.textColor && (n.color = t.textColor);
   const e = {
-    class: `${G} is-empty`,
+    class: `${J} is-empty`,
     style: b(n)
   };
   return t.editable && (e.contenteditable = "true"), g("div", e, j);
@@ -265,7 +259,7 @@ const ee = (t) => {
       (u = r.parentElement) == null || u.insertBefore(o, r), (l = r.parentElement) == null || l.removeChild(r);
     return o;
   }
-  if (X.includes(e)) {
+  if (Z.includes(e)) {
     if (/UL|OL/.test(s)) {
       const c = t.previousElementSibling, d = t.nextElementSibling;
       if (c && w(c)) {
@@ -351,7 +345,7 @@ class se extends K {
       if (!s && !this.options.insertTextToNewParagraph && r.every((o) => o.nodeType === Node.TEXT_NODE))
         return this._insertText(e);
       r.forEach((o) => {
-        o.nodeType === Node.ELEMENT_NODE ? o.nodeName === J ? this._insert(g(N, {}, "<br/>")) : this._insert(o) : o.textContent && this._insert(g(N, {}, o.textContent));
+        o.nodeType === Node.ELEMENT_NODE ? o.nodeName === X ? this._insert(g(N, {}, "<br/>")) : this._insert(o) : o.textContent && this._insert(g(N, {}, o.textContent));
       });
     }
     this._dispatchChange();
@@ -364,7 +358,7 @@ class se extends K {
     if (!!e) {
       if (s = s != null ? s : window.getSelection(), !(s != null && s.rangeCount))
         return this.insert(e, !0);
-      s.deleteFromDocument(), s.getRangeAt(0).insertNode(Z(e)), this.setCursorElement(s.getRangeAt(0).endContainer), this._dispatchChange();
+      s.deleteFromDocument(), s.getRangeAt(0).insertNode(G(e)), this.setCursorElement(s.getRangeAt(0).endContainer), this._dispatchChange();
     }
   }
   _lastLine() {

@@ -9,5 +9,7 @@ export const DEF_OPTIONS: ToolbarOptions = {
   toolbarBeenFixed: true,
   toolbarHeight: 50,
   // buttons name, and order
-  toolbarButtons: ['select-picture', 'text-style'],
+  toolbarButtons: ['choose-picture', 'text-style'],
 }
+
+export const IPHONEX_BOTTOM_OFFSET_HEIGHT = 34

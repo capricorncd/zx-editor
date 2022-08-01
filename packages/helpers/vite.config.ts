@@ -4,18 +4,10 @@
  * Date: 2022/05/07 21:21:11 (GMT+0900)
  */
 /// <reference types="vitest" />
-import { resolve } from 'path'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
   base: './',
-  build: {
-    lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
-      name: 'ZxEditor',
-      fileName: (format) => `zx-editor.${format}.js`,
-    },
-  },
   test: {
     environment: 'jsdom',
   },

@@ -4,11 +4,12 @@
  * Date: 2022/05/05 10:29:43 (GMT+0900)
  */
 import { EventEmitter } from '@zx-editor/event-emitter'
+import { getStyles, createTextNode } from '@zx-editor/helpers'
 import { CSSProperties } from '@zx-editor/types'
 import { $, createElement, slice, toStrStyles } from 'zx-sml'
 import { NODE_NAME_SECTION, NODE_NAME_BR, ALLOWED_NODE_NAMES, BLANK_LINE } from './const'
 import { changeNodeName, initContentDom, checkIsEmpty, getCursorElement } from './dom'
-import { isBrSection, getStyles, createTextNode } from './helpers'
+import { isBrSection } from './helpers'
 import { DEF_OPTIONS, EditorOptions } from './options'
 import './style.scss'
 

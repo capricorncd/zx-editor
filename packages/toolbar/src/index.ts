@@ -5,25 +5,22 @@
  */
 import './toolbar.scss'
 import { Editor, EditorPlugin } from '@zx-editor/editor'
-import { isIPhoneX, addClass, removeClass, classNames, $$, $ } from '@zx-editor/helpers'
+import { isIPhoneX, addClass, removeClass } from '@zx-editor/helpers'
 import { CSSProperties } from '@zx-editor/types'
-import { createElement } from 'zx-sml'
-import { DEF_OPTIONS } from './const'
-import { AddButtonOptions, ToolbarOptions } from './types'
+import { createElement, classNames, $$, $ } from 'zx-sml'
+import { DEF_OPTIONS, IPHONEX_BOTTOM_OFFSET_HEIGHT } from './const'
+import { ButtonOptions, ToolbarOptions } from './types'
 
-export type { AddButtonOptions, ToolbarOptions }
-
-export const IPHONEX_BOTTOM_OFFSET_HEIGHT = 34
+export type { ButtonOptions, ToolbarOptions }
 
 export class Toolbar implements EditorPlugin {
   private editorInstance: Editor | null = null
   public visible: boolean
   private readonly options: ToolbarOptions
-  private readonly height: number
   private readonly $el: HTMLDivElement
   private readonly _btnClickHandler: (e: MouseEvent) => void
 
-  constructor(options: ToolbarOptions) {
+  constructor(options: Partial<ToolbarOptions>) {
     // options
     this.options = {
       ...DEF_OPTIONS,
@@ -31,17 +28,20 @@ export class Toolbar implements EditorPlugin {
     }
 
     // visible
-    this.visible = this.options.toolbarBeenFixed as boolean
+    this.visible = this.options.toolbarBeenFixed
 
     // create element
-    this.height = this.options.toolbarHeight as number
+    const height = this.options.toolbarHeight
     this.$el = createElement(
       'div',
       {
-        class: 'zx-editor-toolbar border-top',
-        style: { height: `${this.height + (isIPhoneX() ? IPHONEX_BOTTOM_OFFSET_HEIGHT : 0)}px` },
+        class: 'zx-editor__toolbar border-top',
+        style: {
+          '--bar-height': height + 'px',
+          height: `${height + (isIPhoneX() ? IPHONEX_BOTTOM_OFFSET_HEIGHT : 0)}px`,
+        },
       },
-      `<dl class="inner-wrapper" style="height:${this.height}px;"></dl>`
+      '<dl class="inner-wrapper"></dl>',
     )
 
     this._btnClickHandler = (e: MouseEvent) => {
@@ -50,7 +50,7 @@ export class Toolbar implements EditorPlugin {
         this.editorInstance.emit('toolbarButtonClick', el.getAttribute('data-name'))
       }
     }
-    ;(this.options.toolbarButtons || []).forEach((btn) => {
+    this.options.toolbarButtons.forEach((btn) => {
       this.addButton({ name: btn })
     })
   }
@@ -81,12 +81,9 @@ export class Toolbar implements EditorPlugin {
    * @param params
    * @param index Insert index
    */
-  addButton(params: AddButtonOptions, index?: number) {
+  addButton(params: ButtonOptions, index?: number) {
     // create $node
     const styles: CSSProperties = { ...params.style }
-    if (this.options.toolbarHeight) {
-      styles.width = styles.height = this.options.toolbarHeight + 'px'
-    }
     const btn = createElement(
       'dd',
       {
@@ -94,7 +91,7 @@ export class Toolbar implements EditorPlugin {
         dataName: params.name,
         style: styles,
       },
-      params.innerHtml
+      params.innerHtml,
     )
 
     // insert to document
