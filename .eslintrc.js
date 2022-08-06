@@ -31,6 +31,8 @@ module.exports = {
     'brace-style': 'off',
     // 'brace-style': 2,
     camelcase: 2,
+    // 对象最后一个属性结尾添加逗号（不能用于json文件）
+    // prettier `{"trailingComma": "all",}` 设置为`es5`会有冲突
     'comma-dangle': [2, 'always-multiline'],
     eqeqeq: [2, 'always', { null: 'ignore' }],
     'object-curly-spacing': [2, 'always'],
