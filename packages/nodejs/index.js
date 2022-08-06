@@ -7,23 +7,16 @@
  * Some tool functions used in the Nodejs environment
  *
  * ```js
- * const { mkdirSync } = require('zx-editor/nodejs-helpers')
+ * const path = require('path')
+ * const { afterBuild } = require('@zx-editor/helpers-nodejs')
+ * const pkg = require('../package.json')
  *
- * mkdirSync('./a/b/c')
+ * afterBuild(path.resolve(__dirname, '../dist'), pkg, true)
  * ```
  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { afterBuild } = require('./after-build')
-const { getCommentsData, outputFile } = require('./create-docs')
-const { mkdirSync } = require('./helpers')
-const { log, warn, error } = require('./log')
 
 module.exports = {
-  getCommentsData,
-  outputFile,
-  mkdirSync,
   afterBuild,
-  log,
-  warn,
-  error,
 }

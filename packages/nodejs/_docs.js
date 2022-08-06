@@ -5,10 +5,10 @@
  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
-const { getCommentsData, outputFile } = require('./index')
+const { getCommentsData, outputFile } = require('zx-sml/nodejs')
 
 function main() {
-  const data = getCommentsData(path.resolve(__dirname, './'), 'packages', true)
+  const data = getCommentsData(path.resolve(__dirname, './'), true)
   outputFile(data, path.resolve(__dirname, './README.md'))
 
   const docsDir = path.resolve(__dirname, '../../docs')
