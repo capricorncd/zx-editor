@@ -6,11 +6,11 @@ instance `new Editor(EditorOptions)`
 
 For example:
 
- ```js
- const editor = new Editor({
-   container: `#container`
- })
- ```
+```js
+const editor = new Editor({
+  container: `#container`
+})
+```
 
 ## Methods
 

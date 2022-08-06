@@ -2,11 +2,13 @@
 
 Some tool functions used in the Nodejs environment
 
- ```js
- const { mkdirSync } = require('zx-editor/nodejs-helpers')
+```js
+const path = require('path')
+const { afterBuild } = require('@zx-editor/helpers-nodejs')
+const pkg = require('../package.json')
 
- mkdirSync('./a/b/c')
- ```
+afterBuild(path.resolve(__dirname, '../dist'), pkg, true)
+```
 
 ## Methods
 
@@ -20,57 +22,13 @@ Handler function after build
 
 - @returns `void`
 
-### error(...args)
+## Types
 
-Output 😡 red color log in console
+### StringObject
 
-- @param args `Array<string>`
-
-- @returns `void`
-
-### getCommentsData(input, rootDirName, needArray?, data?)
-
-Get comments from the `input` file or directory.
-
-- @param input `string` The target file or directory.
-- @param rootDirName `string` The name of the root directory.
-- @param needArray `boolean` It's true will be returned an array. default `false`
-- @param data `object` It's the returned data. default `{}`
-
-- @returns `object | array` It's an array if `needArray` is true.
-
-### log(...args)
-
-Output 😎 green color log in console
-
-- @param args `Array<string>`
-
-- @returns `void`
-
-### mkdirSync(dir)
-
-make a directory synchronously
-
-- @param dir `string` directory path
-
-- @returns `void`
-
-### outputFile(data, outputDirOrFile)
-
-Output the obtained annotation content as a document.
-
-- @param data `object | array` Annotation content obtained from the source.
-- @param outputDirOrFile `string` The file or directory where the output will be written.
-
-- @returns `string | null` output file path
-
-### warn(...args)
-
-Output 😕 yellow color log in console
-
-- @param args `Array<string>`
-
-- @returns `void`
+```ts
+type StringObject = Record<string, string | StringObject>
+```
 
 ## License
 

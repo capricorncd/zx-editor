@@ -2,19 +2,19 @@
 
 This module, in particular, offers the EventEmitter class, which we'll use to handle our events.
 
- ```js
- // For example, let's create a start event, and as a matter of providing a sample,
- // we react to that by just logging to the console:
- const eventEmitter = new EventEmitter()
+```js
+// For example, let's create a start event, and as a matter of providing a sample,
+// we react to that by just logging to the console:
+const eventEmitter = new EventEmitter()
 
- eventEmitter.on('start', () => {
-   console.log('started')
- })
+eventEmitter.on('start', () => {
+  console.log('started')
+})
 
- // When we run
- eventEmitter.emit('start')
- // the event handler function is triggered, and we get the console log.
- ```
+// When we run
+eventEmitter.emit('start')
+// the event handler function is triggered, and we get the console log.
+```
 
 ## Methods
 
@@ -65,7 +65,7 @@ remove an event listener from an event.
 ### EventEmitterCallback
 
 ```ts
- type EventEmitterCallback = (...args: any[]) => void
+type EventEmitterCallback = (...args: any[]) => void
 ```
 
 ## License
