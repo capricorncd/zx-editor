@@ -5,11 +5,11 @@
  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
-const { getCommentsData, outputFile } = require('@zx-editor/helpers-nodejs')
+const { getCommentsData, outputFile } = require('zx-sml/nodejs')
 
 function main() {
   const docsDir = path.resolve(__dirname, '../../../docs')
-  const data = getCommentsData(path.resolve(__dirname, '../src'), 'packages', true)
+  const data = getCommentsData(path.resolve(__dirname, '../src'), true)
   outputFile(data, docsDir)
   outputFile(data, path.resolve(__dirname, '../README.md'))
 }

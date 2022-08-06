@@ -5,7 +5,6 @@
   "author": "capricorncd",
   "main": "./dist/zx-editor.umd.js",
   "module": "./dist/zx-editor.es.js",
-  "style": "./dist/zx-editor.min.css",
   "exports": {
     ".": {
       "import": "./dist/zx-editor.es.js",
@@ -13,9 +12,7 @@
     },
     "./editor": {
       "import": "./dist/editor.es.js",
-      "require": "./dist/editor.umd.js",
-      "style": "./dist/editor.min.css",
-      "sass": "./packages/editor/src/style.scss"
+      "require": "./dist/editor.umd.js"
     },
     "./event-emitter": {
       "import": "./dist/editor.es.js",
@@ -30,7 +27,7 @@
   "types": "types/index.d.ts",
   "files": [
     "dist",
-    "packages/nodejs",
+    "packages/nodejs/*.js",
     "types/index.d.ts"
   ],
   "packageManager": "pnpm@7.6.0",
@@ -38,9 +35,6 @@
     "coverage": "vitest run --coverage",
     "docs": "node scripts/create-docs.js",
     "lint": "eslint . --fix --ext .js,.cjs,.ts"
-  },
-  "dependencies": {
-    "zx-sml": "^0.2.1"
   },
   "devDependencies": {
     "@types/jsdom": "^16.2.14",
@@ -76,5 +70,8 @@
     "url": "https://github.com/capricorncd/zx-editor/issues"
   },
   "homepage": "https://github.com/capricorncd/zx-editor",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "zx-sml": "^0.3.0"
+  }
 }
