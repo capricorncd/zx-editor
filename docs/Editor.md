@@ -122,7 +122,8 @@ allowedNodeNames|`string[]`|no|允许使用的编辑器子元素节点名称， 
 paragraphTailSpacing|`string`/`number`|no|paragraph tail spacing, default 10px
 caretColor|`string`|no|光标颜色
 textColor|`string`|no|编辑器文本默认颜色
-styles|`CSSProperties`|no|自定义用户粘贴处理函数 编辑器自定义样式
+customPasteHandler|`(e: ClipboardEvent) => void`|no|自定义用户粘贴处理函数
+styles|`CSSProperties`|no|编辑器自定义样式
 insertTextToNewParagraph|`boolean`|no|insert text to new paragraph, default `false`
 
 <details>
@@ -167,11 +168,20 @@ interface EditorOptions {
 
 ### EditorPlugin
 
+Prop|Types|Required|Description
+:--|:--|:--|:--
+install|`(e: Editor, parentElement?: HTMLElement) => void`|yes|-
+
+<details>
+<summary>Source Code</summary>
+
 ```ts
 interface EditorPlugin {
   install: (e: Editor, parentElement?: HTMLElement) => void
 }
 ```
+
+</details>
 
 ## License
 

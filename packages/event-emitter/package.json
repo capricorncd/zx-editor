@@ -8,7 +8,7 @@
     "docs": "node scripts/docs.js"
   },
   "devDependencies": {
-    "@zx-editor/helpers-nodejs": "workspace:*"
+    "@zx-editor/nodejs": "workspace:*"
   },
   "author": "Capricorncd",
   "homepage": "https://github.com/capricorncd/zx-editor",

@@ -14,7 +14,7 @@
   "author": "Capricorncd",
   "dependencies": {
     "@zx-editor/event-emitter": "workspace:*",
-    "@zx-editor/helpers-nodejs": "workspace:*",
+    "@zx-editor/nodejs": "workspace:*",
     "@zx-editor/helpers": "workspace:*",
     "@zx-editor/types": "workspace:*"
   },

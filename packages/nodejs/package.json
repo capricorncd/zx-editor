@@ -1,5 +1,5 @@
 {
-  "name": "@zx-editor/helpers-nodejs",
+  "name": "@zx-editor/nodejs",
   "version": "1.0.0",
   "description": "Some functions used in nodejs",
   "main": "index.js",

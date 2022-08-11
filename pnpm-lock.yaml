@@ -20,9 +20,9 @@ importers:
       typescript: ^4.7.4
       vite: ^3.0.3
       vitest: ^0.19.1
-      zx-sml: ^0.4.2
+      zx-sml: ^0.4.3
     dependencies:
-      zx-sml: 0.4.2
+      zx-sml: 0.4.3
     devDependencies:
       '@types/jsdom': 16.2.14
       '@types/node': 17.0.45
@@ -46,19 +46,19 @@ importers:
     specifiers:
       '@zx-editor/event-emitter': workspace:*
       '@zx-editor/helpers': workspace:*
-      '@zx-editor/helpers-nodejs': workspace:*
+      '@zx-editor/nodejs': workspace:*
       '@zx-editor/types': workspace:*
     dependencies:
       '@zx-editor/event-emitter': link:../event-emitter
       '@zx-editor/helpers': link:../helpers
-      '@zx-editor/helpers-nodejs': link:../nodejs
+      '@zx-editor/nodejs': link:../nodejs
       '@zx-editor/types': link:../types
 
   packages/event-emitter:
     specifiers:
-      '@zx-editor/helpers-nodejs': workspace:*
+      '@zx-editor/nodejs': workspace:*
     devDependencies:
-      '@zx-editor/helpers-nodejs': link:../nodejs
+      '@zx-editor/nodejs': link:../nodejs
 
   packages/helpers:
     specifiers:
@@ -100,7 +100,7 @@ importers:
     specifiers:
       '@zx-editor/editor': workspace:*
       '@zx-editor/event-emitter': workspace:*
-      '@zx-editor/helpers-nodejs': workspace:*
+      '@zx-editor/nodejs': workspace:*
       '@zx-editor/style-panel': workspace:*
       '@zx-editor/toolbar': workspace:*
       '@zx-editor/types': workspace:*
@@ -108,7 +108,7 @@ importers:
     dependencies:
       '@zx-editor/editor': link:../editor
       '@zx-editor/event-emitter': link:../event-emitter
-      '@zx-editor/helpers-nodejs': link:../nodejs
+      '@zx-editor/nodejs': link:../nodejs
       '@zx-editor/style-panel': link:../style-panel
       '@zx-editor/toolbar': link:../toolbar
       '@zx-editor/types': link:../types
@@ -3158,9 +3158,9 @@ packages:
       date-utils-2020: 1.0.3
     dev: false
 
-  /zx-sml/0.4.2:
+  /zx-sml/0.4.3:
     resolution:
-      { integrity: sha512-zihAERUBJTHiyY/8SQWz4Nfs7av2kAWVzpcPWFsUcIHYja/GQIO4oQwt+/Brz+ZfULkqL3lJE0IPHVKtexd2xg== }
+      { integrity: sha512-2R4NwzuVDv2kLJ7c2GZQTD8Y62wElo63/NaCQeC2Oh/x/3jnqSW1AkRd7HdkZUebpVCCc96gaMkJxIZ44hrydw== }
     dependencies:
       date-utils-2020: 1.0.3
     dev: false
