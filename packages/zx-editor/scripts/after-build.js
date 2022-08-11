@@ -5,7 +5,7 @@
  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
-const { afterBuild } = require('@zx-editor/helpers-nodejs')
+const { afterBuild } = require('@zx-editor/nodejs')
 
 function main() {
   const distDir = path.resolve(__dirname, '../dist')

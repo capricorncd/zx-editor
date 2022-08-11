@@ -13,7 +13,7 @@
   "dependencies": {
     "@zx-editor/editor": "workspace:*",
     "@zx-editor/event-emitter": "workspace:*",
-    "@zx-editor/helpers-nodejs": "workspace:*",
+    "@zx-editor/nodejs": "workspace:*",
     "@zx-editor/style-panel": "workspace:*",
     "@zx-editor/toolbar": "workspace:*",
     "@zx-editor/types": "workspace:*",
