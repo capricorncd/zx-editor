@@ -108,10 +108,10 @@ export class Editor extends EventEmitter {
   }
 
   /**
-   * @method use(plugin, parentElement?)
+   * @method use(plugin, parentElement)
    * extension, 扩展插件
    * @param plugin `EditorPlugin`
-   * @param parentElement `HTMLElement`
+   * @param parentElement? `HTMLElement`
    */
   use(plugin: EditorPlugin, parentElement?: HTMLElement): void {
     if (typeof plugin.install === 'function') {
@@ -144,11 +144,11 @@ export class Editor extends EventEmitter {
   }
 
   /**
-   * @method insert(input, toNewParagraph?)
+   * @method insert(input, toNewParagraph)
    * 向编辑器中插入内容/HTML代码/元素等
    * insert html or element to content element
    * @param input `string | HTMLElement`
-   * @param toNewParagraph `boolean` Insert text to new paragraph, default `false`
+   * @param toNewParagraph? `boolean` Insert text to new paragraph, default `false`
    */
   insert(input: string | HTMLElement, toNewParagraph = false): void {
     // insert HTMLElement
@@ -259,11 +259,11 @@ export class Editor extends EventEmitter {
   }
 
   /**
-   * @method changeStyles(styles)
+   * @method changeStyles(styles, value)
    * 修改光标所在元素的样式
    *  Change the style of the element where the cursor is located
    * @param styles `CSSProperties | string`
-   * @param value `any`
+   * @param value? `any`
    */
   changeStyles(styles: CSSProperties | string, value?: unknown): void {
     const current = this.getCursorElement(true)
@@ -306,10 +306,10 @@ export class Editor extends EventEmitter {
   }
 
   /**
-   * @method getCursorElement(isOnlyEditorChild?)
+   * @method getCursorElement(isOnlyEditorChild)
    * 获取光标所在的元素
    * Get the element where the cursor is located
-   * @param isOnlyEditorChild `boolean` Must be a child element of editor `HTMLElement`. For example: when it is `false`, the `li` element is returned in `ul/ol`, and when it is `true`, the `ul/ol` element is returned.
+   * @param isOnlyEditorChild? `boolean` Must be a child element of editor `HTMLElement`. For example: when it is `false`, the `li` element is returned in `ul/ol`, and when it is `true`, the `ul/ol` element is returned.
    * @return `HTMLElement`
    */
   getCursorElement(isOnlyEditorChild = false): HTMLElement {

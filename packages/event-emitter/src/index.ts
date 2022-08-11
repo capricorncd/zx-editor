@@ -87,7 +87,7 @@ export class EventEmitter {
    * @method off(eventName, fn)
    * remove an event listener from an event.
    * @param eventName `string` custom event name.
-   * @param fn `Function` callback function.
+   * @param fn? `Function` callback function. When `fn` is not a function, all monitoring functions of `eventName` will be removed.
    * @returns `EventEmitter`
    */
   off(eventName: string, fn?: EventEmitterCallback): EventEmitter {

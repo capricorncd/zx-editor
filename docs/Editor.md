@@ -19,17 +19,21 @@ const editor = new Editor({
 修改光标所在元素的标签
 Replace the tag of the element under the cursor
 
-- @param nodeName `string` For example: `UL`, `SECTION` ...
+Param|Types|Required|Description
+:--|:--|:--|:--
+nodeName|`string`|yes|For example: `UL`, `SECTION` ...
 
 - @returns `boolean`
 
-### changeStyles(styles)
+### changeStyles(styles, value)
 
 修改光标所在元素的样式
 Change the style of the element where the cursor is located
 
-- @param styles `CSSProperties | string`
-- @param value `any`
+Param|Types|Required|Description
+:--|:--|:--|:--
+styles|`CSSProperties`/`string`|yes|-
+value|`any`|no|-
 
 - @returns `void`
 
@@ -40,12 +44,14 @@ destroy events
 
 - @returns `void`
 
-### getCursorElement(isOnlyEditorChild?)
+### getCursorElement(isOnlyEditorChild)
 
 获取光标所在的元素
 Get the element where the cursor is located
 
-- @param isOnlyEditorChild `boolean` Must be a child element of editor `HTMLElement`. For example: when it is `false`, the `li` element is returned in `ul/ol`, and when it is `true`, the `ul/ol` element is returned.
+Param|Types|Required|Description
+:--|:--|:--|:--
+isOnlyEditorChild|`boolean`|no|Must be a child element of editor `HTMLElement`. For example: when it is `false`, the `li` element is returned in `ul/ol`, and when it is `true`, the `ul/ol` element is returned.
 
 - @returns `HTMLElement`
 
@@ -64,13 +70,15 @@ Get the `style` object of the element where the cursor is located
 
 - @returns `CSSProperties`
 
-### insert(input, toNewParagraph?)
+### insert(input, toNewParagraph)
 
 向编辑器中插入内容/HTML代码/元素等
 insert html or element to content element
 
-- @param input `string | HTMLElement`
-- @param toNewParagraph `boolean` Insert text to new paragraph, default `false`
+Param|Types|Required|Description
+:--|:--|:--|:--
+input|`string`/`HTMLElement`|yes|-
+toNewParagraph|`boolean`|no|Insert text to new paragraph, default `false`
 
 - @returns `void`
 
@@ -79,16 +87,20 @@ insert html or element to content element
 设置编辑器内容，会覆盖之前内容
 set html to the content element
 
-- @param html `string`
+Param|Types|Required|Description
+:--|:--|:--|:--
+html|`string`|yes|-
 
 - @returns `void`
 
-### use(plugin, parentElement?)
+### use(plugin, parentElement)
 
 extension, 扩展插件
 
-- @param plugin `EditorPlugin`
-- @param parentElement `HTMLElement`
+Param|Types|Required|Description
+:--|:--|:--|:--
+plugin|`EditorPlugin`|yes|-
+parentElement|`HTMLElement`|no|-
 
 - @returns `void`
 
@@ -97,6 +109,24 @@ extension, 扩展插件
 ### EditorOptions
 
 Editor initialization parameters
+
+Prop|Types|Required|Description
+:--|:--|:--|:--
+container|`string`/`HTMLElement`|no|container that Editor parent HTMLElement
+editable|`boolean`|no|The `contenteditable` global attribute is an enumerated attribute indicating if the element should be editable by the user. If so, the browser modifies its widget to allow editing. default `true`.
+placeholder|`string`|no|编辑器内容为空是的提示内容，default `请在此输入内容..`
+placeholderColor|`string`|no|placeholder color, default `#999`
+lineHeight|`string`/`number`|no|编辑器内容行高，default `1.5`
+minHeight|`string`/`number`|no|min height, default `50vh`
+allowedNodeNames|`string[]`|no|允许使用的编辑器子元素节点名称， default `['SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'BLOCKQUOTE', 'UL', 'OL']` allowed Node names
+paragraphTailSpacing|`string`/`number`|no|paragraph tail spacing, default 10px
+caretColor|`string`|no|光标颜色
+textColor|`string`|no|编辑器文本默认颜色
+styles|`CSSProperties`|no|自定义用户粘贴处理函数 编辑器自定义样式
+insertTextToNewParagraph|`boolean`|no|insert text to new paragraph, default `false`
+
+<details>
+<summary>Source Code</summary>
 
 ```ts
 interface EditorOptions {
@@ -132,6 +162,8 @@ interface EditorOptions {
   insertTextToNewParagraph?: boolean
 }
 ```
+
+</details>
 
 ### EditorPlugin
 

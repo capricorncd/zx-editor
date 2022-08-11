@@ -28,8 +28,10 @@ remove all listeners for an event.
 
 `emit` is used to trigger an event.
 
-- @param eventName `string`
-- @param args `any`
+Param|Types|Required|Description
+:--|:--|:--|:--
+eventName|`string`|yes|-
+args|`any`|yes|-
 
 - @returns `EventEmitter`
 
@@ -37,8 +39,10 @@ remove all listeners for an event.
 
 remove an event listener from an event.
 
-- @param eventName `string` custom event name.
-- @param fn `Function` callback function.
+Param|Types|Required|Description
+:--|:--|:--|:--
+eventName|`string`|yes|custom event name.
+fn|`Function`|no|callback function. When `fn` is not a function, all monitoring functions of `eventName` will be removed.
 
 - @returns `EventEmitter`
 
@@ -46,8 +50,10 @@ remove an event listener from an event.
 
 `on` is used to add a callback function that's going to be executed when the event is triggered.
 
-- @param eventName `string` custom event name.
-- @param fn `Function` callback function.
+Param|Types|Required|Description
+:--|:--|:--|:--
+eventName|`string`|yes|custom event name.
+fn|`Function`|yes|callback function.
 
 - @returns `EventEmitter`
 
@@ -55,8 +61,10 @@ remove an event listener from an event.
 
 `once` add a one-time listener.
 
-- @param eventName `string` custom event name.
-- @param fn `Function` callback function.
+Param|Types|Required|Description
+:--|:--|:--|:--
+eventName|`string`|yes|custom event name.
+fn|`Function`|yes|callback function.
 
 - @returns `EventEmitter`
 
