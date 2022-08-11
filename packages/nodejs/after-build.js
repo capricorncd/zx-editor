@@ -48,11 +48,11 @@ function addHeaderAndReplaceVersion(file, pkg) {
 }
 
 /**
- * @method afterBuild(distDir, pkg, needMoveToDist?)
+ * @method afterBuild(distDir, pkg, needMoveToDist)
  * Handler function after build
  * @param distDir `string` The directory where the processed files are located.
  * @param pkg `object` package.json
- * @param needMoveToDist `boolean` optional parameter. It's true, will be move build files to the root dist directory.
+ * @param needMoveToDist? `boolean` optional parameter. It's true, will be move build files to the root dist directory.
  */
 function main(distDir, pkg, needMoveToDist = false) {
   // rename style.css to packageName.css

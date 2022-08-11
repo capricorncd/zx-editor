@@ -9,10 +9,9 @@
 type StringObject = Record<string, string | StringObject>
 
 /**
- * @method afterBuild(distDir, pkg, needMoveToDist?)
- * Handler function after build
- * @param distDir `string` The directory where the processed files are located.
- * @param pkg `object` package.json
- * @param needMoveToDist `boolean` optional parameter. It's true, will be move build files to the root dist directory.
+ * see after-build.js
+ * @param distDir
+ * @param pkg
+ * @param needMoveToDist
  */
 export function afterBuild(distDir: string, pkg: StringObject, needMoveToDist: boolean = false): void

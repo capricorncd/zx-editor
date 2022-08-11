@@ -12,13 +12,15 @@ afterBuild(path.resolve(__dirname, '../dist'), pkg, true)
 
 ## Methods
 
-### afterBuild(distDir, pkg, needMoveToDist?)
+### afterBuild(distDir, pkg, needMoveToDist)
 
 Handler function after build
 
-- @param distDir `string` The directory where the processed files are located.
-- @param pkg `object` package.json
-- @param needMoveToDist `boolean` optional parameter. It's true, will be move build files to the root dist directory.
+Param|Types|Required|Description
+:--|:--|:--|:--
+distDir|`string`|yes|The directory where the processed files are located.
+pkg|`object`|yes|package.json
+needMoveToDist|`boolean`|no|optional parameter. It's true, will be move build files to the root dist directory.
 
 - @returns `void`
 

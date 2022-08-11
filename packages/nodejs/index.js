@@ -17,6 +17,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const { afterBuild } = require('./after-build')
 
+const outputFileOptions = {
+  endLines: ['', '## License', '', 'MIT License © 2018-Present [Capricorncd](https://github.com/capricorncd).'],
+  typeWithAuto: true,
+}
+
 module.exports = {
   afterBuild,
+  outputFileOptions,
 }
