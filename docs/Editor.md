@@ -32,7 +32,7 @@ Change the style of the element where the cursor is located
 
 Param|Types|Required|Description
 :--|:--|:--|:--
-styles|`CSSProperties`/`string`|yes|-
+styles|`CSSProperties`/`string`|no|When it's `undefined` or null, all styles will be removed.
 value|`any`|no|-
 
 - @returns `void`
@@ -118,6 +118,7 @@ placeholder|`string`|no|编辑器内容为空是的提示内容，default `请�
 placeholderColor|`string`|no|placeholder color, default `#999`
 lineHeight|`string`/`number`|no|编辑器内容行高，default `1.5`
 minHeight|`string`/`number`|no|min height, default `50vh`
+paddingBottom|`string`/`number`|no|Set paddingBottom to avoid being obscured by toolbar or style panel, default `50vh`
 allowedNodeNames|`string[]`|no|允许使用的编辑器子元素节点名称， default `['SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'BLOCKQUOTE', 'UL', 'OL']` allowed Node names
 paragraphTailSpacing|`string`/`number`|no|paragraph tail spacing, default 10px
 caretColor|`string`|no|光标颜色
@@ -145,6 +146,8 @@ interface EditorOptions {
   lineHeight?: string | number
   // min height, default `50vh`
   minHeight?: string | number
+  // Set paddingBottom to avoid being obscured by toolbar or style panel, default `50vh`
+  paddingBottom?: string | number
   // 允许使用的编辑器子元素节点名称，
   // default `['SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'BLOCKQUOTE', 'UL', 'OL']`
   // allowed Node names
