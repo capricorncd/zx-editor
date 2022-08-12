@@ -8,9 +8,11 @@
   overflow-y: auto;
   line-height: var(--line-height);
   outline: none;
+  padding-bottom: var(--padding-bottom);
   > * {
     position: relative;
     margin-top: var(--paragraph-spacing);
+    word-wrap: break-word;
     &:first-child {
       margin-top: 0;
     }

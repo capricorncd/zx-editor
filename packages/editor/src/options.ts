@@ -25,6 +25,8 @@ export interface EditorOptions {
   lineHeight?: string | number
   // min height, default `50vh`
   minHeight?: string | number
+  // Set paddingBottom to avoid being obscured by toolbar or style panel, default `50vh`
+  paddingBottom?: string | number
   // 允许使用的编辑器子元素节点名称，
   // default `['SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'BLOCKQUOTE', 'UL', 'OL']`
   // allowed Node names
@@ -52,6 +54,7 @@ export const DEF_OPTIONS: EditorOptions = {
   // 编辑器输入内容绝对定位
   // editor min height
   minHeight: '50vh',
+  paddingBottom: '50vh',
   // style
   placeholder: '请在此输入内容..',
   placeholderColor: '#999',

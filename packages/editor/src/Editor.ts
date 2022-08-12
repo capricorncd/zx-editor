@@ -72,7 +72,7 @@ export class Editor extends EventEmitter {
     // content event handler
     this._eventHandler = (e: Event) => {
       const type = e.type
-      if (type === 'blur') {
+      if (type === 'blur' || type === 'click') {
         this._lastLine()
         this.setCursorElement(window.getSelection()?.getRangeAt(0).endContainer)
       }
@@ -86,8 +86,9 @@ export class Editor extends EventEmitter {
       if (typeof this.options.customPasteHandler === 'function') {
         return this.options.customPasteHandler(e)
       }
-      e.stopPropagation()
+      e.preventDefault()
       const paste = e.clipboardData?.getData('text')
+      if (!paste) return
       const selection = window.getSelection()
       this._insertText(paste, selection)
     }
@@ -262,14 +263,23 @@ export class Editor extends EventEmitter {
    * @method changeStyles(styles, value)
    * 修改光标所在元素的样式
    *  Change the style of the element where the cursor is located
-   * @param styles `CSSProperties | string`
+   * @param styles? `CSSProperties | string` When it's `undefined` or null, all styles will be removed.
    * @param value? `any`
    */
-  changeStyles(styles: CSSProperties | string, value?: unknown): void {
+  changeStyles(styles?: CSSProperties | string, value?: unknown): void {
     const current = this.getCursorElement(true)
     if (current) {
+      const currentStyles = getStyles(current)
+      // remove all styles
+      if (!styles) {
+        // The current element does not have any styles
+        if (!Object.keys(currentStyles).length) return
+        current.removeAttribute('style')
+        this._dispatchChange()
+        return
+      }
       const s: CSSProperties = typeof styles === 'string' ? { [styles]: value } : styles
-      current.setAttribute('style', toStrStyles(getStyles(current), s))
+      current.setAttribute('style', toStrStyles(currentStyles, s))
       this._dispatchChange()
     }
   }

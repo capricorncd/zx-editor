@@ -22,6 +22,7 @@ export const initContentDom = (options: EditorOptions): HTMLDivElement => {
     '--line-height': options.lineHeight,
     // paragraphTailSpacing
     '--paragraph-spacing': options.paragraphTailSpacing,
+    '--padding-bottom': options.paddingBottom,
     // 用户自定义样式优先
     ...options.styles,
   }
