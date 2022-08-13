@@ -10,6 +10,10 @@ $iconSize: 50px;
   height: $iconSize + 200;
   transform: translateY(-100%);
   opacity: 0;
+  dl,
+  dd {
+    margin: 0;
+  }
   .inner-wrapper {
     position: absolute;
     top: 0;
