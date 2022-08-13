@@ -3,7 +3,7 @@
  * Author: Capricorncd
  * Released under the MIT License
  * Repository: https://github.com/capricorncd/zx-editor
- * Released on: 2022-08-01 22:07:12 (GMT+0900)
+ * Released on: 2022-08-13 12:23:34 (GMT+0900)
  * Copyright © 2018-present, Capricorncd
  */
-.zx-editor__editor{position:relative;overflow-y:auto;line-height:var(--line-height);outline:none}.zx-editor__editor>*{position:relative;margin-top:var(--paragraph-spacing)}.zx-editor__editor>*:first-child{margin-top:0}.zx-editor__editor.is-empty:before{position:absolute;z-index:1;top:0;left:0;pointer-events:none;color:var(--placeholder-color);line-height:var(--line-height);content:var(--placeholder)}.zx-editor__editor img,.zx-editor__editor video{max-width:100%;height:auto}
+.zx-editor__editor{position:relative;overflow-y:auto;line-height:var(--line-height);outline:none;padding-bottom:var(--padding-bottom)}.zx-editor__editor>*{position:relative;padding:0;margin:0;margin-top:var(--paragraph-spacing);word-wrap:break-word}.zx-editor__editor>*:first-child{margin-top:0}.zx-editor__editor>blockquote{padding-left:1em;border-left:3px solid var(--placeholder-color)}.zx-editor__editor>ul,.zx-editor__editor>ol{padding-left:20px;list-style:disc}.zx-editor__editor li,.zx-editor__editor p{color:inherit}.zx-editor__editor.is-empty:before{position:absolute;z-index:1;top:0;left:0;pointer-events:none;color:var(--placeholder-color);line-height:var(--line-height);content:var(--placeholder)}.zx-editor__editor img,.zx-editor__editor video{max-width:100%;height:auto}
