@@ -9,7 +9,7 @@ import { ToolbarOptions } from '@zx-editor/toolbar'
 
 /**
  * @type ZxEditorOptions
- * extends [EditorOptions](./editor.md#EditorOptions), StylePanelOptions, ToolbarOptions
+ * extends [EditorOptions](./editor.md#EditorOptions), [StylePanelOptions](#StylePanelOptions) and [ToolbarOptions](#ToolbarOptions)
  */
 export interface ZxEditorOptions extends EditorOptions, StylePanelOptions, ToolbarOptions {
   // image options

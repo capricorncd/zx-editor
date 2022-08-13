@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
     />
-    <title>Editor</title>
+    <title>Editor - Capricorncd</title>
     <meta name="author" content="capricorncd" />
     <meta name="keywords" content="capricorncd" />
     <meta name="description" content="https://github.com/capricorncd" />
@@ -14,9 +14,11 @@
   <body>
     <div id="app"></div>
     <!--debug-->
-    <!--<script src="https://cdn.bootcss.com/vConsole/3.2.0/vconsole.min.js"></script>-->
+    <script src="https://unpkg.com/vconsole@latest/dist/vconsole.min.js"></script>
     <!--editor-->
     <script type="module">
+      window.vConsole = new window.VConsole();
+
       import { Editor } from './src/index.ts'
       const editor = new Editor({
         container: '#app',
@@ -24,7 +26,11 @@
       window.editor = editor
 
       editor.on('change', (e) => {
-        console.log(e)
+        console.log('change', e)
+      })
+
+      editor.on('error', (e) => {
+        console.log('error', e)
       })
     </script>
   </body>

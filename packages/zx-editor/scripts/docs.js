@@ -10,9 +10,14 @@ const { getCommentsData, outputFile } = require('zx-sml/nodejs')
 
 function main() {
   const docsDir = path.resolve(__dirname, '../../../docs')
-  const data = getCommentsData(path.resolve(__dirname, '../src'), true)
+  const dirs = [
+    path.resolve(__dirname, '../src'),
+    path.resolve(__dirname, '../../style-panel/src'),
+    path.resolve(__dirname, '../../toolbar/src'),
+  ]
+  const data = getCommentsData(dirs, true)
   // outputFile(data, path.resolve(__dirname, '../README.md'), outputFileOptions)
-  outputFile(data, path.join(docsDir, 'Editor.md'), outputFileOptions)
+  outputFile(data, path.join(docsDir, 'ZxEditor.md'), outputFileOptions)
 }
 
 main()

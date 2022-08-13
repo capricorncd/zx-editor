@@ -5,7 +5,7 @@
  */
 import { Editor, ALLOWED_NODE_NAMES } from '@zx-editor/editor'
 import { StylePanel } from '@zx-editor/style-panel'
-import { Toolbar } from '@zx-editor/toolbar'
+import { Toolbar, ButtonOptions } from '@zx-editor/toolbar'
 import { AnyObject } from '@zx-editor/types'
 import { handleImageFile, MediaFileHandlerData } from 'image-process'
 import { $, createElement, slice } from 'zx-sml'
@@ -13,7 +13,8 @@ import { ZxEditorOptions, DEF_OPTIONS } from './options'
 import './style.scss'
 
 /**
- * ZxEditor
+ * @document ZxEditor
+ * extends [Editor](./Editor.md)
  */
 export class ZxEditor extends Editor {
   private readonly $el: HTMLElement
@@ -71,7 +72,7 @@ export class ZxEditor extends Editor {
         })
     }
 
-    this.on('toolbarButtonClick', (name) => {
+    this.on('toolbarButtonOnClick', (name) => {
       switch (name) {
         case 'choose-picture':
           if (typeof options.customPictureHandler === 'function') {
@@ -126,6 +127,19 @@ export class ZxEditor extends Editor {
     })
   }
 
+  /**
+   *
+   * @param params
+   * @param index
+   */
+  addToolbarButton(params: ButtonOptions, index?: number) {
+    this.toolbar.addButton(params, index)
+  }
+
+  /**
+   * @method destroy()
+   * destroy events
+   */
   destroy(): void {
     super.destroy()
     this.stylePanel.destroy()

@@ -7,9 +7,10 @@ import './toolbar.scss'
 import { Editor, EditorPlugin } from '@zx-editor/editor'
 import { isIPhoneX, addClass, removeClass } from '@zx-editor/helpers'
 import { CSSProperties } from '@zx-editor/types'
-import { createElement, classNames, $$, $ } from 'zx-sml'
-import { DEF_OPTIONS, IPHONEX_BOTTOM_OFFSET_HEIGHT } from './const'
-import { ButtonOptions, ToolbarOptions } from './types'
+import { createElement, classNames, $$, $, splitValue } from 'zx-sml'
+import { ButtonOptions, ToolbarOptions, DEF_OPTIONS } from './options'
+
+export const IPHONEX_BOTTOM_OFFSET_HEIGHT = 34
 
 export type { ButtonOptions, ToolbarOptions }
 
@@ -28,17 +29,17 @@ export class Toolbar implements EditorPlugin {
     }
 
     // visible
-    this.visible = this.options.toolbarBeenFixed
+    this.visible = this.options.toolbarBeenFixed!
 
     // create element
-    const height = this.options.toolbarHeight
+    const [height, unit] = splitValue(this.options.toolbarHeight!)
     this.$el = createElement(
       'div',
       {
         class: 'zx-editor__toolbar border-top',
         style: {
-          '--bar-height': height + 'px',
-          height: `${height + (isIPhoneX() ? IPHONEX_BOTTOM_OFFSET_HEIGHT : 0)}px`,
+          '--bar-height': `${height}${unit}`,
+          height: `${height + (isIPhoneX() ? IPHONEX_BOTTOM_OFFSET_HEIGHT : 0)}${unit}`,
         },
       },
       '<dl class="inner-wrapper"></dl>',
@@ -47,10 +48,10 @@ export class Toolbar implements EditorPlugin {
     this._btnClickHandler = (e: MouseEvent) => {
       const el = e.currentTarget as HTMLElement
       if (this.editorInstance && el) {
-        this.editorInstance.emit('toolbarButtonClick', el.getAttribute('data-name'))
+        this.editorInstance.emit('toolbarButtonOnClick', el.getAttribute('data-name'))
       }
     }
-    this.options.toolbarButtons.forEach((btn) => {
+    this.options.toolbarButtons!.forEach((btn) => {
       this.addButton({ name: btn })
     })
   }

@@ -11,11 +11,12 @@ import { CSSProperties } from '@zx-editor/types'
  */
 export interface ToolbarOptions {
   // Has the toolbar been fixed. default `true`
-  toolbarBeenFixed: boolean
-  // toolbar height. default `50`
-  toolbarHeight: number
-  // buttons name, and order. default `['choose-picture', 'text-style']`
-  toolbarButtons: string[]
+  toolbarBeenFixed?: boolean
+  // toolbar height. default `50px`
+  toolbarHeight?: number | string
+  // buttons name, and order. default `['choose-picture', 'text-style']`.
+  // Button click events can be listener `editor.on('toolbarButtonOnClick, ('button-name') => { ... })`
+  toolbarButtons?: string[]
 }
 
 /**
@@ -27,6 +28,18 @@ export interface ButtonOptions {
   name: string
   // class='name'
   className?: string
+  // inner html, Element or Node
   innerHtml?: string | HTMLElement | Node
+  // style
   style?: CSSProperties
+}
+
+/**
+ * default options
+ */
+export const DEF_OPTIONS: ToolbarOptions = {
+  toolbarBeenFixed: true,
+  toolbarHeight: '50px',
+  // buttons name, and order
+  toolbarButtons: ['choose-picture', 'text-style'],
 }

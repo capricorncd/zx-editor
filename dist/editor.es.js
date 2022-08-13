@@ -3,7 +3,7 @@
  * Author: Capricorncd
  * Released under the MIT License
  * Repository: https://github.com/capricorncd/zx-editor
- * Released on: 2022-08-13 12:23:34 (GMT+0900)
+ * Released on: 2022-08-13 22:57:42 (GMT+0900)
  * Copyright © 2018-present, Capricorncd
  */
 var k = Object.defineProperty;
@@ -58,12 +58,12 @@ class F {
  * Repository: https://github.com/capricorncd/zx-sml
  * Released on: 2022-07-24 15:34:05 (GMT+0900)
  */
-var V = Object.defineProperty, x = Object.getOwnPropertySymbols, K = Object.prototype.hasOwnProperty, W = Object.prototype.propertyIsEnumerable, $ = (t, n, e) => n in t ? V(t, n, { enumerable: !0, configurable: !0, writable: !0, value: e }) : t[n] = e, D = (t, n) => {
+var V = Object.defineProperty, $ = Object.getOwnPropertySymbols, K = Object.prototype.hasOwnProperty, W = Object.prototype.propertyIsEnumerable, x = (t, n, e) => n in t ? V(t, n, { enumerable: !0, configurable: !0, writable: !0, value: e }) : t[n] = e, D = (t, n) => {
   for (var e in n || (n = {}))
-    K.call(n, e) && $(t, e, n[e]);
-  if (x)
-    for (var e of x(n))
-      W.call(n, e) && $(t, e, n[e]);
+    K.call(n, e) && x(t, e, n[e]);
+  if ($)
+    for (var e of $(n))
+      W.call(n, e) && x(t, e, n[e]);
   return t;
 };
 function Y(t) {
@@ -119,11 +119,11 @@ var Q = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : ty
           if (l === "timestamp")
             return a.getTime().toString();
           /(y+)/i.test(l) && (f = RegExp.$1, l = l.replace(f, (a.getFullYear() + "").substr(4 - f.length))), p && Array.isArray(p.weeks) || (p = _);
-          var y = { "M+": a.getMonth() + 1, "d+": a.getDate(), "h+": a.getHours(), "m+": a.getMinutes(), "s+": a.getSeconds(), "w+": a.getDay(), "W+": p.weeks[a.getDay()], "a+": a.getHours() < 12 ? "am" : "pm", "A+": a.getHours() < 12 ? "AM" : "PM" };
-          for (var c in y)
+          var N = { "M+": a.getMonth() + 1, "d+": a.getDate(), "h+": a.getHours(), "m+": a.getMinutes(), "s+": a.getSeconds(), "w+": a.getDay(), "W+": p.weeks[a.getDay()], "a+": a.getHours() < 12 ? "am" : "pm", "A+": a.getHours() < 12 ? "AM" : "PM" };
+          for (var c in N)
             if (new RegExp("(" + c + ")").test(l)) {
               f = RegExp.$1;
-              var d = y[c] + "";
+              var d = N[c] + "";
               l = l.replace(f, f.length === 1 ? d : h.toTwoDigits(d));
             }
           if (/(g)/i.test(l)) {
@@ -205,7 +205,7 @@ const O = (t, n = "style") => t ? (t.getAttribute(n) || "").split(/\s?;\s?/).red
   "H6",
   "BLOCKQUOTE"
 ];
-function N(t, n, e) {
+function y(t, n, e) {
   return t.replace(RegExp("(^<" + n + ")|(" + n + ">$)", "gi"), (s) => s.toUpperCase().replace(n, e.toLowerCase()));
 }
 function T(t) {
@@ -234,7 +234,7 @@ const Z = (t, n) => {
   };
   return t.editable && (s.contenteditable = "true"), g("div", s, n);
 }, S = (t, n) => {
-  var h, _, v, u, l, p, f, a, y;
+  var h, _, v, u, l, p, f, a, N;
   if (!t)
     return null;
   const e = t.nodeName, s = n.toUpperCase();
@@ -243,7 +243,7 @@ const Z = (t, n) => {
   const i = g(n), r = t.parentElement;
   let o;
   if (e === "LI" && T(r)) {
-    if (i.innerHTML = N(t.outerHTML, e, s), o = i.firstChild, r.childElementCount > 1)
+    if (i.innerHTML = y(t.outerHTML, e, s), o = i.firstChild, r.childElementCount > 1)
       if (r.firstElementChild === t)
         (h = r.parentElement) == null || h.insertBefore(o, r);
       else if (r.lastElementChild === t) {
@@ -264,14 +264,14 @@ const Z = (t, n) => {
     if (/UL|OL/.test(s)) {
       const c = t.previousElementSibling, d = t.nextElementSibling;
       if (c && T(c)) {
-        if (i.innerHTML = N(t.outerHTML, e, "li"), o = i.firstChild, c.append(o), r == null || r.removeChild(t), d && d.nodeName === c.nodeName) {
+        if (i.innerHTML = y(t.outerHTML, e, "li"), o = i.firstChild, c.append(o), r == null || r.removeChild(t), d && d.nodeName === c.nodeName) {
           const m = C(d.children);
-          c.append(...m), (y = d.parentElement) == null || y.removeChild(d);
+          c.append(...m), (N = d.parentElement) == null || N.removeChild(d);
         }
       } else
-        d && T(d) ? (i.innerHTML = N(t.outerHTML, e, "li"), o = i.firstChild, d.insertBefore(o, d.firstElementChild), r == null || r.removeChild(t)) : (o = i, i.innerHTML = N(t.outerHTML, e, "li"), r == null || r.replaceChild(o, t));
+        d && T(d) ? (i.innerHTML = y(t.outerHTML, e, "li"), o = i.firstChild, d.insertBefore(o, d.firstElementChild), r == null || r.removeChild(t)) : (o = i, i.innerHTML = y(t.outerHTML, e, "li"), r == null || r.replaceChild(o, t));
     } else
-      i.innerHTML = N(t.outerHTML, e, s), o = i.firstChild, r == null || r.replaceChild(o, t);
+      i.innerHTML = y(t.outerHTML, e, s), o = i.firstChild, r == null || r.replaceChild(o, t);
     return o;
   }
   return i.append(t.cloneNode(!0)), r == null || r.replaceChild(i, t), i;
@@ -345,7 +345,8 @@ class ne extends F {
     this.$editor.innerHTML = this.blankLine, this.insert(e, !0), this._lastLine(), A(this.$editor);
   }
   getHtml() {
-    return this.$editor.innerHTML.replace(new RegExp(`${this.blankLine}$`, "i"), "");
+    const e = this.options.childNodeName;
+    return this.$editor.innerHTML.replace(new RegExp(`<${e}><brs?/?></${e}>$`, "i"), "");
   }
   insert(e, s = !1) {
     if (e instanceof HTMLElement)

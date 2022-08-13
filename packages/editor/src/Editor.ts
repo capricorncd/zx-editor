@@ -154,7 +154,8 @@ export class Editor extends EventEmitter {
    * @return `string`
    */
   getHtml(): string {
-    return this.$editor.innerHTML.replace(new RegExp(`${this.blankLine}$`, 'i'), '')
+    const childNodeName = this.options.childNodeName
+    return this.$editor.innerHTML.replace(new RegExp(`<${childNodeName}><br\s?\/?><\/${childNodeName}>$`, 'i'), '')
   }
 
   /**

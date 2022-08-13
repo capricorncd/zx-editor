@@ -4,9 +4,10 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "vite --port=9001",
+    "dev": "vite --host=0.0.0.0 --port=9001",
     "build": "vite build && node scripts/after-build.js",
     "demo": "vite --config vite.demo.ts build",
+    "docs": "node scripts/docs.js",
     "test": "vitest"
   },
   "keywords": [],

@@ -66,7 +66,15 @@ const zxEditor = new ZxEditor({
 })
 ```
 
+## Preview
+
+https://capricorncd.github.io/zx-editor/demo/
+
+![zx-editor Preview](./qr.png)
+
 ## Docs
+
+- [ZxEditor](./docs/ZxEditor.md)
 
 - [Editor](./docs/Editor.md)
 
@@ -76,4 +84,4 @@ const zxEditor = new ZxEditor({
 
 ## Copyright and license
 
-Code and documentation copyright 2018-2022. capricorncd. Code released under the MIT License.
+Code and documentation copyright 2018-Present. capricorncd. Code released under the MIT License.

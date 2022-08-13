@@ -23,6 +23,8 @@ $iconSize: 50px;
     overflow-y: hidden;
     overflow-x: auto;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
     .icon-item {
       position: relative;
       display: inline-flex;
