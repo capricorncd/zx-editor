@@ -3,7 +3,7 @@
  * https://github.com/capricorncd
  * Date: 2022/05/14 23:21:21 (GMT+0900)
  */
-import { Editor } from '@zx-editor/editor'
+import { Editor, ALLOWED_NODE_NAMES } from '@zx-editor/editor'
 import { StylePanel } from '@zx-editor/style-panel'
 import { Toolbar } from '@zx-editor/toolbar'
 import { AnyObject } from '@zx-editor/types'
@@ -133,3 +133,5 @@ export class ZxEditor extends Editor {
     this.fileInput?.removeEventListener('change', this._inputChangeHandler)
   }
 }
+
+export { ALLOWED_NODE_NAMES }

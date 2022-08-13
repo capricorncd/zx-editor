@@ -17,11 +17,14 @@
     <!--<script src="https://cdn.bootcss.com/vConsole/3.2.0/vconsole.min.js"></script>-->
     <!--editor-->
     <script type="module">
-      import { ZxEditor } from './src/index.ts'
+      import { ZxEditor, ALLOWED_NODE_NAMES } from './src/index.ts'
       const editor = new ZxEditor({
         container: '#app',
+        // childNodeName: 'p',
+        // allowedNodeNames: [...ALLOWED_NODE_NAMES, 'p']
       })
       window.editor = editor
+      window.zxEditor = editor
 
       editor.on('change', (e) => {
         console.log(e)
