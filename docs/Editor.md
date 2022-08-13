@@ -21,7 +21,7 @@ Replace the tag of the element under the cursor
 
 Param|Types|Required|Description
 :--|:--|:--|:--
-nodeName|`string`|yes|For example: `UL`, `SECTION` ...
+nodeName|`string`|no|allowed element names, `UL`, `SECTION` etc. If `undefined`, use the default `options.childNodeName`.
 
 - @returns `boolean`
 
@@ -119,10 +119,11 @@ placeholderColor|`string`|no|placeholder color, default `#999`
 lineHeight|`string`/`number`|no|编辑器内容行高，default `1.5`
 minHeight|`string`/`number`|no|min height, default `50vh`
 paddingBottom|`string`/`number`|no|Set paddingBottom to avoid being obscured by toolbar or style panel, default `50vh`
+childNodeName|`string`|no|Editor's child node name, default `section`
 allowedNodeNames|`string[]`|no|允许使用的编辑器子元素节点名称， default `['SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'BLOCKQUOTE', 'UL', 'OL']` allowed Node names
 paragraphTailSpacing|`string`/`number`|no|paragraph tail spacing, default 10px
 caretColor|`string`|no|光标颜色
-textColor|`string`|no|编辑器文本默认颜色
+textColor|`string`|no|编辑器文本默认颜色 default color of editor text, default `#333333`
 customPasteHandler|`(e: ClipboardEvent) => void`|no|自定义用户粘贴处理函数
 styles|`CSSProperties`|no|编辑器自定义样式
 insertTextToNewParagraph|`boolean`|no|insert text to new paragraph, default `false`
@@ -148,6 +149,8 @@ interface EditorOptions {
   minHeight?: string | number
   // Set paddingBottom to avoid being obscured by toolbar or style panel, default `50vh`
   paddingBottom?: string | number
+  // Editor's child node name, default `section`
+  childNodeName?: string
   // 允许使用的编辑器子元素节点名称，
   // default `['SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'BLOCKQUOTE', 'UL', 'OL']`
   // allowed Node names
@@ -156,7 +159,7 @@ interface EditorOptions {
   paragraphTailSpacing?: string | number
   // 光标颜色
   caretColor?: string
-  // 编辑器文本默认颜色
+  // 编辑器文本默认颜色 default color of editor text, default `#333333`
   textColor?: string
   // 自定义用户粘贴处理函数
   customPasteHandler?: (e: ClipboardEvent) => void
