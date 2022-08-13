@@ -12,7 +12,7 @@ export const DEF_OPTIONS: StylePanelOptions = {
 }
 
 // COLOR
-export const DEF_COLORS = ['#333', '#d0d0d0', '#ff583d', '#fdaa25', '#44c67b', '#14b2e0', '#b065e2']
+export const DEF_COLORS = ['#333333', '#d0d0d0', '#ff583d', '#fdaa25', '#44c67b', '#14b2e0', '#b065e2']
 
 export const STYLE_NODE_DATA: VirtualNode = {
   tag: 'dl',

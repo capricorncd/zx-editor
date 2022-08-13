@@ -9,18 +9,22 @@ $iconColor: #999;
 $listHeight: 50px;
 $headHeight: 44px;
 
-.zx-editor-style-panel {
+.style-panel {
   position: fixed;
   z-index: 9999;
   left: 0;
   bottom: 0;
   width: 100%;
-  height: 30vh;
+  height: 40vh;
   transform: translateY(100%);
   overflow: hidden;
   background: #fff;
   transition: 0.3s transform ease-in-out;
-  &.zx-editor-style-panel__fade-in {
+  dl,
+  dd {
+    margin: 0;
+  }
+  &__fade-in {
     transform: translateY(0);
   }
   &__header {
@@ -33,7 +37,7 @@ $headHeight: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    &__left {
+    .__left {
       position: absolute;
       top: 0;
       left: 0;
@@ -44,7 +48,7 @@ $headHeight: 44px;
       display: flex;
       align-items: center;
     }
-    &__switch {
+    .__switch {
       position: absolute;
       top: 0;
       right: 0;
@@ -74,7 +78,7 @@ $headHeight: 44px;
   }
 }
 
-.zx-editor-style-panel__body {
+.style-panel__body {
   .__style-wrapper {
     position: relative;
     display: flex;
