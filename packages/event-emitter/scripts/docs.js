@@ -5,8 +5,8 @@
  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
-const { getCommentsData, outputFile } = require('zx-sml/nodejs')
 const { outputFileOptions } = require('@zx-editor/nodejs')
+const { getCommentsData, outputFile } = require('zx-sml/nodejs')
 
 function main() {
   const docsDir = path.resolve(__dirname, '../../../docs')
