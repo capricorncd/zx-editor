@@ -9,7 +9,7 @@ export const NODE_NAME_SECTION = 'SECTION'
 
 export const NODE_NAME_BR = 'BR'
 
-export const ALLOWED_NODE_NAMES = ['SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'BLOCKQUOTE', 'UL', 'OL']
+export const ALLOWED_NODE_NAMES = [NODE_NAME_SECTION, 'H1', 'H2', 'H3', 'H4', 'H5', 'BLOCKQUOTE', 'UL', 'OL']
 
 export const REPLACE_NODE_LIST = [
   'DIV',
@@ -22,7 +22,7 @@ export const REPLACE_NODE_LIST = [
   'HEADER',
   'MAIN',
   'NAV',
-  'SECTION',
+  NODE_NAME_SECTION,
   'H1',
   'H2',
   'H3',
@@ -31,5 +31,3 @@ export const REPLACE_NODE_LIST = [
   'H6',
   'BLOCKQUOTE',
 ]
-
-export const BLANK_LINE = '<section><br></section>'

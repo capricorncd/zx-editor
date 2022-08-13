@@ -7,9 +7,9 @@ import { EventEmitter } from '@zx-editor/event-emitter'
 import { getStyles, createTextNode } from '@zx-editor/helpers'
 import { CSSProperties } from '@zx-editor/types'
 import { $, createElement, slice, toStrStyles } from 'zx-sml'
-import { NODE_NAME_SECTION, NODE_NAME_BR, ALLOWED_NODE_NAMES, BLANK_LINE } from './const'
+import { NODE_NAME_BR, ALLOWED_NODE_NAMES } from './const'
 import { changeNodeName, initContentDom, checkIsEmpty, getCursorElement } from './dom'
-import { isBrSection } from './helpers'
+import { isOnlyBrInChildren } from './helpers'
 import { DEF_OPTIONS, EditorOptions } from './options'
 import './style.scss'
 
@@ -39,7 +39,7 @@ export class Editor extends EventEmitter {
   // 版本
   public readonly version: string
   // 参数
-  private readonly options: EditorOptions
+  public readonly options: EditorOptions
   // 编辑器内容区域HTML元素
   public readonly $editor: HTMLDivElement
   // current node
@@ -48,6 +48,7 @@ export class Editor extends EventEmitter {
   private readonly _eventHandler: <T extends Event>(e: T) => void
   // 内容中允许使用的元素标签
   private allowedNodeNames: string[]
+  private blankLine: string
 
   private _pasteHandler: (e: ClipboardEvent) => void
 
@@ -65,8 +66,19 @@ export class Editor extends EventEmitter {
     // options
     this.options = { ...DEF_OPTIONS, ...options }
     this.allowedNodeNames = (this.options.allowedNodeNames || ALLOWED_NODE_NAMES).map((item) => item.toUpperCase())
+
+    // childNodeName toUpperCase
+    const childNodeName = this.options.childNodeName!.toUpperCase()
+    this.options.childNodeName = childNodeName
+
+    this.blankLine = `<${childNodeName}><br></${childNodeName}>`
+
+    // Whether the `childNodeName` is in the `allowedNodeNames`
+    if (!this.allowedNodeNames.includes(childNodeName!)) {
+      this.allowedNodeNames.push(childNodeName!)
+    }
     // elements
-    this.$editor = initContentDom(this.options)
+    this.$editor = initContentDom(this.options, this.blankLine)
     container.append(this.$editor)
 
     // content event handler
@@ -74,7 +86,10 @@ export class Editor extends EventEmitter {
       const type = e.type
       if (type === 'blur' || type === 'click') {
         this._lastLine()
-        this.setCursorElement(window.getSelection()?.getRangeAt(0).endContainer)
+        const sel = window.getSelection()
+        const node =
+          sel && sel.rangeCount ? sel.getRangeAt(sel.rangeCount - 1).endContainer : (e.currentTarget as HTMLElement)
+        this.setCursorElement(node)
       }
       this.emit(type === 'input' ? 'change' : type, e)
       checkIsEmpty(this.$editor)
@@ -88,9 +103,7 @@ export class Editor extends EventEmitter {
       }
       e.preventDefault()
       const paste = e.clipboardData?.getData('text')
-      if (!paste) return
-      const selection = window.getSelection()
-      this._insertText(paste, selection)
+      this._insertText(paste)
     }
 
     this._initEvents()
@@ -127,7 +140,7 @@ export class Editor extends EventEmitter {
    * @param html `string`
    */
   setHtml(html: string): void {
-    this.$editor.innerHTML = BLANK_LINE
+    this.$editor.innerHTML = this.blankLine
     this.insert(html, true)
     this._lastLine()
     checkIsEmpty(this.$editor)
@@ -141,7 +154,7 @@ export class Editor extends EventEmitter {
    * @return `string`
    */
   getHtml(): string {
-    return this.$editor.innerHTML.replace(/<section><br><\/section>$/, '')
+    return this.$editor.innerHTML.replace(new RegExp(`${this.blankLine}$`, 'i'), '')
   }
 
   /**
@@ -154,7 +167,7 @@ export class Editor extends EventEmitter {
   insert(input: string | HTMLElement, toNewParagraph = false): void {
     // insert HTMLElement
     if (input instanceof HTMLElement) {
-      this._insert(input)
+      this._insertEl(input)
     }
     // insert string
     else {
@@ -175,14 +188,14 @@ export class Editor extends EventEmitter {
           if (node.nodeType === Node.ELEMENT_NODE) {
             // <br> element
             if (node.nodeName === NODE_NAME_BR) {
-              this._insert(createElement(NODE_NAME_SECTION, {}, '<br/>'))
+              this._insertEl(createElement(this.options.childNodeName!, {}, '<br/>'))
             } else {
-              this._insert(node as HTMLElement)
+              this._insertEl(node as HTMLElement)
             }
           }
           // text
           else if (node.textContent) {
-            this._insert(createElement(NODE_NAME_SECTION, {}, node.textContent))
+            this._insertEl(createElement(this.options.childNodeName!, {}, node.textContent))
           }
         })
       }
@@ -195,34 +208,44 @@ export class Editor extends EventEmitter {
    * @param input
    * @private
    */
-  private _insert(input: HTMLElement): void {
+  private _insertEl(input: HTMLElement): void {
     const currentSection = this.getCursorElement()
-    if (isBrSection(currentSection)) {
+    if (isOnlyBrInChildren(currentSection)) {
       this.$editor.insertBefore(input, currentSection)
     } else {
       this.$editor.insertBefore(input, currentSection.nextElementSibling)
     }
 
     if (!this.allowedNodeNames.includes(input.nodeName)) {
-      input = changeNodeName(input, NODE_NAME_SECTION)!
+      input = changeNodeName(input, this.options.childNodeName!)!
     }
     // 设置光标元素对象
     this.setCursorElement(input)
   }
 
-  private _insertText(input?: string, selection?: Selection | null): void {
+  /**
+   * insert text into editor
+   * @param input
+   * @returns
+   */
+  private _insertText(input?: string): void {
     if (!input) return
-    selection = selection ?? window.getSelection()
-    // 编辑器未出发focus时，直接使用`insert(string)`时
-    // When the editor does not start focus, when using `insert(string)` directly
-    if (!selection?.rangeCount) {
+    const sel = window.getSelection()
+    const rangeCount = sel?.rangeCount
+    // 编辑器未触发focus
+    // When the editor does not triggered focus
+    if (!rangeCount) {
       return this.insert(input, true)
     }
     // 正常操作：光标在编辑器中，将文本插入至光标处
     // Normal operate: cursor in editor, insert text at cursor
-    selection.deleteFromDocument()
-    selection.getRangeAt(0).insertNode(createTextNode(input))
-    this.setCursorElement(selection.getRangeAt(0).endContainer)
+    sel.deleteFromDocument()
+    sel.getRangeAt(0).insertNode(createTextNode(input))
+
+    this.setCursorElement(sel.getRangeAt(rangeCount - 1).endContainer)
+    // collapses the selection to the end of the last range in the selection.
+    sel.collapseToEnd()
+
     this._dispatchChange()
   }
 
@@ -232,9 +255,9 @@ export class Editor extends EventEmitter {
    * @private
    */
   private _lastLine(): void {
-    // if (e) {}
-    if (!isBrSection(this.$editor.lastElementChild)) {
-      this.$editor.appendChild(createElement('section', {}, '<br>'))
+    if (!isOnlyBrInChildren(this.$editor.lastElementChild)) {
+      const childNodeName = this.options.childNodeName!
+      this.$editor.appendChild(createElement(childNodeName, {}, '<br>'))
     }
   }
 
@@ -242,15 +265,16 @@ export class Editor extends EventEmitter {
    * @method changeNodeName(nodeName)
    * 修改光标所在元素的标签
    * Replace the tag of the element under the cursor
-   * @param nodeName `string` For example: `UL`, `SECTION` ...
+   * @param nodeName? `string` allowed element names, `UL`, `SECTION` etc. If `undefined`, use the default `options.childNodeName`.
    * @return `boolean`
    */
-  changeNodeName(nodeName: string): boolean {
+  changeNodeName(nodeName?: string): boolean {
+    nodeName = (nodeName || this.options.childNodeName!).toUpperCase()
     // 判断nodeName是否被允许设置
-    if (!this.allowedNodeNames.includes(nodeName.toUpperCase())) return false
+    if (!this.allowedNodeNames.includes(nodeName)) return false
     const currentSection = this.getCursorElement()
     const el = changeNodeName(currentSection, nodeName)
-    console.log(el)
+
     if (el) {
       this.setCursorElement(el)
       this._dispatchChange()
@@ -275,11 +299,10 @@ export class Editor extends EventEmitter {
         // The current element does not have any styles
         if (!Object.keys(currentStyles).length) return
         current.removeAttribute('style')
-        this._dispatchChange()
-        return
+      } else {
+        const s: CSSProperties = typeof styles === 'string' ? { [styles]: value } : styles
+        current.setAttribute('style', toStrStyles(currentStyles, s))
       }
-      const s: CSSProperties = typeof styles === 'string' ? { [styles]: value } : styles
-      current.setAttribute('style', toStrStyles(currentStyles, s))
       this._dispatchChange()
     }
   }

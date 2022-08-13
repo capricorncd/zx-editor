@@ -4,7 +4,7 @@
  * Date: 2022/07/10 15:42:54 (GMT+0900)
  */
 import { CSSProperties } from '@zx-editor/types'
-import { ALLOWED_NODE_NAMES } from './const'
+import { ALLOWED_NODE_NAMES, NODE_NAME_SECTION } from './const'
 
 /**
  * @type EditorOptions
@@ -27,6 +27,8 @@ export interface EditorOptions {
   minHeight?: string | number
   // Set paddingBottom to avoid being obscured by toolbar or style panel, default `50vh`
   paddingBottom?: string | number
+  // Editor's child node name, default `section`
+  childNodeName?: string
   // 允许使用的编辑器子元素节点名称，
   // default `['SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'BLOCKQUOTE', 'UL', 'OL']`
   // allowed Node names
@@ -35,7 +37,7 @@ export interface EditorOptions {
   paragraphTailSpacing?: string | number
   // 光标颜色
   caretColor?: string
-  // 编辑器文本默认颜色
+  // 编辑器文本默认颜色 default color of editor text, default `#333333`
   textColor?: string
   // 自定义用户粘贴处理函数
   customPasteHandler?: (e: ClipboardEvent) => void
@@ -59,11 +61,12 @@ export const DEF_OPTIONS: EditorOptions = {
   placeholder: '请在此输入内容..',
   placeholderColor: '#999',
   lineHeight: 1.5,
+  childNodeName: NODE_NAME_SECTION,
   allowedNodeNames: ALLOWED_NODE_NAMES,
   // paragraph tail spacing, default 10px
   paragraphTailSpacing: '10px',
   caretColor: '',
-  textColor: '',
+  textColor: '#333333',
   // 自定义粘贴处理函数
   customPasteHandler: undefined,
   insertTextToNewParagraph: false,

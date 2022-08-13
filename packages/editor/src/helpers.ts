@@ -16,11 +16,11 @@ export function isUlElement(el: Element): boolean {
 }
 
 /**
- * is <br> section
- * <section><br></section>
+ * only one BR Node in the el's children
+ * <anyTag><br></anyTag>
  * @param el
  */
-export function isBrSection(el: HTMLElement | Element | null): boolean {
+export function isOnlyBrInChildren(el: HTMLElement | Element | null): boolean {
   if (!el) return false
   const nodes = slice<Node, NodeList>(el.childNodes)
   return nodes.length === 1 && nodes[0].nodeName === 'BR'

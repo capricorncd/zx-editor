@@ -5,15 +5,15 @@
  */
 import { CSSProperties } from '@zx-editor/types'
 import { createElement, toStrStyles, slice } from 'zx-sml'
-import { ROOT_CLASS_NAME, NODE_NAME_SECTION, REPLACE_NODE_LIST, BLANK_LINE } from './const'
-import { isBrSection, isUlElement, replaceHtmlTag } from './helpers'
+import { ROOT_CLASS_NAME, REPLACE_NODE_LIST } from './const'
+import { isOnlyBrInChildren, isUlElement, replaceHtmlTag } from './helpers'
 import { EditorOptions } from './options'
 
 /**
  * init content dom
  * @param options
  */
-export const initContentDom = (options: EditorOptions): HTMLDivElement => {
+export const initContentDom = (options: EditorOptions, blankLine: string): HTMLDivElement => {
   const contentStyles: CSSProperties = {
     minHeight: options.minHeight,
     // placeholder
@@ -36,7 +36,7 @@ export const initContentDom = (options: EditorOptions): HTMLDivElement => {
   }
   if (options.editable) contentAttrs.contenteditable = 'true'
 
-  return createElement<HTMLDivElement>('div', contentAttrs, BLANK_LINE)
+  return createElement<HTMLDivElement>('div', contentAttrs, blankLine)
 }
 
 /**
@@ -44,11 +44,12 @@ export const initContentDom = (options: EditorOptions): HTMLDivElement => {
  * @param input
  * @param tagName
  */
-export const changeNodeName = (input: HTMLElement | null, tagName = NODE_NAME_SECTION): HTMLElement | null => {
+export const changeNodeName = (input: HTMLElement | null, tagName: string): HTMLElement | null => {
   if (!input) return null
   const oldNodeName = input.nodeName
   const newNodeName = tagName.toUpperCase()
-  if (oldNodeName === newNodeName) return input
+  // The element name has not changed, so return null
+  if (oldNodeName === newNodeName) return null
 
   const el = createElement(tagName)
   const parent = input.parentElement as HTMLElement
@@ -149,7 +150,7 @@ export const changeNodeName = (input: HTMLElement | null, tagName = NODE_NAME_SE
 }
 
 export const checkIsEmpty = (el: HTMLElement): void => {
-  if (el.children.length <= 1 && isBrSection(el.children[0])) {
+  if (el.children.length <= 1 && isOnlyBrInChildren(el.children[0])) {
     el.classList.add('is-empty')
   } else {
     el.classList.remove('is-empty')
