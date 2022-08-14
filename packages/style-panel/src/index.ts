@@ -7,9 +7,9 @@ import { Editor, EditorPlugin, EditorOptions } from '@zx-editor/editor'
 import { createNode, getStyles } from '@zx-editor/helpers'
 import { VirtualNode } from '@zx-editor/types'
 import { $, $$, createElement } from 'zx-sml'
-import { DEF_COLORS, DEF_OPTIONS, STYLE_NODE_DATA, TAG_NODE_DATA } from './const'
+import { STYLE_NODE_DATA, TAG_NODE_DATA } from './const'
 import { createColorVNode } from './helpers'
-import { StylePanelOptions } from './options'
+import { StylePanelOptions, DEF_OPTIONS } from './options'
 import './style-panel.scss'
 
 export type { StylePanelOptions }
@@ -101,7 +101,7 @@ export class StylePanel implements EditorPlugin {
     header.append(headerLeft, headerSwitch)
     // body
     const panelBodyChild: VirtualNode[] = [STYLE_NODE_DATA]
-    const colors = Array.isArray(textStyleColors) ? textStyleColors : DEF_COLORS
+    const colors = textStyleColors!
     if (colors.length) {
       // If the editor `options.textColor` does not exist in the `colors`, add it to the `colors`
       // Warning `#333` is not equal `#333333`
