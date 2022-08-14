@@ -3,7 +3,7 @@
  * Author: Capricorncd
  * Released under the MIT License
  * Repository: https://github.com/capricorncd/zx-editor
- * Released on: 2022-08-13 22:57:42 (GMT+0900)
+ * Released on: 2022-08-14 10:28:58 (GMT+0900)
  * Copyright © 2018-present, Capricorncd
  */
 var k = Object.defineProperty;
@@ -344,9 +344,12 @@ class ne extends F {
   setHtml(e) {
     this.$editor.innerHTML = this.blankLine, this.insert(e, !0), this._lastLine(), A(this.$editor);
   }
-  getHtml() {
-    const e = this.options.childNodeName;
-    return this.$editor.innerHTML.replace(new RegExp(`<${e}><brs?/?></${e}>$`, "i"), "");
+  getHtml(e) {
+    const s = this.$editor.innerHTML;
+    if (e)
+      return s;
+    const i = this.options.childNodeName;
+    return s.replace(new RegExp(`(<${i}><br\\s?\\/?><\\/${i}>)+$`, "i"), "");
   }
   insert(e, s = !1) {
     if (e instanceof HTMLElement)
