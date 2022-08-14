@@ -147,15 +147,18 @@ export class Editor extends EventEmitter {
   }
 
   /**
-   * @method getHtml()
-   * 获取编辑器中的HTML代码，会自动去除结尾处的空行
-   * get html string from content element
-   * remove last line that `<section><br></section>`
+   * @method getHtml(retainLastBlankLines)
+   * 获取编辑器中的HTML代码，会自动去除结尾处的空行。
+   * get html string from content element.
+   * @param retainLastBlankLines? `boolean` If `true` the last `<section><br></section>` will be removed.
    * @return `string`
    */
-  getHtml(): string {
+  getHtml(retainLastBlankLines?: boolean): string {
+    const html = this.$editor.innerHTML
+    if (retainLastBlankLines) return html
+    // remove last blank lines
     const childNodeName = this.options.childNodeName
-    return this.$editor.innerHTML.replace(new RegExp(`<${childNodeName}><br\s?\/?><\/${childNodeName}>$`, 'i'), '')
+    return html.replace(new RegExp(`(<${childNodeName}><br\\s?\\/?><\\/${childNodeName}>)+$`, 'i'), '')
   }
 
   /**
