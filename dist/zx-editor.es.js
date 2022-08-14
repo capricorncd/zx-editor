@@ -3,7 +3,7 @@
  * Author: capricorncd
  * Released under the MIT License
  * Repository: https://github.com/capricorncd/zx-editor
- * Released on: 2022-08-14 10:28:34 (GMT+0900)
+ * Released on: 2022-08-14 11:54:41 (GMT+0900)
  * Copyright © 2018-present, capricorncd
  */
 var fe = Object.defineProperty;
@@ -753,7 +753,7 @@ class Fe {
       dataName: e.name,
       style: n
     }, e.innerHtml), s = N("dd", this.$el), o = b("dl", this.$el);
-    typeof i == "number" && i < s.length ? o.insertBefore(r, s[i]) : o.append(r), r.addEventListener("click", this._btnClickHandler);
+    typeof i == "number" && i >= 0 && i < s.length ? o.insertBefore(r, s[i]) : o.append(r), r.addEventListener("click", this._btnClickHandler);
   }
   destroy() {
     N(".icon-item", this.$el).forEach((e) => {

@@ -4,6 +4,17 @@ extends [Editor](./Editor.md)
 
 ## Methods
 
+### addToolbarButton(params, index)
+
+Add a custom button to `toolbar`.
+
+Param|Types|Required|Description
+:--|:--|:--|:--
+params|`ButtonOptions`|yes|[ButtonOptions(#ButtonOptions)]
+index|`number`|no|New button insertion index.
+
+- @returns `void`
+
 ### destroy()
 
 destroy events

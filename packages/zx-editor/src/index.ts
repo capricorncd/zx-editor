@@ -128,9 +128,10 @@ export class ZxEditor extends Editor {
   }
 
   /**
-   *
-   * @param params
-   * @param index
+   * @method addToolbarButton(params, index)
+   * Add a custom button to `toolbar`.
+   * @param params `ButtonOptions` [ButtonOptions(#ButtonOptions)]
+   * @param index? `number` New button insertion index.
    */
   addToolbarButton(params: ButtonOptions, index?: number) {
     this.toolbar.addButton(params, index)

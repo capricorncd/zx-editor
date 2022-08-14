@@ -99,7 +99,7 @@ export class Toolbar implements EditorPlugin {
     const buttons = $$('dd', this.$el)
     const btnContainer = $('dl', this.$el) as HTMLDListElement
 
-    if (typeof index === 'number' && index < buttons.length) {
+    if (typeof index === 'number' && index >= 0 && index < buttons.length) {
       btnContainer.insertBefore(btn, buttons[index])
     } else {
       btnContainer.append(btn)

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host=0.0.0.0 --port=9001",
     "build": "vite build && node scripts/after-build.js",
-    "demo": "vite --config vite.demo.ts build",
+    "demo": "vite --config vite.demo.ts build --emptyOutDir",
     "docs": "node scripts/docs.js",
     "test": "vitest"
   },
