@@ -10,9 +10,18 @@ export function replaceHtmlTag(input: string, oldNodeName: string, newNodeName: 
     match.toUpperCase().replace(oldNodeName, newNodeName.toLowerCase()),
   )
 }
+/**
+ * remove li tag
+ * @param input
+ * @returns
+ */
+export function removeLiTags(input: string): string {
+  return input.replace(/<li[^>]*>(.+)<\/li>/gi, '$1')
+}
 
-export function isUlElement(el: Element): boolean {
-  return /^UL|OL$/.test(el.nodeName)
+export function isUlElement(el: Element | string): boolean {
+  const nodeName = typeof el === 'string' ? el : el.nodeName
+  return /^UL|OL$/i.test(nodeName)
 }
 
 /**

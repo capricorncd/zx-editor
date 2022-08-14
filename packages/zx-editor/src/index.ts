@@ -150,3 +150,4 @@ export class ZxEditor extends Editor {
 }
 
 export { ALLOWED_NODE_NAMES }
+export type { ZxEditorOptions }

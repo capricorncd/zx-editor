@@ -85,11 +85,11 @@ export class Editor extends EventEmitter {
     this._eventHandler = (e: Event) => {
       const type = e.type
       if (type === 'blur' || type === 'click') {
-        this._lastLine()
         const sel = window.getSelection()
         const node =
           sel && sel.rangeCount ? sel.getRangeAt(sel.rangeCount - 1).endContainer : (e.currentTarget as HTMLElement)
         this.setCursorElement(node)
+        this._verifyChild()
       }
       this.emit(type === 'input' ? 'change' : type, e)
       checkIsEmpty(this.$editor)
@@ -142,7 +142,7 @@ export class Editor extends EventEmitter {
   setHtml(html: string): void {
     this.$editor.innerHTML = this.blankLine
     this.insert(html, true)
-    this._lastLine()
+    this._verifyChild()
     checkIsEmpty(this.$editor)
   }
 
@@ -166,7 +166,7 @@ export class Editor extends EventEmitter {
    * 向编辑器中插入内容/HTML代码/元素等
    * insert html or element to content element
    * @param input `string | HTMLElement`
-   * @param toNewParagraph? `boolean` Insert text to new paragraph, default `false`
+   * @param toNewParagraph? `boolean` Insert `text` in a new paragraph, only `textNode` is valid. Defaults to `false`.
    */
   insert(input: string | HTMLElement, toNewParagraph = false): void {
     // insert HTMLElement
@@ -215,14 +215,19 @@ export class Editor extends EventEmitter {
   private _insertEl(input: HTMLElement): void {
     const currentSection = this.getCursorElement()
     if (isOnlyBrInChildren(currentSection)) {
-      this.$editor.insertBefore(input, currentSection)
+      // 成对的标签，比如div/section/p etc.
+      if (/<(\w+)[^>]*>.*<\/\1>/.test(input.outerHTML)) {
+        this.$editor.insertBefore(input, currentSection)
+      }
+      // img之类的非成对标签
+      else {
+        currentSection.innerHTML = ''
+        currentSection.append(input)
+      }
     } else {
       this.$editor.insertBefore(input, currentSection.nextElementSibling)
     }
 
-    if (!this.allowedNodeNames.includes(input.nodeName)) {
-      input = changeNodeName(input, this.options.childNodeName!)!
-    }
     // 设置光标元素对象
     this.setCursorElement(input)
   }
@@ -254,11 +259,27 @@ export class Editor extends EventEmitter {
   }
 
   /**
-   * 检查编辑器最后一段是否为空行，非空行则插入
-   * append br section to content element when the lastElementChild is not a br section element
+   * 验证编辑器的子元素是否为允许使用的元素，并检查其最后一段是否为空行，非空行则插入。
+   * Verify that the editor's child element is an allowed elements, and check if it's last child is a blank line, if not, insert a new blank line
    * @private
    */
-  private _lastLine(): void {
+  private _verifyChild(): void {
+    const currentChild = this.getCursorElement(true)
+    const childNodeName = this.options.childNodeName!
+    const child = this.$editor.children
+    let tempChild: HTMLElement,
+      isCurrentChild = false
+    for (let i = 0; i < child.length; i++) {
+      tempChild = child[i] as HTMLElement
+      if (this.allowedNodeNames.includes(tempChild.nodeName)) continue
+      isCurrentChild = currentChild === tempChild
+      // 将不合法标签元素替换为默认的元素
+      const newChild = changeNodeName(tempChild, childNodeName)
+      if (isCurrentChild && newChild) {
+        this.setCursorElement(newChild)
+      }
+    }
+    // check if it's last child is a blank line, if not, insert a new blank line
     if (!isOnlyBrInChildren(this.$editor.lastElementChild)) {
       const childNodeName = this.options.childNodeName!
       this.$editor.appendChild(createElement(childNodeName, {}, '<br>'))

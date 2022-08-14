@@ -5,8 +5,8 @@
  */
 import { CSSProperties } from '@zx-editor/types'
 import { createElement, toStrStyles, slice } from 'zx-sml'
-import { ROOT_CLASS_NAME, REPLACE_NODE_LIST } from './const'
-import { isOnlyBrInChildren, isUlElement, replaceHtmlTag } from './helpers'
+import { ROOT_CLASS_NAME } from './const'
+import { isOnlyBrInChildren, isUlElement, replaceHtmlTag, removeLiTags } from './helpers'
 import { EditorOptions } from './options'
 
 /**
@@ -42,7 +42,7 @@ export const initContentDom = (options: EditorOptions, blankLine: string): HTMLD
 /**
  * changeNodeName
  * @param input
- * @param tagName
+ * @param tagName `string` new tag name
  */
 export const changeNodeName = (input: HTMLElement | null, tagName: string): HTMLElement | null => {
   if (!input) return null
@@ -107,46 +107,40 @@ export const changeNodeName = (input: HTMLElement | null, tagName: string): HTML
     return newEl
   }
 
-  if (REPLACE_NODE_LIST.includes(oldNodeName)) {
-    // change to ul, ol
-    if (/UL|OL/.test(newNodeName)) {
-      const prev = input.previousElementSibling
-      const next = input.nextElementSibling
-      if (prev && isUlElement(prev)) {
-        el.innerHTML = replaceHtmlTag(input.outerHTML, oldNodeName, 'li')
-        newEl = el.firstChild as HTMLElement
-        prev.append(newEl)
-        parent?.removeChild(input)
-        // parent的下一个元素也为UL/OL元素，将其合并
-        if (next && next.nodeName === prev.nodeName) {
-          const nextEls = slice<HTMLElement, HTMLCollection>(next.children)
-          prev.append(...nextEls)
-          next.parentElement?.removeChild(next)
-        }
-      } else if (next && isUlElement(next)) {
-        el.innerHTML = replaceHtmlTag(input.outerHTML, oldNodeName, 'li')
-        newEl = el.firstChild as HTMLElement
-        next.insertBefore(newEl, next.firstElementChild)
-        parent?.removeChild(input)
-        // parent的上一个元素也为UL/OL元素，将其合并
-        // 不可能发生never
-      } else {
-        // 替换当前元素为UL/OL
-        newEl = el
-        el.innerHTML = replaceHtmlTag(input.outerHTML, oldNodeName, 'li')
-        parent?.replaceChild(newEl, input)
-      }
-    } else {
-      el.innerHTML = replaceHtmlTag(input.outerHTML, oldNodeName, newNodeName)
+  // change to ul, ol
+  if (/UL|OL/.test(newNodeName)) {
+    const prev = input.previousElementSibling
+    const next = input.nextElementSibling
+    if (prev && isUlElement(prev)) {
+      el.innerHTML = replaceHtmlTag(input.outerHTML, oldNodeName, 'li')
       newEl = el.firstChild as HTMLElement
+      prev.append(newEl)
+      parent?.removeChild(input)
+      // parent的下一个元素也为UL/OL元素，将其合并
+      if (next && next.nodeName === prev.nodeName) {
+        const nextEls = slice<HTMLElement, HTMLCollection>(next.children)
+        prev.append(...nextEls)
+        next.parentElement?.removeChild(next)
+      }
+    } else if (next && isUlElement(next)) {
+      el.innerHTML = replaceHtmlTag(input.outerHTML, oldNodeName, 'li')
+      newEl = el.firstChild as HTMLElement
+      next.insertBefore(newEl, next.firstElementChild)
+      parent?.removeChild(input)
+      // parent的上一个元素也为UL/OL元素，将其合并
+      // 不可能发生never
+    } else {
+      // 替换当前元素为UL/OL
+      newEl = el
+      el.innerHTML = replaceHtmlTag(input.outerHTML, oldNodeName, 'li')
       parent?.replaceChild(newEl, input)
     }
-    return newEl
+  } else {
+    el.innerHTML = removeLiTags(replaceHtmlTag(input.outerHTML, oldNodeName, newNodeName))
+    newEl = el.firstChild as HTMLElement
+    parent?.replaceChild(newEl, input)
   }
-
-  el.append(input.cloneNode(true))
-  parent?.replaceChild(el, input)
-  return el
+  return newEl
 }
 
 export const checkIsEmpty = (el: HTMLElement): void => {

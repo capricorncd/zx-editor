@@ -81,7 +81,7 @@ insert html or element to content element
 Param|Types|Required|Description
 :--|:--|:--|:--
 input|`string`/`HTMLElement`|yes|-
-toNewParagraph|`boolean`|no|Insert text to new paragraph, default `false`
+toNewParagraph|`boolean`|no|Insert `text` in a new paragraph, only `textNode` is valid. Defaults to `false`.
 
 - @returns `void`
 
