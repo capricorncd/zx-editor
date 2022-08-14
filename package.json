@@ -8,18 +8,18 @@
   "exports": {
     ".": {
       "import": "./dist/zx-editor.es.js",
-      "require": "./dist/zx-editor.umd.js"
+      "default": "./dist/zx-editor.umd.js"
     },
     "./editor": {
       "import": "./dist/editor.es.js",
-      "require": "./dist/editor.umd.js"
+      "default": "./dist/editor.umd.js"
     },
     "./event-emitter": {
       "import": "./dist/editor.es.js",
       "require": "./dist/editor.umd.js"
     },
     "./nodejs-helpers": {
-      "require": "./packages/nodejs/index.js",
+      "default": "./packages/nodejs/index.js",
       "types": "./packages/nodejs/types.d.ts"
     }
   },
@@ -72,6 +72,6 @@
   "homepage": "https://github.com/capricorncd/zx-editor",
   "license": "MIT",
   "dependencies": {
-    "zx-sml": "^0.5.0"
+    "zx-sml": "^0.5.1"
   }
 }
