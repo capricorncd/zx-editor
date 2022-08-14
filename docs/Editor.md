@@ -55,11 +55,14 @@ isOnlyEditorChild|`boolean`|no|Must be a child element of editor `HTMLElement`. 
 
 - @returns `HTMLElement`
 
-### getHtml()
+### getHtml(retainLastBlankLines)
 
-获取编辑器中的HTML代码，会自动去除结尾处的空行
-get html string from content element
-remove last line that `<section><br></section>`
+获取编辑器中的HTML代码，会自动去除结尾处的空行。
+get html string from content element.
+
+Param|Types|Required|Description
+:--|:--|:--|:--
+retainLastBlankLines|`boolean`|no|If `true` the last `<section><br></section>` will be removed.
 
 - @returns `string`
 

@@ -45,18 +45,20 @@ interface ButtonOptions {
 
 Prop|Types|Required|Description
 :--|:--|:--|:--
-textStyleColors|`string[]`|no|text style, value `['#333333', '#ff0000', ...]`
-textStyleTitle|`string`|no|-
-textStyleHeadLeftBtnText|`string`|no|-
+textStyleColors|`string[]`|no|colors array of style panel, default `['#333333', '#d0d0d0', '#ff583d', '#fdaa25', '#44c67b', '#14b2e0', '#b065e2']`.
+textStyleTitle|`string`|no|title of style panel, default `Set Style`.
+textStyleHeadLeftBtnText|`string`|no|text of button that style panel's left, default `Clear`.
 
 <details>
 <summary>Source Code</summary>
 
 ```ts
 interface StylePanelOptions {
-  // text style, value `['#333333', '#ff0000', ...]`
+  // colors array of style panel, default `['#333333', '#d0d0d0', '#ff583d', '#fdaa25', '#44c67b', '#14b2e0', '#b065e2']`.
   textStyleColors?: string[]
+  // title of style panel, default `Set Style`.
   textStyleTitle?: string
+  // text of button that style panel's left, default `Clear`.
   textStyleHeadLeftBtnText?: string
 }
 ```
@@ -96,9 +98,9 @@ extends [EditorOptions](./editor.md#EditorOptions), [StylePanelOptions](#StylePa
 
 Prop|Types|Required|Description
 :--|:--|:--|:--
-textStyleColors|`string[]`|no|text style, value `['#333333', '#ff0000', ...]`
-textStyleTitle|`string`|no|-
-textStyleHeadLeftBtnText|`string`|no|-
+textStyleColors|`string[]`|no|colors array of style panel, default `['#333333', '#d0d0d0', '#ff583d', '#fdaa25', '#44c67b', '#14b2e0', '#b065e2']`.
+textStyleTitle|`string`|no|title of style panel, default `Set Style`.
+textStyleHeadLeftBtnText|`string`|no|text of button that style panel's left, default `Clear`.
 toolbarBeenFixed|`boolean`|no|Has the toolbar been fixed. default `true`
 toolbarHeight|`number`/`string`|no|toolbar height. default `50px`
 toolbarButtons|`string[]`|no|buttons name, and order. default `['choose-picture', 'text-style']`. Button click events can be listener `editor.on('toolbarButtonOnClick, ('button-name') => { ... })`
