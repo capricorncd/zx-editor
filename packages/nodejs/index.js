@@ -4,11 +4,11 @@
  * Date: 2022/07/10 16:01:17 (GMT+0900)
  *
  * @document nodejs-helpers
- * Some tool functions used in the Nodejs environment
+ * Some tool functions used in the Nodejs environment.
  *
  * ```js
  * const path = require('path')
- * const { afterBuild } = require('@zx-editor/helpers-nodejs')
+ * const { afterBuild } = require('zx-editor/nodejs-helpers')
  * const pkg = require('../package.json')
  *
  * afterBuild(path.resolve(__dirname, '../dist'), pkg, true)
