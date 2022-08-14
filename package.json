@@ -27,7 +27,10 @@
   "types": "types/index.d.ts",
   "files": [
     "dist",
+    "docs",
+    "packages/**/src",
     "packages/nodejs/*.js",
+    "packages/nodejs/types.d.ts",
     "types/index.d.ts"
   ],
   "packageManager": "pnpm@7.6.0",
