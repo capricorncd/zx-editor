@@ -60,7 +60,7 @@ function main(distDir, pkg, needMoveToDist = false) {
   if (fs.existsSync(styleCss)) {
     console.log('Rename is start ...')
     log(styleCss)
-    // @zx-editor/packageName or packageName
+    // @sp-editor/packageName or packageName
     const fileName = pkg.name.includes('/') ? pkg.name.split('/').pop() : pkg.name
     execSync(`mv ${styleCss} ${styleCss.replace('style.css', fileName + '.min.css')}`)
     console.log('Rename is ended.')

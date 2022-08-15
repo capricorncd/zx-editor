@@ -4,9 +4,9 @@
  * Date: 2022/06/18 16:39:57 (GMT+0900)
  */
 import './toolbar.scss'
-import { Editor, EditorPlugin } from '@zx-editor/editor'
-import { isIPhoneX, addClass, removeClass } from '@zx-editor/helpers'
-import { CSSProperties } from '@zx-editor/types'
+import { Editor, EditorPlugin } from '@sp-editor/editor'
+import { isIPhoneX, addClass, removeClass } from '@sp-editor/helpers'
+import { CSSProperties } from '@sp-editor/types'
 import { createElement, classNames, $$, $, splitValue } from 'zx-sml'
 import { ButtonOptions, ToolbarOptions, DEF_OPTIONS } from './options'
 
@@ -36,7 +36,7 @@ export class Toolbar implements EditorPlugin {
     this.$el = createElement(
       'div',
       {
-        class: 'zx-editor__toolbar border-top',
+        class: 'sp-editor__toolbar border-top',
         style: {
           '--bar-height': `${height}${unit}`,
           height: `${height + (isIPhoneX() ? IPHONEX_BOTTOM_OFFSET_HEIGHT : 0)}${unit}`,

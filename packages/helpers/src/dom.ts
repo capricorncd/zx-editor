@@ -3,7 +3,7 @@
  * https://github.com/capricorncd
  * Date: 2022/05/05 10:55:25 (GMT+0900)
  */
-import { CSSProperties, VirtualNode } from '@zx-editor/types'
+import { CSSProperties, VirtualNode } from '@sp-editor/types'
 import { toCamelCase, createElement } from 'zx-sml'
 
 /**

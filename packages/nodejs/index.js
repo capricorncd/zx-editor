@@ -8,7 +8,7 @@
  *
  * ```js
  * const path = require('path')
- * const { afterBuild } = require('zx-editor/nodejs-helpers')
+ * const { afterBuild } = require('sp-editor/nodejs-helpers')
  * const pkg = require('../package.json')
  *
  * afterBuild(path.resolve(__dirname, '../dist'), pkg, true)

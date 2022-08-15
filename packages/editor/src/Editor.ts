@@ -3,9 +3,9 @@
  * https://github.com/capricorncd
  * Date: 2022/05/05 10:29:43 (GMT+0900)
  */
-import { EventEmitter } from '@zx-editor/event-emitter'
-import { getStyles, createTextNode } from '@zx-editor/helpers'
-import { CSSProperties } from '@zx-editor/types'
+import { EventEmitter } from '@sp-editor/event-emitter'
+import { getStyles, createTextNode } from '@sp-editor/helpers'
+import { CSSProperties } from '@sp-editor/types'
 import { $, createElement, slice, toStrStyles } from 'zx-sml'
 import { NODE_NAME_BR, ALLOWED_NODE_NAMES } from './const'
 import { changeNodeName, initContentDom, checkIsEmpty, getCursorElement } from './dom'

@@ -3,7 +3,7 @@
  * https://github.com/capricorncd
  * Date: 2022/05/15 19:26:50 (GMT+0900)
  */
-import { VirtualNode } from '@zx-editor/types'
+import { VirtualNode } from '@sp-editor/types'
 
 // COLOR
 export const DEF_COLORS = ['#333333', '#d0d0d0', '#ff583d', '#fdaa25', '#44c67b', '#14b2e0', '#b065e2']

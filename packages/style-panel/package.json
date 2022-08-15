@@ -1,5 +1,5 @@
 {
-  "name": "@zx-editor/style-panel",
+  "name": "@sp-editor/style-panel",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.ts",
@@ -8,10 +8,10 @@
   },
   "keywords": [],
   "dependencies": {
-    "@zx-editor/editor": "workspace:*",
-    "@zx-editor/event-emitter": "workspace:*",
-    "@zx-editor/helpers": "workspace:*",
-    "@zx-editor/types": "workspace:*"
+    "@sp-editor/editor": "workspace:*",
+    "@sp-editor/event-emitter": "workspace:*",
+    "@sp-editor/helpers": "workspace:*",
+    "@sp-editor/types": "workspace:*"
   },
   "author": "Capriocrncd",
   "license": "MIT"

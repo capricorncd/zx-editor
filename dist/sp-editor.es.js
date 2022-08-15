@@ -1,9 +1,9 @@
 /*!
- * zx-editor version 3.1.0
+ * sp-editor version 1.0.1
  * Author: capricorncd
  * Released under the MIT License
  * Repository: https://github.com/capricorncd/zx-editor
- * Released on: 2022-08-14 23:43:55 (GMT+0900)
+ * Released on: 2022-08-15 12:23:00 (GMT+0900)
  * Copyright © 2018-present, capricorncd
  */
 var fe = Object.defineProperty;
@@ -145,21 +145,21 @@ var _e = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : t
     })();
   });
 })(x);
-function Z(t = "", e = "-") {
+function K(t = "", e = "-") {
   return t.replace(/[A-Z]/g, (i, n) => `${n > 0 ? e : ""}${i.toLowerCase()}`);
 }
-function K(t = "", e = !1) {
+function X(t = "", e = !1) {
   const i = t.replace(/[-_\s](\w)/g, (n, s) => s.toUpperCase());
   return e ? i.replace(/^\w/, (n) => n.toUpperCase()) : i;
 }
-function X(t) {
+function Z(t) {
   return t.replace(/^-?[1-9]\d{0,2}(,\d{3})+/, (e) => e.replace(/,/g, ""));
 }
 function J(t, e = !1) {
   if (typeof t == "number")
     return t;
   if (typeof t == "string") {
-    if (!e && /^(-?\d+(?:\.\d+)?)\D*/.test(X(t)))
+    if (!e && /^(-?\d+(?:\.\d+)?)\D*/.test(Z(t)))
       return J(RegExp.$1, !0);
     const i = Number(t);
     return isNaN(i) ? 0 : i;
@@ -169,7 +169,7 @@ function J(t, e = !1) {
 function ve(t) {
   if (typeof t == "number")
     return [t, ""];
-  const e = X(t).match(/^(-?\d+(?:\.\d+)?)(.*)$/);
+  const e = Z(t).match(/^(-?\d+(?:\.\d+)?)(.*)$/);
   return e ? [J(e[1], !0), e[2]] : [0, ""];
 }
 function Q(t) {
@@ -182,7 +182,7 @@ function v(t, e = 0) {
   return Array.prototype.slice.call(t, e);
 }
 function ee(t = {}, e = !1) {
-  const i = e ? K : Z, n = {};
+  const i = e ? X : K, n = {};
   for (const [s, r] of Object.entries(t))
     n[i(s)] = V(r) ? ee(r, e) : r;
   return n;
@@ -196,7 +196,7 @@ function C(t, e = document) {
 function w(t, e = {}, i) {
   const n = document.createElement(t);
   for (const [s, r] of Object.entries(e))
-    n.setAttribute(Z(s), s === "style" && V(r) ? I(r) : r);
+    n.setAttribute(K(s), s === "style" && V(r) ? I(r) : r);
   return i && (Array.isArray(i) || (i = [i]), i.forEach((s) => {
     if (typeof s == "string") {
       const r = w("div");
@@ -214,9 +214,9 @@ function I(...t) {
 x.exports.formatDate;
 x.exports.toDate;
 x.exports.toTwoDigits;
-const S = (t, e = "style") => t ? (t.getAttribute(e) || "").split(/\s?;\s?/).reduce((n, s) => {
+const D = (t, e = "style") => t ? (t.getAttribute(e) || "").split(/\s?;\s?/).reduce((n, s) => {
   const [r, o] = s.split(/\s?:\s?/);
-  return r && (n[K(r)] = o), n;
+  return r && (n[X(r)] = o), n;
 }, {}) : {}, O = (t) => document.createTextNode(t), te = (t) => {
   if (!t)
     return null;
@@ -238,7 +238,7 @@ const S = (t, e = "style") => t ? (t.getAttribute(e) || "").split(/\s?;\s?/).red
   t.classList.add(e);
 }, Ne = (t, e) => {
   t.classList.remove(e);
-}, xe = "zx-editor__editor", ie = "SECTION", Te = "BR", ne = [ie, "H1", "H2", "H3", "H4", "H5", "BLOCKQUOTE", "UL", "OL"];
+}, xe = "sp-editor__editor", ie = "SECTION", Te = "BR", ne = [ie, "H1", "H2", "H3", "H4", "H5", "BLOCKQUOTE", "UL", "OL"];
 function $(t, e, i) {
   return t.replace(RegExp("(^<" + e + ")|(" + e + ">$)", "gi"), (n) => n.toUpperCase().replace(e, i.toLowerCase()));
 }
@@ -313,7 +313,7 @@ const He = (t, e) => {
 }, F = (t) => {
   t.children.length <= 1 && A(t.children[0]) ? t.classList.add("is-empty") : t.classList.remove("is-empty");
 };
-function De(t, e, i = !1) {
+function Se(t, e, i = !1) {
   var n;
   for (; t && e !== t; ) {
     if (!i && t.nodeName === "LI" && ((n = t.parentElement) == null ? void 0 : n.parentElement) === e || t.parentElement === e)
@@ -322,7 +322,7 @@ function De(t, e, i = !1) {
   }
   return e.lastElementChild;
 }
-const Se = {
+const De = {
   editable: !0,
   minHeight: "50vh",
   paddingBottom: "50vh",
@@ -351,7 +351,7 @@ class Oe extends ge {
     const n = typeof i.container == "string" ? _(i.container) : i.container;
     if (!n)
       throw new Error(`Can't found '${i.container}' Node in document!`);
-    this.version = "3.1.0", this.options = { ...Se, ...i }, this.allowedNodeNames = (this.options.allowedNodeNames || ne).map((r) => r.toUpperCase());
+    this.version = "1.0.1", this.options = { ...De, ...i }, this.allowedNodeNames = (this.options.allowedNodeNames || ne).map((r) => r.toUpperCase());
     const s = this.options.childNodeName.toUpperCase();
     this.options.childNodeName = s, this.blankLine = `<${s}><br></${s}>`, this.allowedNodeNames.includes(s) || this.allowedNodeNames.push(s), this.$editor = He(this.options, this.blankLine), n.append(this.$editor), this._eventHandler = (r) => {
       const o = r.type;
@@ -434,7 +434,7 @@ class Oe extends ge {
   changeStyles(i, n) {
     const s = this.getCursorElement(!0);
     if (s) {
-      const r = S(s);
+      const r = D(s);
       if (i) {
         const o = typeof i == "string" ? { [i]: n } : i;
         s.setAttribute("style", I(r, o));
@@ -450,7 +450,7 @@ class Oe extends ge {
     this.$editor.dispatchEvent(new InputEvent("input"));
   }
   getStyles() {
-    return S(this.getCursorElement());
+    return D(this.getCursorElement());
   }
   setCursorElement(i) {
     if (i instanceof Node)
@@ -465,7 +465,7 @@ class Oe extends ge {
       i && (this._cursorElement = i);
   }
   getCursorElement(i = !1) {
-    return De(this._cursorElement, this.$editor, i);
+    return Se(this._cursorElement, this.$editor, i);
   }
   destroy() {
     this.$editor.removeEventListener("focus", this._eventHandler), this.$editor.removeEventListener("blur", this._eventHandler), this.$editor.removeEventListener("input", this._eventHandler), this.$editor.removeEventListener("paste", this._pasteHandler), this.removeAllListeners();
@@ -597,7 +597,7 @@ const Ae = ["#333333", "#d0d0d0", "#ff583d", "#fdaa25", "#44c67b", "#14b2e0", "#
   textStyleTitle: "Set Style",
   textStyleHeadLeftBtnText: "Clear"
 };
-const N = "style-panel", D = `${N}__fade-in`;
+const N = "style-panel", S = `${N}__fade-in`;
 class Be {
   constructor(e) {
     u(this, "editorInstance", null);
@@ -614,7 +614,7 @@ class Be {
       ...e
     };
     this.options = i, this.$el = w("div", { class: `${N} border-top` }), this._styleHandler = (n) => {
-      const s = this.editorInstance, r = n.currentTarget, o = S(r, "data-style"), l = s.getStyles();
+      const s = this.editorInstance, r = n.currentTarget, o = D(r, "data-style"), l = s.getStyles();
       Object.keys(o).forEach((d) => {
         l[d] && (o[d] = "");
       }), s.changeStyles(o);
@@ -634,7 +634,7 @@ class Be {
       const n = this.editorInstance, { textColor: s, childNodeName: r } = n.options;
       n.changeStyles(), n.changeNodeName(), this.updateActiveClassName(_(`[data-color="${s}"]`, this.$el)), this.updateActiveClassName(_(`[data-tag="${r}"]`, this.$el));
     }, this._headerSwitchHandler = () => {
-      this.$el.classList.contains(D) ? this.hide() : this.show();
+      this.$el.classList.contains(S) ? this.hide() : this.show();
     };
   }
   _initChildEl(e) {
@@ -684,10 +684,10 @@ class Be {
     });
   }
   show() {
-    this.$el.classList.add(D);
+    this.$el.classList.add(S);
   }
   hide() {
-    this.$el.classList.remove(D);
+    this.$el.classList.remove(S);
   }
   updateActiveClassName(e) {
     return e.classList.contains("active") ? !1 : (_(".active", e.parentElement).classList.remove("active"), e.classList.add("active"), !0);
@@ -716,7 +716,7 @@ class Fe {
     }, this.visible = this.options.toolbarBeenFixed;
     const [i, n] = ve(this.options.toolbarHeight);
     this.$el = w("div", {
-      class: "zx-editor__toolbar border-top",
+      class: "sp-editor__toolbar border-top",
       style: {
         "--bar-height": `${i}${n}`,
         height: `${i + (me() ? ke : 0)}${n}`
@@ -875,16 +875,16 @@ function ae(t, e = !1, i = 2) {
 function Ve(t, e = {}, i) {
   const n = document.createElement(t);
   for (const [s, r] of Object.entries(e))
-    n.setAttribute(se(s), s === "style" && re(r) ? Ze(r) : r);
+    n.setAttribute(se(s), s === "style" && re(r) ? Ke(r) : r);
   return i && (typeof i == "string" ? n.innerHTML = i : n.append(i)), n;
 }
-function Ze(...t) {
+function Ke(...t) {
   const e = t.reduce((n, s) => G(G({}, n), oe(s)), {}), i = [];
   for (const [n, s] of Object.entries(e))
     s === "" || typeof s > "u" || s === null || i.push(`${n}:${s}`);
   return i.join(";");
 }
-function Ke(t) {
+function Xe(t) {
   return new Promise((e, i) => {
     const n = new FileReader();
     n.onload = (s) => {
@@ -916,7 +916,7 @@ function de(t, e) {
 T.exports.formatDate;
 T.exports.toDate;
 T.exports.toTwoDigits;
-const Xe = {
+const Ze = {
   enableDevicePixelRatio: !1,
   isForce: !1,
   mimeType: "image/jpeg",
@@ -929,10 +929,10 @@ const Xe = {
 function et(t, e) {
   return new Promise((i, n) => {
     const s = {
-      ...Xe,
+      ...Ze,
       ...e
     };
-    typeof t == "string" && Je.test(t) ? Y(t, s, i, n) : (t instanceof File || t instanceof Blob) && Qe.test(t.type) ? Ke(t).then((r) => {
+    typeof t == "string" && Je.test(t) ? Y(t, s, i, n) : (t instanceof File || t instanceof Blob) && Qe.test(t.type) ? Xe(t).then((r) => {
       Y(r, s, i, n);
     }).catch(n) : n(new Error(`Invalid file, ${t}`));
   });
@@ -1101,7 +1101,7 @@ class st extends Oe {
       ...n
     }, !s)
       throw new Error(`Can't found '${i}' Node in document!`);
-    const r = w("div", { class: "zx-editor" });
+    const r = w("div", { class: "sp-editor" });
     super({
       ...n,
       container: r
@@ -1172,5 +1172,5 @@ class st extends Oe {
 }
 export {
   ne as ALLOWED_NODE_NAMES,
-  st as ZxEditor
+  st as SpEditor
 };

@@ -5,7 +5,7 @@
  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
-const { afterBuild } = require('@zx-editor/nodejs')
+const { afterBuild } = require('@sp-editor/nodejs')
 const pkg = require('../package.json')
 
 afterBuild(path.resolve(__dirname, '../dist'), pkg, true)

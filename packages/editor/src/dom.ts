@@ -3,7 +3,7 @@
  * https://github.com/capricorncd
  * Date: 2022/05/09 21:12:46 (GMT+0900)
  */
-import { CSSProperties } from '@zx-editor/types'
+import { CSSProperties } from '@sp-editor/types'
 import { createElement, toStrStyles, slice } from 'zx-sml'
 import { ROOT_CLASS_NAME } from './const'
 import { isOnlyBrInChildren, isUlElement, replaceHtmlTag, removeLiTags } from './helpers'

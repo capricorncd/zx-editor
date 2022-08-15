@@ -1,8 +1,10 @@
-# ZxEditor
+# SpEditor
 
-extends [Editor](./Editor.md)
+SpEditor is a HTML5 rich text editor in smartphone browsers, and it's extends [Editor](./Editor.md).
 
 ## Methods
+
+More methods please see [Editor](./Editor.md#methods) methods documentation.
 
 ### addToolbarButton(params, index)
 
@@ -47,6 +49,49 @@ interface ButtonOptions {
   innerHtml?: string | HTMLElement | Node
   // style
   style?: CSSProperties
+}
+```
+
+</details>
+
+### SpEditorOptions
+
+extends [EditorOptions](./editor.md#EditorOptions), [StylePanelOptions](#StylePanelOptions) and [ToolbarOptions](#ToolbarOptions)
+
+Prop|Types|Required|Description
+:--|:--|:--|:--
+textStyleColors|`string[]`|no|colors array of style panel, default `['#333333', '#d0d0d0', '#ff583d', '#fdaa25', '#44c67b', '#14b2e0', '#b065e2']`.
+textStyleTitle|`string`|no|title of style panel, default `Set Style`.
+textStyleHeadLeftBtnText|`string`|no|text of button that style panel's left, default `Clear`.
+toolbarBeenFixed|`boolean`|no|Has the toolbar been fixed. default `true`
+toolbarHeight|`number`/`string`|no|toolbar height. default `50px`
+toolbarButtons|`string[]`|no|buttons name, and order. default `['choose-picture', 'text-style']`. Button click events can be listener `editor.on('toolbarButtonOnClick, ('button-name') => { ... })`
+customPictureHandler|`() => void`|no|image options customize Picture Handler
+imageMaxWidth|`number`|no|image max width, default `750`
+ignoreGif|`boolean`|no|GIF pictures are not processed, default `true`.
+forceImageResize|`boolean`|no|Force the width/height of the picture, even if the width/height of the picture is smaller than the target width/height. default `false`.
+chooseFileMultiple|`boolean`|no|When the `multiple` Boolean attribute is specified, the file input allows the user to select more than one file. default `true`.
+chooseFileAccept|`string`|no|mimeType, for example `image/jpeg`, default `image/*`
+
+<details>
+<summary>Source Code</summary>
+
+```ts
+interface SpEditorOptions extends EditorOptions, StylePanelOptions, ToolbarOptions {
+  // image options
+  // customize Picture Handler
+  customPictureHandler?: () => void
+  // image max width, default `750`
+  imageMaxWidth?: number
+  // GIF pictures are not processed, default `true`.
+  ignoreGif?: boolean
+  // Force the width/height of the picture, even if the width/height of the picture
+  // is smaller than the target width/height. default `false`.
+  forceImageResize?: boolean
+  // When the `multiple` Boolean attribute is specified, the file input allows the user to select more than one file. default `true`.
+  chooseFileMultiple?: boolean
+  // mimeType, for example `image/jpeg`, default `image/*`
+  chooseFileAccept?: string
 }
 ```
 
@@ -98,49 +143,6 @@ interface ToolbarOptions {
   // buttons name, and order. default `['choose-picture', 'text-style']`.
   // Button click events can be listener `editor.on('toolbarButtonOnClick, ('button-name') => { ... })`
   toolbarButtons?: string[]
-}
-```
-
-</details>
-
-### ZxEditorOptions
-
-extends [EditorOptions](./editor.md#EditorOptions), [StylePanelOptions](#StylePanelOptions) and [ToolbarOptions](#ToolbarOptions)
-
-Prop|Types|Required|Description
-:--|:--|:--|:--
-textStyleColors|`string[]`|no|colors array of style panel, default `['#333333', '#d0d0d0', '#ff583d', '#fdaa25', '#44c67b', '#14b2e0', '#b065e2']`.
-textStyleTitle|`string`|no|title of style panel, default `Set Style`.
-textStyleHeadLeftBtnText|`string`|no|text of button that style panel's left, default `Clear`.
-toolbarBeenFixed|`boolean`|no|Has the toolbar been fixed. default `true`
-toolbarHeight|`number`/`string`|no|toolbar height. default `50px`
-toolbarButtons|`string[]`|no|buttons name, and order. default `['choose-picture', 'text-style']`. Button click events can be listener `editor.on('toolbarButtonOnClick, ('button-name') => { ... })`
-customPictureHandler|`() => void`|no|image options customize Picture Handler
-imageMaxWidth|`number`|no|image max width, default `750`
-ignoreGif|`boolean`|no|GIF pictures are not processed, default `true`.
-forceImageResize|`boolean`|no|Force the width/height of the picture, even if the width/height of the picture is smaller than the target width/height. default `false`.
-chooseFileMultiple|`boolean`|no|When the `multiple` Boolean attribute is specified, the file input allows the user to select more than one file. default `true`.
-chooseFileAccept|`string`|no|mimeType, for example `image/jpeg`, default `image/*`
-
-<details>
-<summary>Source Code</summary>
-
-```ts
-interface ZxEditorOptions extends EditorOptions, StylePanelOptions, ToolbarOptions {
-  // image options
-  // customize Picture Handler
-  customPictureHandler?: () => void
-  // image max width, default `750`
-  imageMaxWidth?: number
-  // GIF pictures are not processed, default `true`.
-  ignoreGif?: boolean
-  // Force the width/height of the picture, even if the width/height of the picture
-  // is smaller than the target width/height. default `false`.
-  forceImageResize?: boolean
-  // When the `multiple` Boolean attribute is specified, the file input allows the user to select more than one file. default `true`.
-  chooseFileMultiple?: boolean
-  // mimeType, for example `image/jpeg`, default `image/*`
-  chooseFileAccept?: string
 }
 ```
 

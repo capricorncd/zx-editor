@@ -3,7 +3,7 @@
  * https://github.com/capricorncd
  * Date: 2022/05/15 19:31:10 (GMT+0900)
  */
-import { VirtualNode } from '@zx-editor/types'
+import { VirtualNode } from '@sp-editor/types'
 /**
  * create color vnode
  * @param colors

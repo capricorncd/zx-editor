@@ -1,9 +1,9 @@
 /*!
- * @zx-editor/editor version 1.0.0
+ * @sp-editor/editor version 1.0.0
  * Author: Capricorncd
  * Released under the MIT License
- * Repository: https://github.com/capricorncd/zx-editor
- * Released on: 2022-08-14 23:44:19 (GMT+0900)
+ * Repository: https://github.com/capricorncd/sp-editor
+ * Released on: 2022-08-15 12:22:58 (GMT+0900)
  * Copyright © 2018-present, Capricorncd
  */
 var I = Object.defineProperty;
@@ -158,7 +158,7 @@ function B(t = {}, i = !1) {
     n[e(s)] = M(r) ? B(r, i) : r;
   return n;
 }
-function z(t, i = document) {
+function G(t, i = document) {
   return t ? t instanceof HTMLElement ? t : i.querySelector(t) : null;
 }
 function v(t, i = {}, e) {
@@ -185,11 +185,11 @@ w.exports.toTwoDigits;
 const D = (t, i = "style") => t ? (t.getAttribute(i) || "").split(/\s?;\s?/).reduce((n, s) => {
   const [r, o] = s.split(/\s?:\s?/);
   return r && (n[j(r)] = o), n;
-}, {}) : {}, G = (t) => document.createTextNode(t), J = "zx-editor__editor", R = "SECTION", Q = "BR", k = [R, "H1", "H2", "H3", "H4", "H5", "BLOCKQUOTE", "UL", "OL"];
+}, {}) : {}, J = (t) => document.createTextNode(t), Q = "sp-editor__editor", R = "SECTION", X = "BR", k = [R, "H1", "H2", "H3", "H4", "H5", "BLOCKQUOTE", "UL", "OL"];
 function N(t, i, e) {
   return t.replace(RegExp("(^<" + i + ")|(" + i + ">$)", "gi"), (n) => n.toUpperCase().replace(i, e.toLowerCase()));
 }
-function X(t) {
+function Z(t) {
   return t.replace(/<li[^>]*>(.+)<\/li>/gi, "$1");
 }
 function T(t) {
@@ -202,7 +202,7 @@ function b(t) {
   const i = C(t.childNodes);
   return i.length === 1 && i[0].nodeName === "BR";
 }
-const Z = (t, i) => {
+const z = (t, i) => {
   const e = {
     minHeight: t.minHeight,
     "--placeholder": JSON.stringify(t.placeholder),
@@ -214,7 +214,7 @@ const Z = (t, i) => {
   };
   t.caretColor && (e.caretColor = t.caretColor), t.textColor && (e.color = t.textColor);
   const n = {
-    class: `${J} is-empty`,
+    class: `${Q} is-empty`,
     style: L(e)
   };
   return t.editable && (n.contenteditable = "true"), v("div", n, i);
@@ -255,7 +255,7 @@ const Z = (t, i) => {
     } else
       h && T(h) ? (s.innerHTML = N(t.outerHTML, e, "li"), o = s.firstChild, h.insertBefore(o, h.firstElementChild), r == null || r.removeChild(t)) : (o = s, s.innerHTML = N(t.outerHTML, e, "li"), r == null || r.replaceChild(o, t));
   } else
-    s.innerHTML = X(N(t.outerHTML, e, n)), o = s.firstChild, r == null || r.replaceChild(o, t);
+    s.innerHTML = Z(N(t.outerHTML, e, n)), o = s.firstChild, r == null || r.replaceChild(o, t);
   return o;
 }, S = (t) => {
   t.children.length <= 1 && b(t.children[0]) ? t.classList.add("is-empty") : t.classList.remove("is-empty");
@@ -295,12 +295,12 @@ class ne extends F {
     E(this, "allowedNodeNames");
     E(this, "blankLine");
     E(this, "_pasteHandler");
-    const n = typeof e.container == "string" ? z(e.container) : e.container;
+    const n = typeof e.container == "string" ? G(e.container) : e.container;
     if (!n)
       throw new Error(`Can't found '${e.container}' Node in document!`);
     this.version = "1.0.0", this.options = { ...te, ...e }, this.allowedNodeNames = (this.options.allowedNodeNames || k).map((r) => r.toUpperCase());
     const s = this.options.childNodeName.toUpperCase();
-    this.options.childNodeName = s, this.blankLine = `<${s}><br></${s}>`, this.allowedNodeNames.includes(s) || this.allowedNodeNames.push(s), this.$editor = Z(this.options, this.blankLine), n.append(this.$editor), this._eventHandler = (r) => {
+    this.options.childNodeName = s, this.blankLine = `<${s}><br></${s}>`, this.allowedNodeNames.includes(s) || this.allowedNodeNames.push(s), this.$editor = z(this.options, this.blankLine), n.append(this.$editor), this._eventHandler = (r) => {
       const o = r.type;
       if (o === "blur" || o === "click") {
         const a = window.getSelection(), m = a && a.rangeCount ? a.getRangeAt(a.rangeCount - 1).endContainer : r.currentTarget;
@@ -340,7 +340,7 @@ class ne extends F {
       if (!n && !this.options.insertTextToNewParagraph && r.every((o) => o.nodeType === Node.TEXT_NODE))
         return this._insertText(e);
       r.forEach((o) => {
-        o.nodeType === Node.ELEMENT_NODE ? o.nodeName === Q ? this._insertEl(v(this.options.childNodeName, {}, "<br/>")) : this._insertEl(o) : o.textContent && this._insertEl(v(this.options.childNodeName, {}, o.textContent));
+        o.nodeType === Node.ELEMENT_NODE ? o.nodeName === X ? this._insertEl(v(this.options.childNodeName, {}, "<br/>")) : this._insertEl(o) : o.textContent && this._insertEl(v(this.options.childNodeName, {}, o.textContent));
       });
     }
     this._dispatchChange();
@@ -355,7 +355,7 @@ class ne extends F {
     const n = window.getSelection(), s = n == null ? void 0 : n.rangeCount;
     if (!s)
       return this.insert(e, !0);
-    n.deleteFromDocument(), n.getRangeAt(0).insertNode(G(e)), this.setCursorElement(n.getRangeAt(s - 1).endContainer), n.collapseToEnd(), this._dispatchChange();
+    n.deleteFromDocument(), n.getRangeAt(0).insertNode(J(e)), this.setCursorElement(n.getRangeAt(s - 1).endContainer), n.collapseToEnd(), this._dispatchChange();
   }
   _verifyChild() {
     const e = this.getCursorElement(!0), n = this.options.childNodeName, s = this.$editor.children;

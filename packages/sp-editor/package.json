@@ -1,5 +1,5 @@
 {
-  "name": "zx-editor",
+  "name": "sp-editor",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.ts",
@@ -12,12 +12,12 @@
   },
   "keywords": [],
   "dependencies": {
-    "@zx-editor/editor": "workspace:*",
-    "@zx-editor/event-emitter": "workspace:*",
-    "@zx-editor/nodejs": "workspace:*",
-    "@zx-editor/style-panel": "workspace:*",
-    "@zx-editor/toolbar": "workspace:*",
-    "@zx-editor/types": "workspace:*",
+    "@sp-editor/editor": "workspace:*",
+    "@sp-editor/event-emitter": "workspace:*",
+    "@sp-editor/nodejs": "workspace:*",
+    "@sp-editor/style-panel": "workspace:*",
+    "@sp-editor/toolbar": "workspace:*",
+    "@sp-editor/types": "workspace:*",
     "image-process": "^4.2.1"
   },
   "author": "Capriocrncd",

@@ -3,15 +3,15 @@
  * https://github.com/capricorncd
  * Date: 2022/07/10 14:47:59 (GMT+0900)
  */
-import { EditorOptions } from '@zx-editor/editor'
-import { StylePanelOptions } from '@zx-editor/style-panel'
-import { ToolbarOptions } from '@zx-editor/toolbar'
+import { EditorOptions } from '@sp-editor/editor'
+import { StylePanelOptions } from '@sp-editor/style-panel'
+import { ToolbarOptions } from '@sp-editor/toolbar'
 
 /**
- * @type ZxEditorOptions
+ * @type SpEditorOptions
  * extends [EditorOptions](./editor.md#EditorOptions), [StylePanelOptions](#StylePanelOptions) and [ToolbarOptions](#ToolbarOptions)
  */
-export interface ZxEditorOptions extends EditorOptions, StylePanelOptions, ToolbarOptions {
+export interface SpEditorOptions extends EditorOptions, StylePanelOptions, ToolbarOptions {
   // image options
   // customize Picture Handler
   customPictureHandler?: () => void
@@ -31,7 +31,7 @@ export interface ZxEditorOptions extends EditorOptions, StylePanelOptions, Toolb
 /**
  * default options
  */
-export const DEF_OPTIONS: Partial<ZxEditorOptions> = {
+export const DEF_OPTIONS: Partial<SpEditorOptions> = {
   imageMaxWidth: 750,
   ignoreGif: true,
   forceImageResize: false,

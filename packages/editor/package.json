@@ -1,5 +1,5 @@
 {
-  "name": "@zx-editor/editor",
+  "name": "@sp-editor/editor",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.ts",
@@ -13,11 +13,11 @@
   "keywords": [],
   "author": "Capricorncd",
   "dependencies": {
-    "@zx-editor/event-emitter": "workspace:*",
-    "@zx-editor/nodejs": "workspace:*",
-    "@zx-editor/helpers": "workspace:*",
-    "@zx-editor/types": "workspace:*"
+    "@sp-editor/event-emitter": "workspace:*",
+    "@sp-editor/nodejs": "workspace:*",
+    "@sp-editor/helpers": "workspace:*",
+    "@sp-editor/types": "workspace:*"
   },
-  "homepage": "https://github.com/capricorncd/zx-editor",
+  "homepage": "https://github.com/capricorncd/sp-editor",
   "license": "MIT"
 }

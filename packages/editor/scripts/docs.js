@@ -5,7 +5,7 @@
  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
-const { outputFileOptions } = require('@zx-editor/nodejs')
+const { outputFileOptions } = require('@sp-editor/nodejs')
 const { getCommentsData, outputFile } = require('zx-sml/nodejs')
 
 function main() {

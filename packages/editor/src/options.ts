@@ -3,7 +3,7 @@
  * https://github.com/capricorncd
  * Date: 2022/07/10 15:42:54 (GMT+0900)
  */
-import { CSSProperties } from '@zx-editor/types'
+import { CSSProperties } from '@sp-editor/types'
 import { ALLOWED_NODE_NAMES, NODE_NAME_SECTION } from './const'
 
 /**

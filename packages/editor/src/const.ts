@@ -3,7 +3,7 @@
  * https://github.com/capricorncd
  * Date: 2022/05/05 10:32:12 (GMT+0900)
  */
-export const ROOT_CLASS_NAME = 'zx-editor__editor'
+export const ROOT_CLASS_NAME = 'sp-editor__editor'
 
 export const NODE_NAME_SECTION = 'SECTION'
 

@@ -44,74 +44,74 @@ importers:
 
   packages/editor:
     specifiers:
-      '@zx-editor/event-emitter': workspace:*
-      '@zx-editor/helpers': workspace:*
-      '@zx-editor/nodejs': workspace:*
-      '@zx-editor/types': workspace:*
+      '@sp-editor/event-emitter': workspace:*
+      '@sp-editor/helpers': workspace:*
+      '@sp-editor/nodejs': workspace:*
+      '@sp-editor/types': workspace:*
     dependencies:
-      '@zx-editor/event-emitter': link:../event-emitter
-      '@zx-editor/helpers': link:../helpers
-      '@zx-editor/nodejs': link:../nodejs
-      '@zx-editor/types': link:../types
+      '@sp-editor/event-emitter': link:../event-emitter
+      '@sp-editor/helpers': link:../helpers
+      '@sp-editor/nodejs': link:../nodejs
+      '@sp-editor/types': link:../types
 
   packages/event-emitter:
     specifiers:
-      '@zx-editor/nodejs': workspace:*
+      '@sp-editor/nodejs': workspace:*
     devDependencies:
-      '@zx-editor/nodejs': link:../nodejs
+      '@sp-editor/nodejs': link:../nodejs
 
   packages/helpers:
     specifiers:
-      '@zx-editor/types': workspace:*
+      '@sp-editor/types': workspace:*
     dependencies:
-      '@zx-editor/types': link:../types
+      '@sp-editor/types': link:../types
 
   packages/nodejs:
     specifiers: {}
 
   packages/style-panel:
     specifiers:
-      '@zx-editor/editor': workspace:*
-      '@zx-editor/event-emitter': workspace:*
-      '@zx-editor/helpers': workspace:*
-      '@zx-editor/types': workspace:*
+      '@sp-editor/editor': workspace:*
+      '@sp-editor/event-emitter': workspace:*
+      '@sp-editor/helpers': workspace:*
+      '@sp-editor/types': workspace:*
     dependencies:
-      '@zx-editor/editor': link:../editor
-      '@zx-editor/event-emitter': link:../event-emitter
-      '@zx-editor/helpers': link:../helpers
-      '@zx-editor/types': link:../types
+      '@sp-editor/editor': link:../editor
+      '@sp-editor/event-emitter': link:../event-emitter
+      '@sp-editor/helpers': link:../helpers
+      '@sp-editor/types': link:../types
 
   packages/toolbar:
     specifiers:
-      '@zx-editor/editor': workspace:*
-      '@zx-editor/event-emitter': workspace:*
-      '@zx-editor/helpers': workspace:*
-      '@zx-editor/types': workspace:*
+      '@sp-editor/editor': workspace:*
+      '@sp-editor/event-emitter': workspace:*
+      '@sp-editor/helpers': workspace:*
+      '@sp-editor/types': workspace:*
     dependencies:
-      '@zx-editor/editor': link:../editor
-      '@zx-editor/event-emitter': link:../event-emitter
-      '@zx-editor/helpers': link:../helpers
-      '@zx-editor/types': link:../types
+      '@sp-editor/editor': link:../editor
+      '@sp-editor/event-emitter': link:../event-emitter
+      '@sp-editor/helpers': link:../helpers
+      '@sp-editor/types': link:../types
 
   packages/types:
     specifiers: {}
 
-  packages/zx-editor:
+  packages/sp-editor:
     specifiers:
-      '@zx-editor/editor': workspace:*
-      '@zx-editor/event-emitter': workspace:*
-      '@zx-editor/nodejs': workspace:*
-      '@zx-editor/style-panel': workspace:*
-      '@zx-editor/toolbar': workspace:*
-      '@zx-editor/types': workspace:*
+      '@sp-editor/editor': workspace:*
+      '@sp-editor/event-emitter': workspace:*
+      '@sp-editor/nodejs': workspace:*
+      '@sp-editor/style-panel': workspace:*
+      '@sp-editor/toolbar': workspace:*
+      '@sp-editor/types': workspace:*
       image-process: ^4.2.1
     dependencies:
-      '@zx-editor/editor': link:../editor
-      '@zx-editor/event-emitter': link:../event-emitter
-      '@zx-editor/nodejs': link:../nodejs
-      '@zx-editor/style-panel': link:../style-panel
-      '@zx-editor/toolbar': link:../toolbar
-      '@zx-editor/types': link:../types
+      '@sp-editor/editor': link:../editor
+      '@sp-editor/event-emitter': link:../event-emitter
+      '@sp-editor/nodejs': link:../nodejs
+      '@sp-editor/style-panel': link:../style-panel
+      '@sp-editor/toolbar': link:../toolbar
+      '@sp-editor/types': link:../types
       image-process: 4.2.1
 
 packages:

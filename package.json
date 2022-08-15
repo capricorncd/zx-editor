@@ -1,22 +1,22 @@
 {
-  "name": "zx-editor",
-  "version": "3.1.0",
-  "description": "ZxEditor is a HTML5 rich text editor",
+  "name": "sp-editor",
+  "version": "1.0.1",
+  "description": "SpEditor is a HTML5 rich text editor in smartphone browsers",
   "author": "capricorncd",
-  "main": "./dist/zx-editor.umd.js",
-  "module": "./dist/zx-editor.es.js",
+  "main": "./dist/sp-editor.umd.js",
+  "module": "./dist/sp-editor.es.js",
   "exports": {
     ".": {
-      "import": "./dist/zx-editor.es.js",
-      "default": "./dist/zx-editor.umd.js"
+      "import": "./dist/sp-editor.es.js",
+      "default": "./dist/sp-editor.umd.js"
     },
     "./editor": {
       "import": "./dist/editor.es.js",
       "default": "./dist/editor.umd.js"
     },
     "./event-emitter": {
-      "import": "./dist/editor.es.js",
-      "require": "./dist/editor.umd.js"
+      "import": "./dist/event-emitter.es.js",
+      "require": "./dist/event-emitter.umd.js"
     },
     "./nodejs-helpers": {
       "default": "./packages/nodejs/index.js",
@@ -28,7 +28,8 @@
   "files": [
     "dist",
     "docs",
-    "packages/**/src",
+    "packages/**/src/*.ts",
+    "packages/**/package.json",
     "packages/nodejs/*.js",
     "packages/nodejs/types.d.ts",
     "types/index.d.ts"
@@ -36,7 +37,8 @@
   "packageManager": "pnpm@7.6.0",
   "scripts": {
     "coverage": "vitest run --coverage",
-    "docs": "node scripts/create-docs.js",
+    "build": "pnpm run lint && cd packages/editor && pnpm run build && cd ../sp-editor && pnpm run build && pnpm run demo",
+    "docs": "cd packages/editor && pnpm run docs && cd ../nodejs && pnpm run docs && cd ../sp-editor && pnpm run docs && cd ../event-emitter && pnpm run docs",
     "lint": "eslint . --fix --ext .js,.cjs,.ts"
   },
   "devDependencies": {

@@ -12,8 +12,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
-      name: 'ZxEditor',
-      fileName: (format) => `zx-editor.${format}.js`,
+      name: 'SpEditor',
+      fileName: (format) => `sp-editor.${format}.js`,
     },
   },
   test: {

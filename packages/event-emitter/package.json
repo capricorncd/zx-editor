@@ -1,5 +1,5 @@
 {
-  "name": "@zx-editor/event-emitter",
+  "name": "@sp-editor/event-emitter",
   "version": "1.0.0",
   "description": "event-emitter",
   "main": "src/index.ts",
@@ -8,9 +8,9 @@
     "docs": "node scripts/docs.js"
   },
   "devDependencies": {
-    "@zx-editor/nodejs": "workspace:*"
+    "@sp-editor/nodejs": "workspace:*"
   },
   "author": "Capricorncd",
-  "homepage": "https://github.com/capricorncd/zx-editor",
+  "homepage": "https://github.com/capricorncd/sp-editor",
   "license": "MIT"
 }

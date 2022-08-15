@@ -3,27 +3,27 @@
  * https://github.com/capricorncd
  * Date: 2022/05/14 23:21:21 (GMT+0900)
  */
-import { Editor, ALLOWED_NODE_NAMES } from '@zx-editor/editor'
-import { StylePanel } from '@zx-editor/style-panel'
-import { Toolbar, ButtonOptions } from '@zx-editor/toolbar'
-import { AnyObject } from '@zx-editor/types'
+import { Editor, ALLOWED_NODE_NAMES } from '@sp-editor/editor'
+import { StylePanel } from '@sp-editor/style-panel'
+import { Toolbar, ButtonOptions } from '@sp-editor/toolbar'
+import { AnyObject } from '@sp-editor/types'
 import { handleImageFile, MediaFileHandlerData } from 'image-process'
 import { $, createElement, slice } from 'zx-sml'
-import { ZxEditorOptions, DEF_OPTIONS } from './options'
+import { SpEditorOptions, DEF_OPTIONS } from './options'
 import './style.scss'
 
 /**
- * @document ZxEditor
- * extends [Editor](./Editor.md)
+ * @document SpEditor
+ * SpEditor is a HTML5 rich text editor in smartphone browsers, and it's extends [Editor](./Editor.md).
  */
-export class ZxEditor extends Editor {
+export class SpEditor extends Editor {
   private readonly $el: HTMLElement
   private readonly stylePanel: StylePanel
   private readonly toolbar: Toolbar
   private fileInput: HTMLInputElement | null = null
   private _inputChangeHandler: (e: Event) => void
 
-  constructor(selector: string | HTMLElement | Partial<ZxEditorOptions>, options: Partial<ZxEditorOptions> = {}) {
+  constructor(selector: string | HTMLElement | Partial<SpEditorOptions>, options: Partial<SpEditorOptions> = {}) {
     let container: HTMLElement | null = null
     // check selector
     if (typeof selector === 'string' || selector instanceof HTMLElement) {
@@ -42,7 +42,7 @@ export class ZxEditor extends Editor {
       throw new Error(`Can't found '${selector}' Node in document!`)
     }
 
-    const $el = createElement('div', { class: 'zx-editor' })
+    const $el = createElement('div', { class: 'sp-editor' })
     super({
       ...options,
       container: $el,
@@ -150,4 +150,4 @@ export class ZxEditor extends Editor {
 }
 
 export { ALLOWED_NODE_NAMES }
-export type { ZxEditorOptions }
+export type { SpEditorOptions }

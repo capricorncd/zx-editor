@@ -3,7 +3,7 @@
  * https://github.com/capricorncd
  * Date: 2022/07/10 18:14:29 (GMT+0900)
  */
-import { CSSProperties } from '@zx-editor/types'
+import { CSSProperties } from '@sp-editor/types'
 
 /**
  * @type ToolbarOptions

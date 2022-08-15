@@ -3,9 +3,9 @@
  * https://github.com/capricorncd
  * Date: 2022/05/14 23:09:20 (GMT+0900)
  */
-import { Editor, EditorPlugin, EditorOptions } from '@zx-editor/editor'
-import { createNode, getStyles } from '@zx-editor/helpers'
-import { VirtualNode } from '@zx-editor/types'
+import { Editor, EditorPlugin, EditorOptions } from '@sp-editor/editor'
+import { createNode, getStyles } from '@sp-editor/helpers'
+import { VirtualNode } from '@sp-editor/types'
 import { $, $$, createElement } from 'zx-sml'
 import { STYLE_NODE_DATA, TAG_NODE_DATA } from './const'
 import { createColorVNode } from './helpers'

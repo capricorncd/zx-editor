@@ -6,6 +6,7 @@
  * @document EventEmitter
  * This module, in particular, offers the EventEmitter class, which we'll use to handle our events.
  * ```js
+ * import { EventEmitter } from 'sp-editor/event-emitter';
  * // For example, let's create a start event, and as a matter of providing a sample,
  * // we react to that by just logging to the console:
  * const eventEmitter = new EventEmitter()

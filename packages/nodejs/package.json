@@ -1,5 +1,5 @@
 {
-  "name": "@zx-editor/nodejs",
+  "name": "@sp-editor/nodejs",
   "version": "1.0.0",
   "description": "Some functions used in nodejs",
   "main": "index.js",

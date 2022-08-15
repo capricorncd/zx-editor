@@ -5,18 +5,18 @@
  */
 import { describe, it, expect, beforeEach } from 'vitest'
 import { createElement } from 'zx-sml'
-import { ZxEditor } from '../src'
+import { SpEditor } from '../src'
 
-describe('ZxEditor', () => {
-  let zxEditor: ZxEditor
+describe('SpEditor', () => {
+  let spEditor: SpEditor
 
   beforeEach(() => {
     const container = createElement('div')
-    zxEditor = new ZxEditor(container, {})
+    spEditor = new SpEditor(container, {})
   })
 
   it('实例化成功', () => {
     // 实例化完成，能成功获取版本
-    expect(zxEditor.version).toBe('__VERSION__')
+    expect(spEditor.version).toBe('__VERSION__')
   })
 })
