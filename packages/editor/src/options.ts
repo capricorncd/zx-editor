@@ -43,7 +43,7 @@ export interface EditorOptions {
   customPasteHandler?: (e: ClipboardEvent) => void
   // 编辑器自定义样式
   styles?: CSSProperties
-  // insert text to new paragraph, default `false`
+  // Insert text to new paragraph, only `textNode` is valid. default `false`
   insertTextToNewParagraph?: boolean
 }
 
