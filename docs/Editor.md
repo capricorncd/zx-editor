@@ -129,7 +129,7 @@ caretColor|`string`|no|光标颜色
 textColor|`string`|no|编辑器文本默认颜色 default color of editor text, default `#333333`
 customPasteHandler|`(e: ClipboardEvent) => void`|no|自定义用户粘贴处理函数
 styles|`CSSProperties`|no|编辑器自定义样式
-insertTextToNewParagraph|`boolean`|no|insert text to new paragraph, default `false`
+insertTextToNewParagraph|`boolean`|no|Insert text to new paragraph, only `textNode` is valid. default `false`
 
 <details>
 <summary>Source Code</summary>
@@ -168,7 +168,7 @@ interface EditorOptions {
   customPasteHandler?: (e: ClipboardEvent) => void
   // 编辑器自定义样式
   styles?: CSSProperties
-  // insert text to new paragraph, default `false`
+  // Insert text to new paragraph, only `textNode` is valid. default `false`
   insertTextToNewParagraph?: boolean
 }
 ```
