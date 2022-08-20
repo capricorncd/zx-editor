@@ -6,7 +6,7 @@
 import { CSSProperties } from '@sp-editor/types'
 import { createElement, toStrStyles, slice } from 'zx-sml'
 import { ROOT_CLASS_NAME } from './const'
-import { isOnlyBrInChildren, isUlElement, replaceHtmlTag, removeLiTags } from './helpers'
+import { hasSpecialPairedTag, isUlElement, replaceHtmlTag, removeLiTags } from './helpers'
 import { EditorOptions } from './options'
 
 /**
@@ -143,8 +143,12 @@ export const changeNodeName = (input: HTMLElement | null, tagName: string): HTML
   return newEl
 }
 
+/**
+ * Determine if there is content in the `el`
+ * @param el
+ */
 export const checkIsEmpty = (el: HTMLElement): void => {
-  if (el.children.length <= 1 && isOnlyBrInChildren(el.children[0])) {
+  if (!el.innerText.trim() && !hasSpecialPairedTag(el)) {
     el.classList.add('is-empty')
   } else {
     el.classList.remove('is-empty')

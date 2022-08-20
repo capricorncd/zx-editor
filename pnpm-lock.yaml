@@ -20,9 +20,9 @@ importers:
       typescript: ^4.7.4
       vite: ^3.0.3
       vitest: ^0.19.1
-      zx-sml: ^0.5.1
+      zx-sml: ^0.5.3
     dependencies:
-      zx-sml: 0.5.1
+      zx-sml: 0.5.3
     devDependencies:
       '@types/jsdom': 16.2.14
       '@types/node': 17.0.45
@@ -69,6 +69,24 @@ importers:
   packages/nodejs:
     specifiers: {}
 
+  packages/sp-editor:
+    specifiers:
+      '@sp-editor/editor': workspace:*
+      '@sp-editor/event-emitter': workspace:*
+      '@sp-editor/nodejs': workspace:*
+      '@sp-editor/style-panel': workspace:*
+      '@sp-editor/toolbar': workspace:*
+      '@sp-editor/types': workspace:*
+      image-process: ^4.2.1
+    dependencies:
+      '@sp-editor/editor': link:../editor
+      '@sp-editor/event-emitter': link:../event-emitter
+      '@sp-editor/nodejs': link:../nodejs
+      '@sp-editor/style-panel': link:../style-panel
+      '@sp-editor/toolbar': link:../toolbar
+      '@sp-editor/types': link:../types
+      image-process: 4.2.1
+
   packages/style-panel:
     specifiers:
       '@sp-editor/editor': workspace:*
@@ -95,24 +113,6 @@ importers:
 
   packages/types:
     specifiers: {}
-
-  packages/sp-editor:
-    specifiers:
-      '@sp-editor/editor': workspace:*
-      '@sp-editor/event-emitter': workspace:*
-      '@sp-editor/nodejs': workspace:*
-      '@sp-editor/style-panel': workspace:*
-      '@sp-editor/toolbar': workspace:*
-      '@sp-editor/types': workspace:*
-      image-process: ^4.2.1
-    dependencies:
-      '@sp-editor/editor': link:../editor
-      '@sp-editor/event-emitter': link:../event-emitter
-      '@sp-editor/nodejs': link:../nodejs
-      '@sp-editor/style-panel': link:../style-panel
-      '@sp-editor/toolbar': link:../toolbar
-      '@sp-editor/types': link:../types
-      image-process: 4.2.1
 
 packages:
   /@eslint/eslintrc/1.3.0:
@@ -3158,9 +3158,9 @@ packages:
       date-utils-2020: 1.0.3
     dev: false
 
-  /zx-sml/0.5.1:
+  /zx-sml/0.5.3:
     resolution:
-      { integrity: sha512-/UBbuqqZKV/LfAj3+QZ9UkVYG8hvDGRXjMttcAK57lZESUQ0eEpPsy4gzk+bs2Xm1EsxRkdWkRRwv4TnyDP83Q== }
+      { integrity: sha512-TW0gk4Zyuwol6sIHBdNkw7rkCIEsa/1XeHkxVcDu1apgv+RVgWUbZe+X1qfR8DT9QAIVsMEq2L6TeaH2zIq2xA== }
     dependencies:
       date-utils-2020: 1.0.3
     dev: false

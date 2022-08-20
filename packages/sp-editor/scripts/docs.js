@@ -10,8 +10,12 @@ const { getCommentsData, outputFile } = require('zx-sml/nodejs')
 
 const options = {
   ...outputFileOptions,
-  linesAfterTitle: {
-    method: 'More methods please see [Editor](./Editor.md#methods) methods documentation.',
+  lines: {
+    ...outputFileOptions.lines,
+    afterTitle: {
+      ...outputFileOptions.lines?.afterTitle,
+      method: 'More methods please see [Editor](./Editor.md#methods) methods documentation.',
+    },
   },
 }
 

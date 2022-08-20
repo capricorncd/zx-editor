@@ -9,7 +9,7 @@ import { CSSProperties } from '@sp-editor/types'
 import { $, createElement, slice, toStrStyles } from 'zx-sml'
 import { NODE_NAME_BR, ALLOWED_NODE_NAMES } from './const'
 import { changeNodeName, initContentDom, checkIsEmpty, getCursorElement } from './dom'
-import { isOnlyBrInChildren } from './helpers'
+import { isOnlyBrInChildren, isPairedTags, isSpecialPairedTags } from './helpers'
 import { DEF_OPTIONS, EditorOptions } from './options'
 import './style.scss'
 
@@ -89,7 +89,8 @@ export class Editor extends EventEmitter {
         const node =
           sel && sel.rangeCount ? sel.getRangeAt(sel.rangeCount - 1).endContainer : (e.currentTarget as HTMLElement)
         this.setCursorElement(node)
-        this._verifyChild()
+
+        type === 'blur' && this._verifyChild()
       }
       this.emit(type === 'input' ? 'change' : type, e)
       checkIsEmpty(this.$editor)
@@ -205,6 +206,7 @@ export class Editor extends EventEmitter {
       }
     }
     this._dispatchChange()
+    this._verifyChild()
   }
 
   /**
@@ -216,7 +218,7 @@ export class Editor extends EventEmitter {
     const currentSection = this.getCursorElement()
     if (isOnlyBrInChildren(currentSection)) {
       // 成对的标签，比如div/section/p etc.
-      if (/<(\w+)[^>]*>.*<\/\1>/.test(input.outerHTML)) {
+      if (isPairedTags(input.outerHTML)) {
         this.$editor.insertBefore(input, currentSection)
       }
       // img之类的非成对标签
@@ -266,22 +268,39 @@ export class Editor extends EventEmitter {
   private _verifyChild(): void {
     const currentChild = this.getCursorElement(true)
     const childNodeName = this.options.childNodeName!
-    const child = this.$editor.children
-    let tempChild: HTMLElement,
+
+    let tempNode: Node,
       isCurrentChild = false
-    for (let i = 0; i < child.length; i++) {
-      tempChild = child[i] as HTMLElement
-      if (this.allowedNodeNames.includes(tempChild.nodeName)) continue
-      isCurrentChild = currentChild === tempChild
-      // 将不合法标签元素替换为默认的元素
-      const newChild = changeNodeName(tempChild, childNodeName)
-      if (isCurrentChild && newChild) {
-        this.setCursorElement(newChild)
+    let count = 0
+    while (count < this.$editor.childNodes.length) {
+      tempNode = this.$editor.childNodes[count++]
+      // Element
+      if (tempNode.nodeType === Node.ELEMENT_NODE) {
+        if (isPairedTags(tempNode as Element)) {
+          if (this.allowedNodeNames.includes(tempNode.nodeName)) continue
+          isCurrentChild = currentChild === tempNode
+
+          if (!isSpecialPairedTags(tempNode as Element)) {
+            // 将不合法标签元素替换为默认的元素
+            const newChild = changeNodeName(tempNode as HTMLElement, childNodeName)
+            if (isCurrentChild && newChild) {
+              this.setCursorElement(newChild)
+            }
+            continue
+          }
+        }
+        ;(tempNode as Element).replaceWith(createElement(childNodeName, {}, tempNode.cloneNode(true)))
       }
+      // Node
+      else {
+        const newChild = createElement(childNodeName, {}, tempNode.cloneNode(true))
+        this.$editor.replaceChild(newChild, tempNode)
+      }
+      console.log(count)
     }
+
     // check if it's last child is a blank line, if not, insert a new blank line
     if (!isOnlyBrInChildren(this.$editor.lastElementChild)) {
-      const childNodeName = this.options.childNodeName!
       this.$editor.appendChild(createElement(childNodeName, {}, '<br>'))
     }
   }

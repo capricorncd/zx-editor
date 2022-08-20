@@ -18,7 +18,9 @@
 const { afterBuild } = require('./after-build')
 
 const outputFileOptions = {
-  endLines: ['', '## License', '', 'MIT License © 2018-Present [Capricorncd](https://github.com/capricorncd).'],
+  lines: {
+    end: ['', '## License', '', 'MIT License © 2018-Present [Capricorncd](https://github.com/capricorncd).'],
+  },
   typeWithAuto: true,
 }
 

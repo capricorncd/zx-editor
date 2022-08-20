@@ -37,6 +37,7 @@
   "packageManager": "pnpm@7.6.0",
   "scripts": {
     "coverage": "vitest run --coverage",
+    "dev": "cd packages/sp-editor && pnpm run dev",
     "build": "pnpm run lint && cd packages/editor && pnpm run build && cd ../sp-editor && pnpm run build && pnpm run demo",
     "docs": "cd packages/editor && pnpm run docs && cd ../nodejs && pnpm run docs && cd ../sp-editor && pnpm run docs && cd ../event-emitter && pnpm run docs",
     "lint": "eslint . --fix --ext .js,.cjs,.ts"
@@ -77,6 +78,6 @@
   "homepage": "https://github.com/capricorncd/zx-editor",
   "license": "MIT",
   "dependencies": {
-    "zx-sml": "^0.5.1"
+    "zx-sml": "^0.5.3"
   }
 }
