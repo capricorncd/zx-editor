@@ -1,6 +1,6 @@
 {
   "name": "sp-editor",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "SpEditor is a HTML5 rich text editor in smartphone browsers",
   "author": "capricorncd",
   "main": "./dist/sp-editor.umd.js",
