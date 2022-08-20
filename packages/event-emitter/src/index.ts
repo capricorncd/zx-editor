@@ -106,7 +106,7 @@ export class EventEmitter {
   }
 
   /**
-   * @method _removeEmpty(eventName)
+   * _removeEmpty(eventName)
    * remove empty event list
    * @param eventName `string`
    * @private
