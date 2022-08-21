@@ -62,7 +62,7 @@ get html string from content element.
 
 Param|Types|Required|Description
 :--|:--|:--|:--
-retainLastBlankLines|`boolean`|no|If `true` the last `<section><br></section>` will be removed.
+retainLastBlankLines|`boolean`|no|Retain last blank lines, If `true` the last `<section><br></section>` not will be removed.
 
 - @returns `string`
 
