@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+  <title>移动端HTML文档（富文本）编辑器 - Zx-Editor</title>
+  <meta name="keyword" content="Zx-Editor,html-editor,editor">
+  <meta name="description" content="移动端HTML文档（富文本）编辑器，支持图文混排、引用、大标题、无序列表，字体颜色、加粗、斜体。">
+  <link rel="stylesheet" href="./css/index.css">
+</head>
+<body>
+<div class="container">
+  <header class="border-bm">
+    <div class="left-wrapper">
+      <a href="#" class="back" onclick="handleBackClick()">返回</a>
+    </div>
+    <div class="title">发布文章</div>
+    <div class="right-wrapper">
+      <a href="#" class="preview" onclick="handlePreviewClick()">预览</a>
+    </div>
+  </header>
+  <section class="cover-wrapper">
+    <div class="cover"><img src=""></div>
+    <input type="file" accept="image/*" style="display: none">
+  </section>
+  <!--标题-->
+  <section class="title-wrapper border-bm">
+    <div class="item placeholder">标题<span>（不超过30个字）</span></div>
+    <div class="item input-hook" contenteditable="true" style="display: none;"></div>
+  </section>
+  <!--导语、摘要-->
+  <section class="summary-wrapper border-bm" style="display: none;">
+    <div class="item placeholder">输入导语，140字内（非必填）</div>
+    <div class="item input-hook" contenteditable="true" style="display: none;"></div>
+  </section>
+  <article>
+    <div class="zx-eidtor-container" id="editorContainer"></div>
+  </article>
+</div>
+
+<!--预览-->
+<div class="article-preview-wrapper">
+  <header class="border-bm">
+    <div class="left-wrapper">
+      <a href="#" class="back-text" onclick="handleBackPreviewClick()">继续编辑</a>
+    </div>
+    <div class="right-wrapper">
+      <a href="#" class="submit active" onclick="handleSubmitClick()">完成</a>
+    </div>
+  </header>
+  <div class="preview-wrapper">
+    <div class="preview-cover"><img src=""></div>
+    <div class="preview-title"></div>
+    <div class="preview-summary"></div>
+    <div class="preveiw-content"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-polyfills/0.1.42/polyfill.min.js"></script>
+<!--exif获取照片参数插件-->
+<script src="./libs/exif.min.js"></script>
+<!--debug-->
+<script src="./libs/zx-debug.min.js"></script>
+<!--编辑器-->
+<script src="../dist/js/zx-editor.min.js"></script>
+<!--发布文章逻辑-->
+<script src="./js/index.js"></script>
+</body>
+</html>
