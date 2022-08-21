@@ -78,6 +78,6 @@
   "homepage": "https://github.com/capricorncd/zx-editor",
   "license": "MIT",
   "dependencies": {
-    "zx-sml": "^0.5.3"
+    "zx-sml": "^0.5.4"
   }
 }

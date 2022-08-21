@@ -5,14 +5,14 @@
  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
-const { outputFileOptions } = require('@sp-editor/nodejs')
+const { getOutputFileOptions } = require('@sp-editor/nodejs')
 const { getCommentsData, outputFile } = require('zx-sml/nodejs')
 
 function main() {
   const docsDir = path.resolve(__dirname, '../../../docs')
   const data = getCommentsData(path.resolve(__dirname, '../src'), true)
-  outputFile(data, docsDir, outputFileOptions)
-  outputFile(data, path.resolve(__dirname, '../README.md'), outputFileOptions)
+  outputFile(data, docsDir, getOutputFileOptions(true))
+  outputFile(data, path.resolve(__dirname, '../README.md'), getOutputFileOptions())
 }
 
 main()

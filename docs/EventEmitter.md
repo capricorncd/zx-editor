@@ -77,6 +77,16 @@ fn|`Function`|yes|callback function.
 type EventEmitterCallback = (...args: any[]) => void
 ```
 
+## Other Docs
+
+Docs|Description|Url
+:--|--:|:--:
+Editor|class Editor documentation, main module of SpEditor.|[/docs/Editor.md](./Editor.md)
+EventEmitter|class EventEmitter documentation.|[/docs/EventEmitter.md](./EventEmitter.md)
+SpEditor|class SpEditor documentation.|[/docs/SpEditor.md](./SpEditor.md)
+nodejs-helpers|nodejs-helpers documentation.|[/docs/nodejs-helpers.md](./nodejs-helpers.md)
+Others|Other documentations.|[/docs](./)
+
 ## License
 
 MIT License © 2018-Present [Capricorncd](https://github.com/capricorncd).

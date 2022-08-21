@@ -20,9 +20,9 @@ importers:
       typescript: ^4.7.4
       vite: ^3.0.3
       vitest: ^0.19.1
-      zx-sml: ^0.5.3
+      zx-sml: ^0.5.4
     dependencies:
-      zx-sml: 0.5.3
+      zx-sml: 0.5.4
     devDependencies:
       '@types/jsdom': 16.2.14
       '@types/node': 17.0.45
@@ -3158,9 +3158,9 @@ packages:
       date-utils-2020: 1.0.3
     dev: false
 
-  /zx-sml/0.5.3:
+  /zx-sml/0.5.4:
     resolution:
-      { integrity: sha512-TW0gk4Zyuwol6sIHBdNkw7rkCIEsa/1XeHkxVcDu1apgv+RVgWUbZe+X1qfR8DT9QAIVsMEq2L6TeaH2zIq2xA== }
+      { integrity: sha512-HglET2DGF3GpR5pb28WGs9g8wAM3I9Rr6JjHOTKPUVUgiLb4AYphN8r8l0PgXRsWHb6MMYlov29nv6nWCCbjQw== }
     dependencies:
       date-utils-2020: 1.0.3
     dev: false

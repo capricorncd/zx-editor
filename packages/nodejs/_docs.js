@@ -6,14 +6,14 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
 const { getCommentsData, outputFile } = require('zx-sml/nodejs')
-const { outputFileOptions } = require('./index')
+const { getOutputFileOptions } = require('./index')
 
 function main() {
   const data = getCommentsData(path.resolve(__dirname, './'), true)
-  outputFile(data, path.resolve(__dirname, './README.md'), outputFileOptions)
+  outputFile(data, path.resolve(__dirname, './README.md'), getOutputFileOptions())
 
   const docsDir = path.resolve(__dirname, '../../docs')
-  outputFile(data, path.join(docsDir, 'nodejs-helpers.md'), outputFileOptions)
+  outputFile(data, path.join(docsDir, 'nodejs-helpers.md'), getOutputFileOptions(true))
 }
 
 main()
