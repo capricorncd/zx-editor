@@ -3,13 +3,13 @@
  * Author: Capricorncd
  * Released under the MIT License
  * Repository: https://github.com/capricorncd/sp-editor
- * Released on: 2022-08-20 21:17:03 (GMT+0900)
+ * Released on: 2022-09-01 21:16:14 (GMT+0900)
  * Copyright © 2018-present, Capricorncd
  */
 var V = Object.defineProperty;
 var W = (e, n, t) => n in e ? V(e, n, { enumerable: !0, configurable: !0, writable: !0, value: t }) : e[n] = t;
 var E = (e, n, t) => (W(e, typeof n != "symbol" ? n + "" : n, t), t);
-class K {
+class G {
   constructor() {
     this._events = {};
   }
@@ -58,12 +58,12 @@ class K {
  * Repository: https://github.com/capricorncd/zx-sml
  * Released on: 2022-08-14 09:57:06 (GMT+0900)
  */
-var Y = Object.defineProperty, b = Object.getOwnPropertySymbols, q = Object.prototype.hasOwnProperty, G = Object.prototype.propertyIsEnumerable, $ = (e, n, t) => n in e ? Y(e, n, { enumerable: !0, configurable: !0, writable: !0, value: t }) : e[n] = t, H = (e, n) => {
+var K = Object.defineProperty, b = Object.getOwnPropertySymbols, Y = Object.prototype.hasOwnProperty, q = Object.prototype.propertyIsEnumerable, $ = (e, n, t) => n in e ? K(e, n, { enumerable: !0, configurable: !0, writable: !0, value: t }) : e[n] = t, H = (e, n) => {
   for (var t in n || (n = {}))
-    q.call(n, t) && $(e, t, n[t]);
+    Y.call(n, t) && $(e, t, n[t]);
   if (b)
     for (var t of b(n))
-      G.call(n, t) && $(e, t, n[t]);
+      q.call(n, t) && $(e, t, n[t]);
   return e;
 };
 function J(e) {
@@ -90,7 +90,7 @@ var Q = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : ty
           return a.toTwoDigits;
         } });
         var v = { weeks: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] };
-        function _(u) {
+        function N(u) {
           if (u instanceof Date)
             return u;
           if (typeof u == "number")
@@ -113,17 +113,17 @@ var Q = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : ty
           return null;
         }
         r.formatDate = function(u, l, p) {
-          var f, c = _(u);
+          var f, c = N(u);
           if (!c || !l)
             return u + "";
           if (l === "timestamp")
             return c.getTime().toString();
           /(y+)/i.test(l) && (f = RegExp.$1, l = l.replace(f, (c.getFullYear() + "").substr(4 - f.length))), p && Array.isArray(p.weeks) || (p = v);
-          var N = { "M+": c.getMonth() + 1, "d+": c.getDate(), "h+": c.getHours(), "m+": c.getMinutes(), "s+": c.getSeconds(), "w+": c.getDay(), "W+": p.weeks[c.getDay()], "a+": c.getHours() < 12 ? "am" : "pm", "A+": c.getHours() < 12 ? "AM" : "PM" };
-          for (var d in N)
+          var _ = { "M+": c.getMonth() + 1, "d+": c.getDate(), "h+": c.getHours(), "m+": c.getMinutes(), "s+": c.getSeconds(), "w+": c.getDay(), "W+": p.weeks[c.getDay()], "a+": c.getHours() < 12 ? "am" : "pm", "A+": c.getHours() < 12 ? "AM" : "PM" };
+          for (var d in _)
             if (new RegExp("(" + d + ")").test(l)) {
               f = RegExp.$1;
-              var h = N[d] + "";
+              var h = _[d] + "";
               l = l.replace(f, f.length === 1 ? h : a.toTwoDigits(h));
             }
           if (/(g)/i.test(l)) {
@@ -131,7 +131,7 @@ var Q = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : ty
             l = l.replace(/g/i, F ? g[0] : g.join(" "));
           }
           return l;
-        }, r.toDate = _;
+        }, r.toDate = N;
       } }, i = {};
       return function s(r) {
         if (i[r])
@@ -208,15 +208,18 @@ function O(e) {
 function I(e) {
   return ["PICTURE", "VIDEO", "AUDIO", "CANVAS"].includes(e.nodeName);
 }
+function re(e) {
+  return ["IMG"].includes(e.nodeName) || I(e);
+}
 function U(e) {
-  if (I(e))
+  if (re(e))
     return !0;
   for (let n = 0; n < e.children.length; n++)
     if (U(e.children[n]))
       return !0;
   return !1;
 }
-const re = (e, n) => {
+const ne = (e, n) => {
   const t = {
     minHeight: e.minHeight,
     "--placeholder": JSON.stringify(e.placeholder),
@@ -233,7 +236,7 @@ const re = (e, n) => {
   };
   return e.editable && (i.contenteditable = "true"), m("div", i, n);
 }, S = (e, n) => {
-  var a, v, _, u, l, p, f, c, N;
+  var a, v, N, u, l, p, f, c, _;
   if (!e)
     return null;
   const t = e.nodeName, i = n.toUpperCase();
@@ -247,7 +250,7 @@ const re = (e, n) => {
         (a = r.parentElement) == null || a.insertBefore(o, r);
       else if (r.lastElementChild === e) {
         const d = (v = r.parentElement) == null ? void 0 : v.nextElementSibling;
-        d ? (_ = d.parentElement) == null || _.insertBefore(o, d) : (u = r.parentElement) == null || u.append(o);
+        d ? (N = d.parentElement) == null || N.insertBefore(o, d) : (u = r.parentElement) == null || u.append(o);
       } else {
         const d = C(r.children), h = m(r.nodeName);
         let g = d.shift();
@@ -264,7 +267,7 @@ const re = (e, n) => {
     if (d && w(d)) {
       if (s.innerHTML = y(e.outerHTML, t, "li"), o = s.firstChild, d.append(o), r == null || r.removeChild(e), h && h.nodeName === d.nodeName) {
         const g = C(h.children);
-        d.append(...g), (N = h.parentElement) == null || N.removeChild(h);
+        d.append(...g), (_ = h.parentElement) == null || _.removeChild(h);
       }
     } else
       h && w(h) ? (s.innerHTML = y(e.outerHTML, t, "li"), o = s.firstChild, h.insertBefore(o, h.firstElementChild), r == null || r.removeChild(e)) : (o = s, s.innerHTML = y(e.outerHTML, t, "li"), r == null || r.replaceChild(o, e));
@@ -274,7 +277,7 @@ const re = (e, n) => {
 }, M = (e) => {
   !e.innerText.trim() && !U(e) ? e.classList.add("is-empty") : e.classList.remove("is-empty");
 };
-function ne(e, n, t = !1) {
+function ie(e, n, t = !1) {
   var i;
   for (; e && n !== e; ) {
     if (!t && e.nodeName === "LI" && ((i = e.parentElement) == null ? void 0 : i.parentElement) === n || e.parentElement === n)
@@ -283,7 +286,7 @@ function ne(e, n, t = !1) {
   }
   return n.lastElementChild;
 }
-const ie = {
+const se = {
   editable: !0,
   minHeight: "50vh",
   paddingBottom: "50vh",
@@ -298,7 +301,7 @@ const ie = {
   customPasteHandler: void 0,
   insertTextToNewParagraph: !1
 };
-class oe extends K {
+class le extends G {
   constructor(t) {
     super();
     E(this, "version");
@@ -312,9 +315,9 @@ class oe extends K {
     const i = typeof t.container == "string" ? X(t.container) : t.container;
     if (!i)
       throw new Error(`Can't found '${t.container}' Node in document!`);
-    this.version = "1.0.0", this.options = { ...ie, ...t }, this.allowedNodeNames = (this.options.allowedNodeNames || k).map((r) => r.toUpperCase());
+    this.version = "1.0.0", this.options = { ...se, ...t }, this.allowedNodeNames = (this.options.allowedNodeNames || k).map((r) => r.toUpperCase());
     const s = this.options.childNodeName.toUpperCase();
-    this.options.childNodeName = s, this.blankLine = `<${s}><br></${s}>`, this.allowedNodeNames.includes(s) || this.allowedNodeNames.push(s), this.$editor = re(this.options, this.blankLine), i.append(this.$editor), this._eventHandler = (r) => {
+    this.options.childNodeName = s, this.blankLine = `<${s}><br></${s}>`, this.allowedNodeNames.includes(s) || this.allowedNodeNames.push(s), this.$editor = ne(this.options, this.blankLine), i.append(this.$editor), this._eventHandler = (r) => {
       const o = r.type;
       if (o === "blur" || o === "click") {
         const a = window.getSelection(), v = a && a.rangeCount ? a.getRangeAt(a.rangeCount - 1).endContainer : r.currentTarget;
@@ -390,7 +393,7 @@ class oe extends K {
         const a = m(i, {}, s.cloneNode(!0));
         this.$editor.replaceChild(a, s);
       }
-      console.log(o);
+      console.log(o, s.nodeName, s.nodeType);
     }
     D(this.$editor.lastElementChild) || this.$editor.appendChild(m(i, {}, "<br>"));
   }
@@ -434,7 +437,7 @@ class oe extends K {
       t && (this._cursorElement = t);
   }
   getCursorElement(t = !1) {
-    return ne(this._cursorElement, this.$editor, t);
+    return ie(this._cursorElement, this.$editor, t);
   }
   destroy() {
     this.$editor.removeEventListener("focus", this._eventHandler), this.$editor.removeEventListener("blur", this._eventHandler), this.$editor.removeEventListener("input", this._eventHandler), this.$editor.removeEventListener("paste", this._pasteHandler), this.removeAllListeners();
@@ -442,5 +445,5 @@ class oe extends K {
 }
 export {
   k as ALLOWED_NODE_NAMES,
-  oe as Editor
+  le as Editor
 };

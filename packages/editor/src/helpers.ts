@@ -58,15 +58,19 @@ export function isSpecialPairedTags<T extends Element>(el: T): boolean {
   return ['PICTURE', 'VIDEO', 'AUDIO', 'CANVAS'].includes(el.nodeName)
 }
 
+export function isSpecialTags<T extends Element>(el: T): boolean {
+  return ['IMG'].includes(el.nodeName) || isSpecialPairedTags(el)
+}
+
 /**
- * hasSpecialPairedTag(el)
+ * hasSpecialTag(el)
  * @param el `Element`
  * @returns
  */
-export function hasSpecialPairedTag<T extends Element>(el: T): boolean {
-  if (isSpecialPairedTags(el)) return true
+export function hasSpecialTag<T extends Element>(el: T): boolean {
+  if (isSpecialTags(el)) return true
   for (let i = 0; i < el.children.length; i++) {
-    if (hasSpecialPairedTag(el.children[i])) return true
+    if (hasSpecialTag(el.children[i])) return true
   }
   return false
 }

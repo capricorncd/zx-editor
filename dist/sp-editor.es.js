@@ -1,9 +1,9 @@
 /*!
- * sp-editor version 1.0.1
+ * sp-editor version 1.0.2
  * Author: capricorncd
  * Released under the MIT License
  * Repository: https://github.com/capricorncd/zx-editor
- * Released on: 2022-08-20 21:17:05 (GMT+0900)
+ * Released on: 2022-09-01 21:16:15 (GMT+0900)
  * Copyright © 2018-present, capricorncd
  */
 var me = Object.defineProperty;
@@ -261,15 +261,18 @@ function k(t) {
 function se(t) {
   return ["PICTURE", "VIDEO", "AUDIO", "CANVAS"].includes(t.nodeName);
 }
+function Oe(t) {
+  return ["IMG"].includes(t.nodeName) || se(t);
+}
 function oe(t) {
-  if (se(t))
+  if (Oe(t))
     return !0;
   for (let e = 0; e < t.children.length; e++)
     if (oe(t.children[e]))
       return !0;
   return !1;
 }
-const Oe = (t, e) => {
+const Ae = (t, e) => {
   const i = {
     minHeight: t.minHeight,
     "--placeholder": JSON.stringify(t.placeholder),
@@ -327,7 +330,7 @@ const Oe = (t, e) => {
 }, U = (t) => {
   !t.innerText.trim() && !oe(t) ? t.classList.add("is-empty") : t.classList.remove("is-empty");
 };
-function Ae(t, e, i = !1) {
+function Pe(t, e, i = !1) {
   var n;
   for (; t && e !== t; ) {
     if (!i && t.nodeName === "LI" && ((n = t.parentElement) == null ? void 0 : n.parentElement) === e || t.parentElement === e)
@@ -336,7 +339,7 @@ function Ae(t, e, i = !1) {
   }
   return e.lastElementChild;
 }
-const Pe = {
+const Ie = {
   editable: !0,
   minHeight: "50vh",
   paddingBottom: "50vh",
@@ -351,7 +354,7 @@ const Pe = {
   customPasteHandler: void 0,
   insertTextToNewParagraph: !1
 };
-class Ie extends we {
+class Me extends we {
   constructor(i) {
     super();
     u(this, "version");
@@ -365,9 +368,9 @@ class Ie extends we {
     const n = typeof i.container == "string" ? _(i.container) : i.container;
     if (!n)
       throw new Error(`Can't found '${i.container}' Node in document!`);
-    this.version = "1.0.1", this.options = { ...Pe, ...i }, this.allowedNodeNames = (this.options.allowedNodeNames || re).map((s) => s.toUpperCase());
+    this.version = "1.0.2", this.options = { ...Ie, ...i }, this.allowedNodeNames = (this.options.allowedNodeNames || re).map((s) => s.toUpperCase());
     const r = this.options.childNodeName.toUpperCase();
-    this.options.childNodeName = r, this.blankLine = `<${r}><br></${r}>`, this.allowedNodeNames.includes(r) || this.allowedNodeNames.push(r), this.$editor = Oe(this.options, this.blankLine), n.append(this.$editor), this._eventHandler = (s) => {
+    this.options.childNodeName = r, this.blankLine = `<${r}><br></${r}>`, this.allowedNodeNames.includes(r) || this.allowedNodeNames.push(r), this.$editor = Ae(this.options, this.blankLine), n.append(this.$editor), this._eventHandler = (s) => {
       const o = s.type;
       if (o === "blur" || o === "click") {
         const l = window.getSelection(), d = l && l.rangeCount ? l.getRangeAt(l.rangeCount - 1).endContainer : s.currentTarget;
@@ -443,7 +446,7 @@ class Ie extends we {
         const l = y(n, {}, r.cloneNode(!0));
         this.$editor.replaceChild(l, r);
       }
-      console.log(o);
+      console.log(o, r.nodeName, r.nodeType);
     }
     j(this.$editor.lastElementChild) || this.$editor.appendChild(y(n, {}, "<br>"));
   }
@@ -487,13 +490,13 @@ class Ie extends we {
       i && (this._cursorElement = i);
   }
   getCursorElement(i = !1) {
-    return Ae(this._cursorElement, this.$editor, i);
+    return Pe(this._cursorElement, this.$editor, i);
   }
   destroy() {
     this.$editor.removeEventListener("focus", this._eventHandler), this.$editor.removeEventListener("blur", this._eventHandler), this.$editor.removeEventListener("input", this._eventHandler), this.$editor.removeEventListener("paste", this._pasteHandler), this.removeAllListeners();
   }
 }
-const Me = ["#333333", "#d0d0d0", "#ff583d", "#fdaa25", "#44c67b", "#14b2e0", "#b065e2"], Re = {
+const Re = ["#333333", "#d0d0d0", "#ff583d", "#fdaa25", "#44c67b", "#14b2e0", "#b065e2"], Be = {
   tag: "dl",
   attrs: {
     class: "__style-wrapper border-bottom"
@@ -595,14 +598,14 @@ const Me = ["#333333", "#d0d0d0", "#ff583d", "#fdaa25", "#44c67b", "#14b2e0", "#
       child: ["\u65E0\u5E8F\u5217\u8868", { tag: "i" }]
     }
   ]
-}, Be = (t) => {
+}, je = (t) => {
   const e = [];
   return t.forEach((i, n) => {
     /^#\w{3,6}$/.test(i) && e.push({
       tag: "dd",
       attrs: {
         class: n === 0 ? "active" : "",
-        "data-color": je(i.toLowerCase())
+        "data-color": ke(i.toLowerCase())
       },
       child: [
         {
@@ -614,13 +617,13 @@ const Me = ["#333333", "#d0d0d0", "#ff583d", "#fdaa25", "#44c67b", "#14b2e0", "#
       ]
     });
   }), e;
-}, je = (t) => t.length === 7 ? t : `#${t[1]}${t[1]}${t[2]}${t[2]}${t[3]}${t[3]}`, ke = {
-  textStyleColors: [...Me],
+}, ke = (t) => t.length === 7 ? t : `#${t[1]}${t[1]}${t[2]}${t[2]}${t[3]}${t[3]}`, Fe = {
+  textStyleColors: [...Re],
   textStyleTitle: "Set Style",
   textStyleHeadLeftBtnText: "Clear"
 };
 const N = "style-panel", S = `${N}__fade-in`;
-class Fe {
+class Ue {
   constructor(e) {
     u(this, "editorInstance", null);
     u(this, "$el");
@@ -632,7 +635,7 @@ class Fe {
     u(this, "_colorHandler");
     u(this, "_tagHandler");
     const i = {
-      ...ke,
+      ...Fe,
       ...e
     };
     this.options = i, this.$el = y("div", { class: `${N} border-top` }), this._styleHandler = (n) => {
@@ -662,7 +665,7 @@ class Fe {
   _initChildEl(e) {
     const { textColor: i, childNodeName: n } = e, { textStyleTitle: r, textStyleHeadLeftBtnText: s, textStyleColors: o } = this.options, l = y("div", { class: `${N}__header` }, r), d = y("div", { class: "__left" }, s), E = y("div", { class: "__switch" });
     l.append(d, E);
-    const h = [Re], a = o;
+    const h = [Be], a = o;
     if (a.length) {
       i && !a.includes(i) && a.unshift(i);
       const m = {
@@ -670,7 +673,7 @@ class Fe {
         attrs: {
           class: "__color-wrapper border-bottom"
         },
-        child: Be(a)
+        child: je(a)
       };
       h.push(m);
     }
@@ -720,12 +723,12 @@ class Fe {
     });
   }
 }
-const Ue = {
+const We = {
   toolbarBeenFixed: !0,
   toolbarHeight: "50px",
   toolbarButtons: ["choose-picture", "text-style"]
-}, We = 34;
-class ze {
+}, ze = 34;
+class Ge {
   constructor(e) {
     u(this, "editorInstance", null);
     u(this, "visible");
@@ -733,7 +736,7 @@ class ze {
     u(this, "$el");
     u(this, "_btnClickHandler");
     this.options = {
-      ...Ue,
+      ...We,
       ...e
     }, this.visible = this.options.toolbarBeenFixed;
     const [i, n] = Ne(this.options.toolbarHeight);
@@ -741,7 +744,7 @@ class ze {
       class: "sp-editor__toolbar border-top",
       style: {
         "--bar-height": `${i}${n}`,
-        height: `${i + (Ee() ? We : 0)}${n}`
+        height: `${i + (Ee() ? ze : 0)}${n}`
       }
     }, '<dl class="inner-wrapper"></dl>'), this._btnClickHandler = (r) => {
       const s = r.currentTarget;
@@ -785,26 +788,26 @@ class ze {
  * Repository: https://github.com/capricorncd/zx-sml
  * Released on: 2022-07-13 22:46:38 (GMT+0900)
  */
-var Ge = Object.defineProperty, z = Object.getOwnPropertySymbols, Ve = Object.prototype.hasOwnProperty, Ye = Object.prototype.propertyIsEnumerable, G = (t, e, i) => e in t ? Ge(t, e, { enumerable: !0, configurable: !0, writable: !0, value: i }) : t[e] = i, V = (t, e) => {
+var Ve = Object.defineProperty, z = Object.getOwnPropertySymbols, Ye = Object.prototype.hasOwnProperty, qe = Object.prototype.propertyIsEnumerable, G = (t, e, i) => e in t ? Ve(t, e, { enumerable: !0, configurable: !0, writable: !0, value: i }) : t[e] = i, V = (t, e) => {
   for (var i in e || (e = {}))
-    Ve.call(e, i) && G(t, i, e[i]);
+    Ye.call(e, i) && G(t, i, e[i]);
   if (z)
     for (var i of z(e))
-      Ye.call(e, i) && G(t, i, e[i]);
+      qe.call(e, i) && G(t, i, e[i]);
   return t;
 };
-function qe(t) {
+function Ke(t) {
   return Array.isArray(t);
 }
 function ae(t) {
-  return t !== null && !qe(t) && typeof t == "object";
+  return t !== null && !Ke(t) && typeof t == "object";
 }
-var Ke = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : typeof global < "u" ? global : typeof self < "u" ? self : {}, T = { exports: {} };
+var Xe = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : typeof global < "u" ? global : typeof self < "u" ? self : {}, T = { exports: {} };
 /*! For license information please see date-utils-2020.js.LICENSE.txt */
 (function(t, e) {
   (function(i, n) {
     t.exports = n();
-  })(typeof self < "u" ? self : Ke, function() {
+  })(typeof self < "u" ? self : Xe, function() {
     return (() => {
       var i = { 949: (r, s) => {
         Object.defineProperty(s, "__esModule", { value: !0 }), s.toTwoDigits = void 0, s.toTwoDigits = function(o) {
@@ -872,12 +875,12 @@ var Ke = typeof globalThis < "u" ? globalThis : typeof window < "u" ? window : t
 function le(t = "", e = "-") {
   return t.replace(/[A-Z]/g, (i, n) => `${n > 0 ? e : ""}${i.toLowerCase()}`);
 }
-function Xe(t = "", e = !1) {
+function Ze(t = "", e = !1) {
   const i = t.replace(/[-_\s](\w)/g, (n, r) => r.toUpperCase());
   return e ? i.replace(/^\w/, (n) => n.toUpperCase()) : i;
 }
 function ce(t = {}, e = !1) {
-  const i = e ? Xe : le, n = {};
+  const i = e ? Ze : le, n = {};
   for (const [r, s] of Object.entries(t))
     n[i(r)] = ae(s) ? ce(s, e) : s;
   return n;
@@ -894,19 +897,19 @@ function de(t, e = !1, i = 2) {
     bytes: t
   };
 }
-function Ze(t, e = {}, i) {
+function Je(t, e = {}, i) {
   const n = document.createElement(t);
   for (const [r, s] of Object.entries(e))
-    n.setAttribute(le(r), r === "style" && ae(s) ? Je(s) : s);
+    n.setAttribute(le(r), r === "style" && ae(s) ? Qe(s) : s);
   return i && (typeof i == "string" ? n.innerHTML = i : n.append(i)), n;
 }
-function Je(...t) {
+function Qe(...t) {
   const e = t.reduce((n, r) => V(V({}, n), ce(r)), {}), i = [];
   for (const [n, r] of Object.entries(e))
     r === "" || typeof r > "u" || r === null || i.push(`${n}:${r}`);
   return i.join(";");
 }
-function Qe(t) {
+function et(t) {
   return new Promise((e, i) => {
     const n = new FileReader();
     n.onload = (r) => {
@@ -938,7 +941,7 @@ function fe(t, e) {
 T.exports.formatDate;
 T.exports.toDate;
 T.exports.toTwoDigits;
-const et = {
+const tt = {
   enableDevicePixelRatio: !1,
   isForce: !1,
   mimeType: "image/jpeg",
@@ -947,14 +950,14 @@ const et = {
   width: 0,
   height: 0,
   longestSide: 0
-}, tt = /^data:(.+?);base64/, it = /^image\/.+/;
-function nt(t, e) {
+}, it = /^data:(.+?);base64/, nt = /^image\/.+/;
+function rt(t, e) {
   return new Promise((i, n) => {
     const r = {
-      ...et,
+      ...tt,
       ...e
     };
-    typeof t == "string" && tt.test(t) ? Y(t, r, i, n) : (t instanceof File || t instanceof Blob) && it.test(t.type) ? Qe(t).then((s) => {
+    typeof t == "string" && it.test(t) ? Y(t, r, i, n) : (t instanceof File || t instanceof Blob) && nt.test(t.type) ? et(t).then((s) => {
       Y(s, r, i, n);
     }).catch(n) : n(new Error(`Invalid file, ${t}`));
   });
@@ -978,7 +981,7 @@ function Y(t, e, i, n) {
       dy: 0,
       dw: e.cropInfo.sw,
       dh: e.cropInfo.sh
-    }) : e.width > 0 && e.height > 0 ? q(l, e, i, n, st(l, e)) : e.width > 0 || e.height > 0 || e.longestSide > 0 ? rt(l, e, i, n) : A({ ...l, raw: l }, e, i);
+    }) : e.width > 0 && e.height > 0 ? q(l, e, i, n, ot(l, e)) : e.width > 0 || e.height > 0 || e.longestSide > 0 ? st(l, e, i, n) : A({ ...l, raw: l }, e, i);
   }, o.onerror = n, o.src = t;
 }
 function q(t, e, i, n, r) {
@@ -1006,7 +1009,7 @@ function q(t, e, i, n, r) {
     n(s);
   }
 }
-function rt(t, e, i, n) {
+function st(t, e, i, n) {
   try {
     e.longestSide > 0 && !e.width && !e.height && (t.width >= t.height ? e.width = e.longestSide : e.height = e.longestSide);
     const r = {
@@ -1074,7 +1077,7 @@ function ge(t, e, i, n, r) {
     raw: e
   });
 }
-function st(t, e) {
+function ot(t, e) {
   const { width: i, height: n } = t, { width: r, height: s } = e;
   let o;
   const l = n * r / s;
@@ -1103,23 +1106,23 @@ function st(t, e) {
   };
 }
 function I(t, e) {
-  const i = e.enableDevicePixelRatio && window.devicePixelRatio || 1, n = Ze("canvas");
+  const i = e.enableDevicePixelRatio && window.devicePixelRatio || 1, n = Je("canvas");
   n.width = e.dw * i, n.height = e.dh * i;
   const r = n.getContext("2d");
   return r.scale(i, i), r.drawImage(t, e.sx, e.sy, e.sw, e.sh, e.dx, e.dy, e.dw, e.dh), n;
 }
-const ot = {
+const at = {
   imageMaxWidth: 750,
   ignoreGif: !0,
   forceImageResize: !1,
   chooseFileMultiple: !0,
   chooseFileAccept: "image/*"
 };
-class lt extends Ie {
+class ct extends Me {
   constructor(i, n = {}) {
     let r = null;
     if (typeof i == "string" || i instanceof HTMLElement ? r = _(i) : (n = i || {}, typeof n.container == "string" && (r = _(n.container))), n = {
-      ...ot,
+      ...at,
       ...n
     }, !r)
       throw new Error(`Can't found '${i}' Node in document!`);
@@ -1133,7 +1136,7 @@ class lt extends Ie {
     u(this, "toolbar");
     u(this, "fileInput", null);
     u(this, "_inputChangeHandler");
-    r.append(s), this.$el = s, this.stylePanel = new Fe(n), this.use(this.stylePanel, this.$el), this.toolbar = new ze(n), this.use(this.toolbar, this.$el), this._inputChangeHandler = (o) => {
+    r.append(s), this.$el = s, this.stylePanel = new Ue(n), this.use(this.stylePanel, this.$el), this.toolbar = new Ge(n), this.use(this.toolbar, this.$el), this._inputChangeHandler = (o) => {
       const l = o.currentTarget;
       this.handleImageFile(l.files).then((d) => {
         d.forEach((E) => {
@@ -1176,7 +1179,7 @@ class lt extends Ie {
   }
   _handleFile(i, n) {
     return new Promise((r, s) => {
-      nt(i).then((o) => {
+      rt(i).then((o) => {
         r({
           data: o,
           index: n
@@ -1194,5 +1197,5 @@ class lt extends Ie {
 }
 export {
   re as ALLOWED_NODE_NAMES,
-  lt as SpEditor
+  ct as SpEditor
 };
