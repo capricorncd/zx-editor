@@ -195,7 +195,7 @@ interface EditorPlugin {
 ## Other Docs
 
 Docs|Description|Url
-:--|--:|:--:
+:--|:--|:--
 Editor|class Editor documentation, main module of SpEditor.|[/docs/Editor.md](./Editor.md)
 EventEmitter|class EventEmitter documentation.|[/docs/EventEmitter.md](./EventEmitter.md)
 SpEditor|class SpEditor documentation.|[/docs/SpEditor.md](./SpEditor.md)

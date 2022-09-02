@@ -103,7 +103,13 @@ export class SpEditor extends Editor {
     })
   }
 
-  handleImageFile(files?: FileList | File[] | Blob[] | null): Promise<MediaFileHandlerData[]> {
+  /**
+   * @method handleImageFile(files)
+   * Image files handler.
+   * @param files `FileList | File[] | Blob[] | null` Image files.
+   * @returns `Promise<MediaFileHandlerData[]` [MediaFileHandlerData](https://github.com/capricorncd/image-process-tools#returns)
+   */
+  handleImageFile(files: FileList | File[] | Blob[] | null): Promise<MediaFileHandlerData[]> {
     if (!files) return Promise.resolve([])
     return new Promise((resolve, reject) => {
       Promise.all(slice<File, FileList | File[] | Blob[]>(files).map(this._handleFile))
@@ -130,7 +136,7 @@ export class SpEditor extends Editor {
   /**
    * @method addToolbarButton(params, index)
    * Add a custom button to `toolbar`.
-   * @param params `ButtonOptions` [ButtonOptions(#ButtonOptions)]
+   * @param params `ButtonOptions` [ButtonOptions](#ButtonOptions)
    * @param index? `number` New button insertion index.
    */
   addToolbarButton(params: ButtonOptions, index?: number) {

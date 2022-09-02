@@ -22,8 +22,8 @@ const otherDocsTable = {
   // align: 'center',
   align: {
     // Docs: 'left',
-    Description: 'right',
-    Url: 'center',
+    // Description: 'right',
+    // Url: 'center',
   },
   thead: ['Docs', 'Description', 'Url'],
   tbody: [
