@@ -6,7 +6,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
 const { getOutputFileOptions } = require('@sp-editor/nodejs')
-const { getCommentsData, outputFile } = require('zx-sml/nodejs')
+const { getCommentsData, outputFile, getTypes } = require('zx-sml/nodejs')
 
 const outputFileOptions = getOutputFileOptions(true)
 
@@ -22,13 +22,18 @@ const options = {
 }
 
 function main() {
+  // get Editor options
+  const editorData = getCommentsData(path.resolve(__dirname, '../../editor/src'))
+  const editorTypes = getTypes(editorData)
+
+  // get comments and output doc of SpEditor
   const docsDir = path.resolve(__dirname, '../../../docs')
   const dirs = [
     path.resolve(__dirname, '../src'),
     path.resolve(__dirname, '../../style-panel/src'),
     path.resolve(__dirname, '../../toolbar/src'),
   ]
-  const data = getCommentsData(dirs, true)
+  const data = getCommentsData(dirs, { types: editorTypes })
   // outputFile(data, path.resolve(__dirname, '../README.md'), outputFileOptions)
   outputFile(data, path.join(docsDir, 'SpEditor.md'), options)
 }

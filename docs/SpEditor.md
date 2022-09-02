@@ -84,6 +84,21 @@ extends [EditorOptions](./editor.md#EditorOptions), [StylePanelOptions](#StylePa
 
 Prop|Types|Required|Description
 :--|:--|:--|:--
+container|`string`/`HTMLElement`|no|container that Editor parent HTMLElement
+editable|`boolean`|no|The `contenteditable` global attribute is an enumerated attribute indicating if the element should be editable by the user. If so, the browser modifies its widget to allow editing. default `true`.
+placeholder|`string`|no|编辑器内容为空是的提示内容，default `请在此输入内容..`
+placeholderColor|`string`|no|placeholder color, default `#999`
+lineHeight|`string`/`number`|no|编辑器内容行高，default `1.5`
+minHeight|`string`/`number`|no|min height, default `50vh`
+paddingBottom|`string`/`number`|no|Set paddingBottom to avoid being obscured by toolbar or style panel, default `50vh`
+childNodeName|`string`|no|Editor's child node name, default `section`
+allowedNodeNames|`string[]`|no|允许使用的编辑器子元素节点名称， default `['SECTION', 'H1', 'H2', 'H3', 'H4', 'H5', 'BLOCKQUOTE', 'UL', 'OL']` allowed Node names
+paragraphTailSpacing|`string`/`number`|no|paragraph tail spacing, default 10px
+caretColor|`string`|no|光标颜色
+textColor|`string`|no|编辑器文本默认颜色 default color of editor text, default `#333333`
+customPasteHandler|`(e: ClipboardEvent) => void`|no|自定义用户粘贴处理函数
+styles|`CSSProperties`|no|编辑器自定义样式
+insertTextToNewParagraph|`boolean`|no|Insert text to new paragraph, only `textNode` is valid. default `false`
 textStyleColors|`string[]`|no|colors array of style panel, default `['#333333', '#d0d0d0', '#ff583d', '#fdaa25', '#44c67b', '#14b2e0', '#b065e2']`.
 textStyleTitle|`string`|no|title of style panel, default `Set Style`.
 textStyleHeadLeftBtnText|`string`|no|text of button that style panel's left, default `Clear`.
