@@ -12,7 +12,7 @@ Add a custom button to `toolbar`.
 
 Param|Types|Required|Description
 :--|:--|:--|:--
-params|`ButtonOptions`|yes|[ButtonOptions(#ButtonOptions)]
+params|`ButtonOptions`|yes|[ButtonOptions](#ButtonOptions)
 index|`number`|no|New button insertion index.
 
 - @returns `void`
@@ -22,6 +22,16 @@ index|`number`|no|New button insertion index.
 destroy events
 
 - @returns `void`
+
+### handleImageFile(files)
+
+Image files handler.
+
+Param|Types|Required|Description
+:--|:--|:--|:--
+files|`FileList`/`File[]`/`Blob[]`/`null`|yes|Image files.
+
+- @returns `Promise<MediaFileHandlerData[]` [MediaFileHandlerData](https://github.com/capricorncd/image-process-tools#returns)
 
 ## Types
 
