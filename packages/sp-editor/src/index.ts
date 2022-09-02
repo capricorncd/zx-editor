@@ -138,6 +138,19 @@ export class SpEditor extends Editor {
    * Add a custom button to `toolbar`.
    * @param params `ButtonOptions` [ButtonOptions](#ButtonOptions)
    * @param index? `number` New button insertion index.
+   * ```js
+   * // Add a button named 'custom-button-name' for toolbar.
+   * editor.addToolbarButton({
+   *   name: 'custom-button-name',
+   * })
+   *
+   * // when the button is clicked
+   * editor.on('toolbarButtonOnClick', (name) => {
+   *   if (name === 'custom-button-name') {
+   *     // do something ...
+   *   }
+   * })
+   * ```
    */
   addToolbarButton(params: ButtonOptions, index?: number) {
     this.toolbar.addButton(params, index)

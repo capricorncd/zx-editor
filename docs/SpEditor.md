@@ -17,6 +17,20 @@ index|`number`|no|New button insertion index.
 
 - @returns `void`
 
+```js
+// Add a button named 'custom-button-name' for toolbar.
+editor.addToolbarButton({
+  name: 'custom-button-name',
+})
+
+// when the button is clicked
+editor.on('toolbarButtonOnClick', (name) => {
+  if (name === 'custom-button-name') {
+    // do something ...
+  }
+})
+```
+
 ### destroy()
 
 destroy events
