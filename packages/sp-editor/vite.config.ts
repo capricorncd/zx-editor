@@ -9,11 +9,19 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   base: './',
+  server: {
+    open: true,
+  },
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'SpEditor',
       fileName: (format) => `sp-editor.${format}.js`,
+    },
+  },
+  css: {
+    postcss: {
+      plugins: [require('autoprefixer')],
     },
   },
   test: {
