@@ -34,6 +34,13 @@ export interface EditorPlugin {
  *   container: `#container`
  * })
  * ```
+ *
+ * @code
+ * use Editor css
+ *
+ * ```js
+ * import 'sp-editor/editor/css'
+ * ```
  */
 export class Editor extends EventEmitter {
   // 版本

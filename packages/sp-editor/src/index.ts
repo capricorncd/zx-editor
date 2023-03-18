@@ -15,6 +15,17 @@ import './style.scss'
 /**
  * @document SpEditor
  * SpEditor is a HTML5 rich text editor in smartphone browsers, and it's extends [Editor](./Editor.md).
+ *
+ * ```js
+ * import { SpEditor } from 'sp-editor'
+ * import 'sp-editor/css'
+ *
+ * const spEditor = new SpEditor({
+ *   // container: document.querySelector('#app'),
+ *   // or
+ *   container: '#app',
+ * })
+ * ```
  */
 export class SpEditor extends Editor {
   private readonly $el: HTMLElement

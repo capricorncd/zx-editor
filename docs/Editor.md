@@ -12,6 +12,12 @@ const editor = new Editor({
 })
 ```
 
+use Editor css
+
+```js
+import 'sp-editor/editor/css'
+```
+
 ## Methods
 
 ### changeNodeName(nodeName)

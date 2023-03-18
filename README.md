@@ -41,7 +41,7 @@ yarn add sp-editor
 
 ```javascript
 import { SpEditor } from 'sp-editor'
-import 'sp-editor/dist/sp-editor.min.css'
+import 'sp-editor/css'
 const spEditor = new SpEditor({
   // container: document.querySelector('#app'),
   // or
@@ -52,7 +52,7 @@ const spEditor = new SpEditor({
 #### # browser
 
 ```html
-<!--<link rel="stylesheet" href="./dist/sp-editor.min.css">-->
+<link rel="stylesheet" href="./dist/sp-editor.min.css">
 <div id="editorContainer">
   <!-- 编辑器容器 -->
 </div>
