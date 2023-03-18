@@ -21,9 +21,11 @@
     "./nodejs-helpers": {
       "default": "./packages/nodejs/index.js",
       "types": "./packages/nodejs/types.d.ts"
-    }
+    },
+    "./css": "./dist/sp-editor.min.css",
+    "./editor/css": "./dist/editor.min.css"
   },
-  "github": "https://github.com/capricorncd",
+  "github": "https://github.com/capricorncd/zx-editor",
   "types": "types/index.d.ts",
   "files": [
     "dist",

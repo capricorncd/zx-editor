@@ -14,10 +14,14 @@
   "author": "Capricorncd",
   "dependencies": {
     "@sp-editor/event-emitter": "workspace:*",
-    "@sp-editor/nodejs": "workspace:*",
     "@sp-editor/helpers": "workspace:*",
+    "@sp-editor/nodejs": "workspace:*",
     "@sp-editor/types": "workspace:*"
   },
-  "homepage": "https://github.com/capricorncd/sp-editor",
-  "license": "MIT"
+  "homepage": "https://github.com/capricorncd/zx-editor",
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.21"
+  }
 }

@@ -11,6 +11,6 @@
     "@sp-editor/nodejs": "workspace:*"
   },
   "author": "Capricorncd",
-  "homepage": "https://github.com/capricorncd/sp-editor",
+  "homepage": "https://github.com/capricorncd/zx-editor",
   "license": "MIT"
 }
