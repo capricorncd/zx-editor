@@ -8,7 +8,7 @@ const { execSync } = require('child_process')
 const fs = require('fs')
 const { EOL } = require('os')
 const path = require('path')
-const { formatDate } = require('zx-sml')
+// const { formatDate } = require('zx-sml')
 const { mkdirSync, log } = require('zx-sml/nodejs')
 
 /**
@@ -23,7 +23,7 @@ function header(pkg) {
     ` * Author: ${pkg.author}`,
     ` * Released under the ${pkg.license} License`,
     ` * Repository: ${pkg.homepage}`,
-    ` * Released on: ${formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss (g)')}`,
+    // ` * Released on: ${formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss (g)')}`,
     ` * Copyright © 2018-present, ${pkg.author}`,
     ' */',
   ]
