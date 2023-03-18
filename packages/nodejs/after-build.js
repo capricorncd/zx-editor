@@ -24,7 +24,7 @@ function header(pkg) {
     ` * Released under the ${pkg.license} License`,
     ` * Repository: ${pkg.homepage}`,
     // ` * Released on: ${formatDate(new Date(), 'yyyy-MM-dd hh:mm:ss (g)')}`,
-    ` * Copyright © 2018-present, ${pkg.author}`,
+    ` * Copyright © 2018-present, ${pkg.author}/ Xing Zhong.`,
     ' */',
   ]
 }

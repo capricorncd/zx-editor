@@ -2,9 +2,8 @@
  * @sp-editor/editor version 1.0.0
  * Author: Capricorncd
  * Released under the MIT License
- * Repository: https://github.com/capricorncd/sp-editor
- * Released on: 2022-09-01 21:16:14 (GMT+0900)
- * Copyright © 2018-present, Capricorncd
+ * Repository: https://github.com/capricorncd/zx-editor
+ * Copyright © 2018-present, Capricorncd/ Xing Zhong.
  */
 var V = Object.defineProperty;
 var W = (e, n, t) => n in e ? V(e, n, { enumerable: !0, configurable: !0, writable: !0, value: t }) : e[n] = t;

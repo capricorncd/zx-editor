@@ -3,8 +3,7 @@
  * Author: capricorncd
  * Released under the MIT License
  * Repository: https://github.com/capricorncd/zx-editor
- * Released on: 2022-09-01 21:16:15 (GMT+0900)
- * Copyright © 2018-present, capricorncd
+ * Copyright © 2018-present, capricorncd/ Xing Zhong.
  */
 var me = Object.defineProperty;
 var ye = (t, e, i) => e in t ? me(t, e, { enumerable: !0, configurable: !0, writable: !0, value: i }) : t[e] = i;

@@ -2,9 +2,8 @@
  * @sp-editor/editor version 1.0.0
  * Author: Capricorncd
  * Released under the MIT License
- * Repository: https://github.com/capricorncd/sp-editor
- * Released on: 2022-09-01 21:16:14 (GMT+0900)
- * Copyright © 2018-present, Capricorncd
+ * Repository: https://github.com/capricorncd/zx-editor
+ * Copyright © 2018-present, Capricorncd/ Xing Zhong.
  */
 (function(h,f){typeof exports=="object"&&typeof module<"u"?f(exports):typeof define=="function"&&define.amd?define(["exports"],f):(h=typeof globalThis<"u"?globalThis:h||self,f(h.Editor={}))})(this,function(h){"use strict";var oe=Object.defineProperty;var le=(h,f,N)=>f in h?oe(h,f,{enumerable:!0,configurable:!0,writable:!0,value:N}):h[f]=N;var _=(h,f,N)=>(le(h,typeof f!="symbol"?f+"":f,N),N);class f{constructor(){this._events={}}on(s,t){return!s||!t||typeof t!="function"?this:(this._events[s]||(this._events[s]=[]),this._events[s].push(t),this)}once(s,t){const r=(...i)=>{t.apply(this,i),this.off(s,r)};return this.on(s,r)}emit(s,...t){const r=this._events[s];if(!r)return this;for(let i=0;i<r.length;i++)try{r[i].apply(this,t)}catch(n){this.emit("error",n,"emit")}return this}off(s,t){if(!this._events[s])return this;const r=this._events[s];if(typeof t=="function"){const i=r.findIndex(n=>n===t);i>=0&&r.splice(i,1)}else this._events[s].length=0;return this._removeEmpty(s),this}_removeEmpty(s){this._events[s].length||delete this._events[s]}removeAllListeners(){Object.keys(this._events).forEach(s=>this.off(s))}}/*!
  * zx-sml version 0.5.1

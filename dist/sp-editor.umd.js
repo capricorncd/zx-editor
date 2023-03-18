@@ -3,8 +3,7 @@
  * Author: capricorncd
  * Released under the MIT License
  * Repository: https://github.com/capricorncd/zx-editor
- * Released on: 2022-09-01 21:16:15 (GMT+0900)
- * Copyright © 2018-present, capricorncd
+ * Copyright © 2018-present, capricorncd/ Xing Zhong.
  */
 (function(_,b){typeof exports=="object"&&typeof module<"u"?b(exports):typeof define=="function"&&define.amd?define(["exports"],b):(_=typeof globalThis<"u"?globalThis:_||self,b(_.SpEditor={}))})(this,function(_){"use strict";var lt=Object.defineProperty;var ct=(_,b,C)=>b in _?lt(_,b,{enumerable:!0,configurable:!0,writable:!0,value:C}):_[b]=C;var u=(_,b,C)=>(ct(_,typeof b!="symbol"?b+"":b,C),C);class b{constructor(){this._events={}}on(t,i){return!t||!i||typeof i!="function"?this:(this._events[t]||(this._events[t]=[]),this._events[t].push(i),this)}once(t,i){const n=(...r)=>{i.apply(this,r),this.off(t,n)};return this.on(t,n)}emit(t,...i){const n=this._events[t];if(!n)return this;for(let r=0;r<n.length;r++)try{n[r].apply(this,i)}catch(s){this.emit("error",s,"emit")}return this}off(t,i){if(!this._events[t])return this;const n=this._events[t];if(typeof i=="function"){const r=n.findIndex(s=>s===i);r>=0&&n.splice(r,1)}else this._events[t].length=0;return this._removeEmpty(t),this}_removeEmpty(t){this._events[t].length||delete this._events[t]}removeAllListeners(){Object.keys(this._events).forEach(t=>this.off(t))}}function C(){return window.screen.height===812&&window.screen.width===375}/*!
  * zx-sml version 0.5.1

@@ -2,8 +2,7 @@
  * @sp-editor/editor version 1.0.0
  * Author: Capricorncd
  * Released under the MIT License
- * Repository: https://github.com/capricorncd/sp-editor
- * Released on: 2022-09-01 21:16:14 (GMT+0900)
- * Copyright © 2018-present, Capricorncd
+ * Repository: https://github.com/capricorncd/zx-editor
+ * Copyright © 2018-present, Capricorncd/ Xing Zhong.
  */
 .sp-editor__editor{position:relative;overflow-y:auto;line-height:var(--line-height);outline:none;padding-bottom:var(--padding-bottom)}.sp-editor__editor>*{position:relative;padding:0;margin:0;margin-top:var(--paragraph-spacing);word-wrap:break-word}.sp-editor__editor>*:first-child{margin-top:0}.sp-editor__editor>blockquote{padding-left:1em;border-left:3px solid var(--placeholder-color)}.sp-editor__editor>ul,.sp-editor__editor>ol{padding-left:20px;list-style:disc}.sp-editor__editor li,.sp-editor__editor p{color:inherit}.sp-editor__editor.is-empty:before{position:absolute;z-index:1;top:0;left:0;pointer-events:none;color:var(--placeholder-color);line-height:var(--line-height);content:var(--placeholder)}.sp-editor__editor img,.sp-editor__editor video{max-width:100%;height:auto}
