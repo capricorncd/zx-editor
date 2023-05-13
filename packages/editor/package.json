@@ -12,12 +12,6 @@
   },
   "keywords": [],
   "author": "Capricorncd",
-  "dependencies": {
-    "@sp-editor/event-emitter": "workspace:*",
-    "@sp-editor/helpers": "workspace:*",
-    "@sp-editor/nodejs": "workspace:*",
-    "@sp-editor/types": "workspace:*"
-  },
   "homepage": "https://github.com/capricorncd/zx-editor",
   "license": "MIT",
   "devDependencies": {

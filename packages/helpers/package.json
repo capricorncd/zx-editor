@@ -7,9 +7,6 @@
     "test": "vitest"
   },
   "keywords": [],
-  "dependencies": {
-    "@sp-editor/types": "workspace:*"
-  },
   "author": "Capricorncd",
-  "license": "ISC"
+  "license": "MIT"
 }

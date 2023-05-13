@@ -7,9 +7,6 @@
     "build": "vite build && node scripts/after-build.js",
     "docs": "node scripts/docs.js"
   },
-  "devDependencies": {
-    "@sp-editor/nodejs": "workspace:*"
-  },
   "author": "Capricorncd",
   "homepage": "https://github.com/capricorncd/zx-editor",
   "license": "MIT"

@@ -36,12 +36,16 @@
     "packages/nodejs/types.d.ts",
     "types/index.d.ts"
   ],
-  "packageManager": "pnpm@7.6.0",
   "scripts": {
     "coverage": "vitest run --coverage",
-    "dev": "cd packages/sp-editor && pnpm run dev",
-    "build": "pnpm run lint && cd packages/editor && pnpm run build && cd ../sp-editor && pnpm run build && pnpm run demo",
-    "docs": "cd packages/editor && pnpm run docs && cd ../nodejs && pnpm run docs && cd ../sp-editor && pnpm run docs && cd ../event-emitter && pnpm run docs",
+    "dev": "npm run dev -w packages/sp-editor",
+    "dev:editor": "npm run dev -w packages/editor",
+    "build:editor": "npm run build -w packages/editor",
+    "build:sp": "npm run build -w packages/sp-editor",
+    "build": "npm run lint && npm run build:editor && npm run build:sp && npm run build:demo -w packages/sp-editor",
+    "docs": "npm run docs -w packages/editor && npm run docs -w packages/nodejs && npm run docs -w packages/sp-editor && npm run docs -w packages/event-emitter",
+    "test": "vitest",
+    "test:editor": "npm run test -w packages/editor",
     "lint": "eslint . --fix --ext .js,.cjs,.ts"
   },
   "devDependencies": {
@@ -60,8 +64,8 @@
     "prettier": "^2.6.2",
     "sass": "^1.51.0",
     "typescript": "^4.7.4",
-    "vite": "^3.0.3",
-    "vitest": "^0.19.1"
+    "vite": "^4.3.5",
+    "vitest": "^0.31.0"
   },
   "lint-staged": {
     "*.{js,ts,cjs}": "eslint --fix",
@@ -88,5 +92,12 @@
   ],
   "dependencies": {
     "zx-sml": "^0.7.0"
+  },
+  "workspaces": [
+    "./packages/*"
+  ],
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   }
 }
