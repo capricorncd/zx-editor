@@ -15,7 +15,7 @@
  * ```
  */
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { toTableLines } = require('zx-sml/nodejs')
+const { toTableLines } = require('zx-sml/docgen')
 const { afterBuild } = require('./after-build')
 
 const otherDocsTable = {
@@ -61,6 +61,10 @@ function getOutputFileOptions(needOtherDocs = false) {
   }
 
   const options = {
+    tableAlign: {
+      Types: 'center',
+      Required: 'center',
+    },
     lines: {
       end: endLines,
     },

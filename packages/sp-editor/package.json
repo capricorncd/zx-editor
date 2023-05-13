@@ -6,18 +6,12 @@
   "scripts": {
     "dev": "vite --host=0.0.0.0 --port=9001",
     "build": "vite build && node scripts/after-build.js",
-    "demo": "vite --config vite.demo.ts build --emptyOutDir",
+    "build:demo": "vite --config vite.demo.ts build --emptyOutDir",
     "docs": "node scripts/docs.js",
     "test": "vitest"
   },
   "keywords": [],
   "dependencies": {
-    "@sp-editor/editor": "workspace:*",
-    "@sp-editor/event-emitter": "workspace:*",
-    "@sp-editor/nodejs": "workspace:*",
-    "@sp-editor/style-panel": "workspace:*",
-    "@sp-editor/toolbar": "workspace:*",
-    "@sp-editor/types": "workspace:*",
     "image-process": "^4.2.1"
   },
   "author": "Capriocrncd",

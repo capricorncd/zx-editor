@@ -5,7 +5,7 @@
  */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
-const { getCommentsData, outputFile } = require('zx-sml/nodejs')
+const { getCommentsData, outputFile } = require('zx-sml/docgen')
 const { getOutputFileOptions } = require('./index')
 
 function main() {
