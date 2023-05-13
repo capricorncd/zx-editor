@@ -6,7 +6,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path')
 const { getOutputFileOptions } = require('@sp-editor/nodejs')
-const { getCommentsData, outputFile } = require('zx-sml/nodejs')
+const { getCommentsData, outputFile } = require('zx-sml/docgen')
 
 function main() {
   const docsDir = path.resolve(__dirname, '../../../docs')

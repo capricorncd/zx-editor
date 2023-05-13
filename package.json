@@ -83,10 +83,10 @@
   },
   "homepage": "https://github.com/capricorncd/zx-editor",
   "license": "MIT",
-  "dependencies": {
-    "zx-sml": "^0.5.6"
-  },
   "browserslist": [
     "last 4 version"
-  ]
+  ],
+  "dependencies": {
+    "zx-sml": "^0.7.0"
+  }
 }

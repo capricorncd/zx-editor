@@ -9,7 +9,7 @@ const fs = require('fs')
 const { EOL } = require('os')
 const path = require('path')
 // const { formatDate } = require('zx-sml')
-const { mkdirSync, log } = require('zx-sml/nodejs')
+const { mkdirSync, log } = require('zx-sml/docgen')
 
 /**
  * create information about the package, and append it to the build file's header

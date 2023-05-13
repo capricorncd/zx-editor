@@ -21,9 +21,9 @@ importers:
       typescript: ^4.7.4
       vite: ^3.0.3
       vitest: ^0.19.1
-      zx-sml: ^0.5.6
+      zx-sml: ^0.7.0
     dependencies:
-      zx-sml: 0.5.6
+      zx-sml: 0.7.0
     devDependencies:
       '@types/jsdom': 16.2.14
       '@types/node': 17.0.45
@@ -738,6 +738,10 @@ packages:
 
   /date-utils-2020/1.0.3:
     resolution: {integrity: sha512-KGXhD5NTzuj+QxXUmtsQnxhbnA+RTLXOzvArQkGVhmweEQ8WuurP1+RT/XNrceCtvBpCQszQcfdHbVrcN+QWVw==}
+    dev: false
+
+  /date-utils-2020/1.1.0:
+    resolution: {integrity: sha512-EncaXdVnGhUcCU+goqske9/Y+Gun+6O+7dQtVl78aHBvbBIH2TFlVp9M2cO/Xff/KGWIHlpnNUayAAlFmVVHNg==}
     dev: false
 
   /debug/2.6.9:
@@ -3018,8 +3022,9 @@ packages:
       date-utils-2020: 1.0.3
     dev: false
 
-  /zx-sml/0.5.6:
-    resolution: {integrity: sha512-MFcFEkcPVP9T3Ckx+dxLViV2qAgT1pZ3Wrw+p1krm8y+1OYdHcafKKk+AcFn/4jZ9WILlkJAr9ADFktc2wlrgQ==}
+  /zx-sml/0.7.0:
+    resolution: {integrity: sha512-WMDY8nRCj28Ya88Cw/w+HbnRg8rqOJW6ewMB7UVJamr4CG2MhTor+Z8B/oE6XY4iUpmdYUD8Vw0LW/IHXUhWpg==}
+    engines: {node: '>=16.13.1', npm: '>=8.1.2'}
     dependencies:
-      date-utils-2020: 1.0.3
+      date-utils-2020: 1.1.0
     dev: false
