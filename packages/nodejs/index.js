@@ -61,6 +61,10 @@ function getOutputFileOptions(needOtherDocs = false) {
   }
 
   const options = {
+    tableAlign: {
+      Types: 'center',
+      Required: 'center',
+    },
     lines: {
       end: endLines,
     },

@@ -20,14 +20,6 @@ More methods please see [Editor](./Editor.md#methods) methods documentation.
 ### addToolbarButton(params, index)
 
 Add a custom button to `toolbar`.
-
-Param|Types|Required|Description
-:--|:--|:--|:--
-params|`ButtonOptions`|yes|[ButtonOptions](#ButtonOptions)
-index|`number`|no|New button insertion index.
-
-- @returns `void`
-
 ```js
 // Add a button named 'custom-button-name' for toolbar.
 editor.addToolbarButton({
@@ -42,6 +34,13 @@ editor.on('toolbarButtonOnClick', (name) => {
 })
 ```
 
+Param|Types|Required|Description
+:--|:--:|:--:|:--
+params|`ButtonOptions`|yes|[ButtonOptions](#ButtonOptions)
+index|`number`|no|New button insertion index.
+
+- @returns `void`
+
 ### destroy()
 
 destroy events
@@ -53,7 +52,7 @@ destroy events
 Image files handler.
 
 Param|Types|Required|Description
-:--|:--|:--|:--
+:--|:--:|:--:|:--
 files|`FileList`/`File[]`/`Blob[]`/`null`|yes|Image files.
 
 - @returns `Promise<MediaFileHandlerData[]` [MediaFileHandlerData](https://github.com/capricorncd/image-process-tools#returns)
@@ -65,7 +64,7 @@ files|`FileList`/`File[]`/`Blob[]`/`null`|yes|Image files.
 button options, use by add button to toolbar
 
 Prop|Types|Required|Description
-:--|:--|:--|:--
+:--|:--:|:--:|:--
 name|`string`|yes|button name, returned when button is clicked
 className|`string`|no|class='name'
 innerHtml|`string`/`HTMLElement`/`Node`|no|inner html, Element or Node
@@ -94,7 +93,7 @@ interface ButtonOptions {
 extends [EditorOptions](./editor.md#EditorOptions), [StylePanelOptions](#StylePanelOptions) and [ToolbarOptions](#ToolbarOptions)
 
 Prop|Types|Required|Description
-:--|:--|:--|:--
+:--|:--:|:--:|:--
 container|`string`/`HTMLElement`|no|container that Editor parent HTMLElement
 editable|`boolean`|no|The `contenteditable` global attribute is an enumerated attribute indicating if the element should be editable by the user. If so, the browser modifies its widget to allow editing. default `true`.
 placeholder|`string`|no|编辑器内容为空是的提示内容，default `请在此输入内容..`
@@ -150,7 +149,7 @@ interface SpEditorOptions extends EditorOptions, StylePanelOptions, ToolbarOptio
 ### StylePanelOptions
 
 Prop|Types|Required|Description
-:--|:--|:--|:--
+:--|:--:|:--:|:--
 textStyleColors|`string[]`|no|colors array of style panel, default `['#333333', '#d0d0d0', '#ff583d', '#fdaa25', '#44c67b', '#14b2e0', '#b065e2']`.
 textStyleTitle|`string`|no|title of style panel, default `Set Style`.
 textStyleHeadLeftBtnText|`string`|no|text of button that style panel's left, default `Clear`.
@@ -176,7 +175,7 @@ interface StylePanelOptions {
 toolbar options
 
 Prop|Types|Required|Description
-:--|:--|:--|:--
+:--|:--:|:--:|:--
 toolbarBeenFixed|`boolean`|no|Has the toolbar been fixed. default `true`
 toolbarHeight|`number`/`string`|no|toolbar height. default `50px`
 toolbarButtons|`string[]`|no|buttons name, and order. default `['choose-picture', 'text-style']`. Button click events can be listener `editor.on('toolbarButtonOnClick, ('button-name') => { ... })`

@@ -1,7 +1,6 @@
 # EventEmitter
 
 This module, in particular, offers the EventEmitter class, which we'll use to handle our events.
-
 ```js
 import { EventEmitter } from 'sp-editor/event-emitter';
 // For example, let's create a start event, and as a matter of providing a sample,
@@ -30,7 +29,7 @@ remove all listeners for an event.
 `emit` is used to trigger an event.
 
 Param|Types|Required|Description
-:--|:--|:--|:--
+:--|:--:|:--:|:--
 eventName|`string`|yes|-
 args|`any`|yes|-
 
@@ -41,7 +40,7 @@ args|`any`|yes|-
 remove an event listener from an event.
 
 Param|Types|Required|Description
-:--|:--|:--|:--
+:--|:--:|:--:|:--
 eventName|`string`|yes|custom event name.
 fn|`Function`|no|callback function. When `fn` is not a function, all monitoring functions of `eventName` will be removed.
 
@@ -52,7 +51,7 @@ fn|`Function`|no|callback function. When `fn` is not a function, all monitoring 
 `on` is used to add a callback function that's going to be executed when the event is triggered.
 
 Param|Types|Required|Description
-:--|:--|:--|:--
+:--|:--:|:--:|:--
 eventName|`string`|yes|custom event name.
 fn|`Function`|yes|callback function.
 
@@ -63,7 +62,7 @@ fn|`Function`|yes|callback function.
 `once` add a one-time listener.
 
 Param|Types|Required|Description
-:--|:--|:--|:--
+:--|:--:|:--:|:--
 eventName|`string`|yes|custom event name.
 fn|`Function`|yes|callback function.
 

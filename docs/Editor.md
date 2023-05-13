@@ -26,7 +26,7 @@ import 'sp-editor/editor/css'
 Replace the tag of the element under the cursor
 
 Param|Types|Required|Description
-:--|:--|:--|:--
+:--|:--:|:--:|:--
 nodeName|`string`|no|allowed element names, `UL`, `SECTION` etc. If `undefined`, use the default `options.childNodeName`.
 
 - @returns `boolean`
@@ -37,7 +37,7 @@ nodeName|`string`|no|allowed element names, `UL`, `SECTION` etc. If `undefined`,
 Change the style of the element where the cursor is located
 
 Param|Types|Required|Description
-:--|:--|:--|:--
+:--|:--:|:--:|:--
 styles|`CSSProperties`/`string`|no|When it's `undefined` or null, all styles will be removed.
 value|`any`|no|-
 
@@ -56,7 +56,7 @@ destroy events
 Get the element where the cursor is located
 
 Param|Types|Required|Description
-:--|:--|:--|:--
+:--|:--:|:--:|:--
 isOnlyEditorChild|`boolean`|no|Must be a child element of editor `HTMLElement`. For example: when it is `false`, the `li` element is returned in `ul/ol`, and when it is `true`, the `ul/ol` element is returned.
 
 - @returns `HTMLElement`
@@ -67,7 +67,7 @@ isOnlyEditorChild|`boolean`|no|Must be a child element of editor `HTMLElement`. 
 get html string from content element.
 
 Param|Types|Required|Description
-:--|:--|:--|:--
+:--|:--:|:--:|:--
 retainLastBlankLines|`boolean`|no|Retain last blank lines, If `true` the last `<section><br></section>` not will be removed.
 
 - @returns `string`
@@ -85,7 +85,7 @@ Get the `style` object of the element where the cursor is located
 insert html or element to content element
 
 Param|Types|Required|Description
-:--|:--|:--|:--
+:--|:--:|:--:|:--
 input|`string`/`HTMLElement`|yes|-
 toNewParagraph|`boolean`|no|Insert `text` in a new paragraph, only `textNode` is valid. Defaults to `false`.
 
@@ -97,7 +97,7 @@ toNewParagraph|`boolean`|no|Insert `text` in a new paragraph, only `textNode` is
 set html to the content element
 
 Param|Types|Required|Description
-:--|:--|:--|:--
+:--|:--:|:--:|:--
 html|`string`|yes|-
 
 - @returns `void`
@@ -107,7 +107,7 @@ html|`string`|yes|-
 extension, 扩展插件
 
 Param|Types|Required|Description
-:--|:--|:--|:--
+:--|:--:|:--:|:--
 plugin|`EditorPlugin`|yes|-
 parentElement|`HTMLElement`|no|-
 
@@ -120,7 +120,7 @@ parentElement|`HTMLElement`|no|-
 Editor initialization parameters
 
 Prop|Types|Required|Description
-:--|:--|:--|:--
+:--|:--:|:--:|:--
 container|`string`/`HTMLElement`|no|container that Editor parent HTMLElement
 editable|`boolean`|no|The `contenteditable` global attribute is an enumerated attribute indicating if the element should be editable by the user. If so, the browser modifies its widget to allow editing. default `true`.
 placeholder|`string`|no|编辑器内容为空是的提示内容，default `请在此输入内容..`
@@ -184,7 +184,7 @@ interface EditorOptions {
 ### EditorPlugin
 
 Prop|Types|Required|Description
-:--|:--|:--|:--
+:--|:--:|:--:|:--
 install|`(e: Editor, parentElement?: HTMLElement) => void`|yes|-
 
 <details>
