@@ -1042,4 +1042,4 @@
       return EXIF
     })
   }
-}.call(this))
+}).call(this)

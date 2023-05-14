@@ -70,7 +70,7 @@
   },
   "lint-staged": {
     "*.{js,ts,cjs}": "eslint --fix",
-    "*.{css,scss}": "prettier --write"
+    "*.{css,scss}": "prettier --write --no-ignore"
   },
   "repository": {
     "type": "git",
