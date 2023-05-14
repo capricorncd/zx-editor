@@ -5,6 +5,7 @@
   "author": "capricorncd",
   "main": "./dist/sp-editor.umd.js",
   "module": "./dist/sp-editor.es.js",
+  "types": "types/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/sp-editor.es.js",
@@ -26,7 +27,6 @@
     "./editor/css": "./dist/editor.min.css"
   },
   "github": "https://github.com/capricorncd/zx-editor",
-  "types": "types/index.d.ts",
   "files": [
     "dist",
     "docs",
@@ -46,7 +46,8 @@
     "docs": "npm run docs -w packages/editor && npm run docs -w packages/nodejs && npm run docs -w packages/sp-editor && npm run docs -w packages/event-emitter",
     "test": "vitest",
     "test:editor": "npm run test -w packages/editor",
-    "lint": "eslint . --fix --ext .js,.cjs,.ts"
+    "lint": "eslint . --fix --ext .js,.cjs,.ts",
+    "prettier": "prettier --write ."
   },
   "devDependencies": {
     "@types/jsdom": "^16.2.14",
@@ -69,7 +70,7 @@
   },
   "lint-staged": {
     "*.{js,ts,cjs}": "eslint --fix",
-    "*.{css,scss}": "prettier --write"
+    "*.{css,scss}": "prettier --write --no-ignore"
   },
   "repository": {
     "type": "git",
@@ -91,7 +92,7 @@
     "last 4 version"
   ],
   "dependencies": {
-    "zx-sml": "^0.7.0"
+    "zx-sml": "^0.7.2"
   },
   "workspaces": [
     "./packages/*"
