@@ -148,7 +148,7 @@ export const changeNodeName = (input: HTMLElement | null, tagName: string): HTML
  * @param el
  */
 export const checkIsEmpty = (el: HTMLElement): void => {
-  if (!el.innerText.trim() && !hasSpecialTag(el)) {
+  if (!el.innerText?.trim() && !hasSpecialTag(el)) {
     el.classList.add('is-empty')
   } else {
     el.classList.remove('is-empty')

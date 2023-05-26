@@ -18,6 +18,14 @@ use Editor css
 import 'sp-editor/editor/css'
 ```
 
+## Property
+
+### version
+
+获取版本号
+
+- @returns `string`
+
 ## Methods
 
 ### changeNodeName(nodeName)

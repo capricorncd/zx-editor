@@ -19,12 +19,7 @@ const { toTableLines } = require('zx-sml/docgen')
 const { afterBuild } = require('./after-build')
 
 const otherDocsTable = {
-  // align: 'center',
-  align: {
-    // Docs: 'left',
-    // Description: 'right',
-    // Url: 'center',
-  },
+  // align: ['left', 'right', 'center'],
   thead: ['Docs', 'Description', 'Url'],
   tbody: [
     ['Editor', 'class Editor documentation, main module of SpEditor.', '[/docs/Editor.md](./Editor.md)'],
