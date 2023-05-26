@@ -44,7 +44,8 @@ describe('Editor', () => {
   // changeNodeName
   it('changeNodeName', () => {
     editor.insert('Text')
-    editor.changeNodeName('UL')
+    expect(editor.getHtml()).toBe('<section>Text</section>')
+    editor.changeNodeName('ul')
     expect(editor.getHtml()).toBe('<ul><li>Text</li></ul>')
   })
 
@@ -103,6 +104,7 @@ describe('Editor', () => {
   it('use', () => {
     class TestUse implements EditorPlugin {
       private editor: Editor | null = null
+
       install(e: Editor) {
         this.editor = e
       }

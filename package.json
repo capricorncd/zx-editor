@@ -70,7 +70,7 @@
   },
   "lint-staged": {
     "*.{js,ts,cjs}": "eslint --fix",
-    "*.{css,scss}": "prettier --write --no-ignore"
+    "*.{css,scss}": "prettier --write"
   },
   "repository": {
     "type": "git",
@@ -92,7 +92,7 @@
     "last 4 version"
   ],
   "dependencies": {
-    "zx-sml": "^0.7.2"
+    "zx-sml": "^0.7.5"
   },
   "workspaces": [
     "./packages/*"

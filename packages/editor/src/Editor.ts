@@ -43,7 +43,11 @@ export interface EditorPlugin {
  * ```
  */
 export class Editor extends EventEmitter {
-  // 版本
+  /**
+   * @property version
+   * 获取版本号
+   * @returns `string`
+   */
   public readonly version: string
   // 参数
   public readonly options: EditorOptions
@@ -150,7 +154,8 @@ export class Editor extends EventEmitter {
   setHtml(html: string): void {
     this.$editor.innerHTML = this.blankLine
     this.insert(html, true)
-    this._verifyChild()
+    // TODO
+    // this._verifyChild()
     checkIsEmpty(this.$editor)
   }
 
@@ -177,6 +182,7 @@ export class Editor extends EventEmitter {
    * @param toNewParagraph? `boolean` Insert `text` in a new paragraph, only `textNode` is valid. Defaults to `false`.
    */
   insert(input: string | HTMLElement, toNewParagraph = false): void {
+    const { childNodeName, insertTextToNewParagraph } = this.options
     // insert HTMLElement
     if (input instanceof HTMLElement) {
       this._insertEl(input)
@@ -188,7 +194,7 @@ export class Editor extends EventEmitter {
       // Insert text content at the cursor position
       if (
         !toNewParagraph &&
-        !this.options.insertTextToNewParagraph &&
+        !insertTextToNewParagraph &&
         childNodes.every((node) => node.nodeType === Node.TEXT_NODE)
       ) {
         return this._insertText(input)
@@ -200,20 +206,22 @@ export class Editor extends EventEmitter {
           if (node.nodeType === Node.ELEMENT_NODE) {
             // <br> element
             if (node.nodeName === NODE_NAME_BR) {
-              this._insertEl(createElement(this.options.childNodeName!, {}, '<br/>'))
+              this._insertEl(createElement(childNodeName!, {}, '<br/>'))
             } else {
               this._insertEl(node as HTMLElement)
             }
           }
           // text
           else if (node.textContent) {
-            this._insertEl(createElement(this.options.childNodeName!, {}, node.textContent))
+            this._insertEl(createElement(childNodeName!, {}, node.textContent))
           }
         })
       }
     }
     this._dispatchChange()
-    this._verifyChild()
+
+    // TODO
+    // this._verifyChild()
   }
 
   /**
@@ -230,11 +238,24 @@ export class Editor extends EventEmitter {
       }
       // img之类的非成对标签
       else {
-        currentSection.innerHTML = ''
-        currentSection.append(input)
+        // lase child of this.$editor
+        if (currentSection === this.$editor.children[this.$editor.children.length - 1]) {
+          this.$editor.insertBefore(createElement(this.options.childNodeName!, {}, input), currentSection)
+        } else {
+          currentSection.innerHTML = ''
+          currentSection.append(input)
+        }
       }
     } else {
-      this.$editor.insertBefore(input, currentSection.nextElementSibling)
+      // img
+      if (!isPairedTags(input.outerHTML)) {
+        input = createElement(this.options.childNodeName!, {}, input)
+      }
+      if (currentSection.nextElementSibling) {
+        this.$editor.insertBefore(input, currentSection.nextElementSibling)
+      } else {
+        this.$editor.append(input)
+      }
     }
 
     // 设置光标元素对象
@@ -303,7 +324,6 @@ export class Editor extends EventEmitter {
         const newChild = createElement(childNodeName, {}, tempNode.cloneNode(true))
         this.$editor.replaceChild(newChild, tempNode)
       }
-      console.log(count, tempNode.nodeName, tempNode.nodeType)
     }
 
     // check if it's last child is a blank line, if not, insert a new blank line
