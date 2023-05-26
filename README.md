@@ -14,14 +14,13 @@
 
 ```bash
 # 安装依赖
-pnpm i
+npm i
 
-cd packages/sp-editor
 # http://localhost:9001
-pnpm dev
+npm run dev
 
 # build files
-pnpm build
+npm run build
 ```
 
 ## 使用 Use
