@@ -5,11 +5,19 @@
  */
 import { slice } from 'zx-sml'
 
+/**
+ * replaceHtmlTag
+ * @param input `string`
+ * @param oldNodeName `string`
+ * @param newNodeName `string`
+ * @returns `string`
+ */
 export function replaceHtmlTag(input: string, oldNodeName: string, newNodeName: string): string {
-  return input.replace(RegExp('(^<' + oldNodeName + ')|(' + oldNodeName + '>$)', 'gi'), (match) =>
-    match.toUpperCase().replace(oldNodeName, newNodeName.toLowerCase()),
+  return input.replace(new RegExp('(^<' + oldNodeName + ')|(' + oldNodeName + '>$)', 'gi'), (match) =>
+    match.replace(new RegExp(oldNodeName, 'i'), newNodeName.toLowerCase()),
   )
 }
+
 /**
  * remove li tag
  * @param input
@@ -32,7 +40,7 @@ export function isUlElement(el: Element | string): boolean {
 export function isOnlyBrInChildren(el: HTMLElement | Element | null): boolean {
   if (!el) return false
   const nodes = slice<Node, NodeList>(el.childNodes)
-  return nodes.length === 1 && nodes[0].nodeName === 'BR'
+  return nodes.length > 0 && nodes.every((node) => node.nodeName === 'BR')
 }
 
 /**
@@ -42,10 +50,10 @@ export function isOnlyBrInChildren(el: HTMLElement | Element | null): boolean {
  * @returns `boolean`
  */
 export function isPairedTags<T extends Element>(el: T | string): boolean {
-  if (el instanceof Element) {
+  if (typeof el !== 'string' && el.nodeName) {
     el = el.outerHTML
   }
-  return /^<(\w+)[^>]*>.*<\/\1>$/.test(el)
+  return typeof el === 'string' && /^<(\w+)[^>]*>.*<\/\1>$/.test(el)
 }
 
 /**

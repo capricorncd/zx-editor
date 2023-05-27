@@ -302,9 +302,14 @@ export class Editor extends EventEmitter {
     const childNodes = this.$editor.childNodes
 
     for (let i = 0; i < childNodes.length; i++) {
+      newNode = null
       tempNode = childNodes[i]
       isCurrentChild = tempNode === currentChild
-      if (tempNode.nodeType === Node.ELEMENT_NODE && isPairedTags(tempNode as Element)) {
+      if (
+        tempNode.nodeType === Node.ELEMENT_NODE &&
+        isPairedTags(tempNode as Element) &&
+        !isSpecialPairedTags(tempNode as HTMLElement)
+      ) {
         if (this.allowedNodeNames.includes(tempNode.nodeName)) continue
         // 处理不被允许使用的标签
         newNode = changeNodeName(tempNode as HTMLElement, childNodeName)
@@ -313,7 +318,8 @@ export class Editor extends EventEmitter {
         this.$editor.replaceChild(newNode, tempNode)
       }
       if (isCurrentChild && newNode) this.setCursorElement(newNode)
-      newNode = null
+      // @ts-ignore
+      console.log('======', newNode?.outerHTML)
     }
 
     // check if it's last child is a blank line, if not, insert a new blank line
