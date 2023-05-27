@@ -7,7 +7,7 @@ $iconSize: 50px;
   bottom: 0;
   width: 100%;
   background-color: #fff;
-  height: $iconSize + 200;
+  height: calc(env(safe-area-inset-bottom) + var(--bar-height));
   transform: translateY(-100%);
   opacity: 0;
   dl,

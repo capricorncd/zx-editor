@@ -22,7 +22,7 @@ export const initContentDom = (options: EditorOptions, blankLine: string): HTMLD
     '--line-height': options.lineHeight,
     // paragraphTailSpacing
     '--paragraph-spacing': options.paragraphTailSpacing,
-    '--padding-bottom': options.paddingBottom,
+    '--padding-bottom': `calc(${options.paddingBottom || '0px'} + env(safe-area-inset-bottom))`,
     // 用户自定义样式优先
     ...options.styles,
   }

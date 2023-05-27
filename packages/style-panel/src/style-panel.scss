@@ -71,7 +71,7 @@ $headHeight: 44px;
     position: absolute;
     top: $headHeight;
     left: 0;
-    bottom: 0;
+    bottom: env(safe-area-inset-bottom);
     width: 100%;
     overflow-x: hidden;
     overflow-y: auto;

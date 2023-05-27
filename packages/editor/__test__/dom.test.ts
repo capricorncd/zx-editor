@@ -17,7 +17,7 @@ describe('dom', () => {
 
     expect(el.getAttribute('contenteditable')).toBeFalsy()
 
-    expect(el.getAttribute('style')).toBe('min-height:200px')
+    expect(el.getAttribute('style')).toBe('min-height:200px;--padding-bottom:calc(0px + env(safe-area-inset-bottom))')
     expect(el.style.minHeight).toBe('200px')
   })
 

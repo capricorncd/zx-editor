@@ -5,7 +5,7 @@
  */
 import './toolbar.scss'
 import { Editor, EditorPlugin } from '@sp-editor/editor'
-import { isIPhoneX, addClass, removeClass } from '@sp-editor/helpers'
+import { addClass, removeClass } from '@sp-editor/helpers'
 import { CSSProperties } from '@sp-editor/types'
 import { createElement, classNames, $$, $, splitValue } from 'zx-sml'
 import { ButtonOptions, ToolbarOptions, DEF_OPTIONS } from './options'
@@ -39,7 +39,6 @@ export class Toolbar implements EditorPlugin {
         class: 'sp-editor__toolbar border-top',
         style: {
           '--bar-height': `${height}${unit}`,
-          height: `${height + (isIPhoneX() ? IPHONEX_BOTTOM_OFFSET_HEIGHT : 0)}${unit}`,
         },
       },
       '<dl class="inner-wrapper"></dl>',

@@ -10,7 +10,3 @@ const PLATFORM = window.navigator.platform
 export function isIPhone() {
   return /iphone/i.test(USER_AGENT) && /iphone/.test(PLATFORM)
 }
-
-export function isIPhoneX() {
-  return window.screen.height === 812 && window.screen.width === 375
-}
