@@ -101,7 +101,7 @@ export class Editor extends EventEmitter {
           sel && sel.rangeCount ? sel.getRangeAt(sel.rangeCount - 1).endContainer : (e.currentTarget as HTMLElement)
         this.setCursorElement(node)
 
-        type === 'blur' && this._verifyChild()
+        // type === 'blur' && this._verifyChild()
       }
       this.emit(type === 'input' ? 'change' : type, e)
       checkIsEmpty(this.$editor)
@@ -293,44 +293,44 @@ export class Editor extends EventEmitter {
    * Verify that the editor's child element is an allowed elements, and check if it's last child is a blank line, if not, insert a new blank line
    * @private
    */
-  private _verifyChild(): void {
-    const currentChild = this.getCursorElement(true)
-    const childNodeName = this.options.childNodeName!
+  // private _verifyChild(): void {
+  //   const currentChild = this.getCursorElement(true)
+  //   const childNodeName = this.options.childNodeName!
 
-    let tempNode: Node,
-      isCurrentChild = false
-    let count = 0
-    while (count < this.$editor.childNodes.length) {
-      tempNode = this.$editor.childNodes[count++]
-      // Element
-      if (tempNode.nodeType === Node.ELEMENT_NODE) {
-        if (isPairedTags(tempNode as Element)) {
-          if (this.allowedNodeNames.includes(tempNode.nodeName)) continue
-          isCurrentChild = currentChild === tempNode
+  //   let tempNode: Node,
+  //     isCurrentChild = false
+  //   let count = 0
+  //   while (count < this.$editor.childNodes.length) {
+  //     tempNode = this.$editor.childNodes[count++]
+  //     // Element
+  //     if (tempNode.nodeType === Node.ELEMENT_NODE) {
+  //       if (isPairedTags(tempNode as Element)) {
+  //         if (this.allowedNodeNames.includes(tempNode.nodeName)) continue
+  //         isCurrentChild = currentChild === tempNode
 
-          if (!isSpecialPairedTags(tempNode as Element)) {
-            // 将不合法标签元素替换为默认的元素
-            const newChild = changeNodeName(tempNode as HTMLElement, childNodeName)
-            if (isCurrentChild && newChild) {
-              this.setCursorElement(newChild)
-            }
-            continue
-          }
-        }
-        ;(tempNode as Element).replaceWith(createElement(childNodeName, {}, tempNode.cloneNode(true)))
-      }
-      // Node
-      else {
-        const newChild = createElement(childNodeName, {}, tempNode.cloneNode(true))
-        this.$editor.replaceChild(newChild, tempNode)
-      }
-    }
+  //         if (!isSpecialPairedTags(tempNode as Element)) {
+  //           // 将不合法标签元素替换为默认的元素
+  //           const newChild = changeNodeName(tempNode as HTMLElement, childNodeName)
+  //           if (isCurrentChild && newChild) {
+  //             this.setCursorElement(newChild)
+  //           }
+  //           continue
+  //         }
+  //       }
+  //       ;(tempNode as Element).replaceWith(createElement(childNodeName, {}, tempNode.cloneNode(true)))
+  //     }
+  //     // Node
+  //     else {
+  //       const newChild = createElement(childNodeName, {}, tempNode.cloneNode(true))
+  //       this.$editor.replaceChild(newChild, tempNode)
+  //     }
+  //   }
 
-    // check if it's last child is a blank line, if not, insert a new blank line
-    if (!isOnlyBrInChildren(this.$editor.lastElementChild)) {
-      this.$editor.appendChild(createElement(childNodeName, {}, '<br>'))
-    }
-  }
+  //   // check if it's last child is a blank line, if not, insert a new blank line
+  //   if (!isOnlyBrInChildren(this.$editor.lastElementChild)) {
+  //     this.$editor.appendChild(createElement(childNodeName, {}, '<br>'))
+  //   }
+  // }
 
   /**
    * @method changeNodeName(nodeName)
