@@ -101,7 +101,9 @@ export class Editor extends EventEmitter {
           sel && sel.rangeCount ? sel.getRangeAt(sel.rangeCount - 1).endContainer : (e.currentTarget as HTMLElement)
         this.setCursorElement(node)
 
-        // type === 'blur' && this._verifyChild()
+        if (type === 'blur') {
+          this._verifyChild()
+        }
       }
       this.emit(type === 'input' ? 'change' : type, e)
       checkIsEmpty(this.$editor)
@@ -115,7 +117,7 @@ export class Editor extends EventEmitter {
       }
       e.preventDefault()
       const paste = e.clipboardData?.getData('text')
-      this._insertText(paste)
+      this.insert(paste)
     }
 
     this._initEvents()
@@ -154,8 +156,6 @@ export class Editor extends EventEmitter {
   setHtml(html: string): void {
     this.$editor.innerHTML = this.blankLine
     this.insert(html, true)
-    // TODO
-    // this._verifyChild()
     checkIsEmpty(this.$editor)
   }
 
@@ -181,7 +181,8 @@ export class Editor extends EventEmitter {
    * @param input `string | HTMLElement`
    * @param toNewParagraph? `boolean` Insert `text` in a new paragraph, only `textNode` is valid. Defaults to `false`.
    */
-  insert(input: string | HTMLElement, toNewParagraph = false): void {
+  insert(input?: string | HTMLElement, toNewParagraph = false): void {
+    if (!input) return
     const { childNodeName, insertTextToNewParagraph } = this.options
     // insert HTMLElement
     if (input instanceof HTMLElement) {
@@ -218,10 +219,9 @@ export class Editor extends EventEmitter {
         })
       }
     }
-    this._dispatchChange()
 
-    // TODO
-    // this._verifyChild()
+    this._verifyChild()
+    this._dispatchChange()
   }
 
   /**
@@ -284,8 +284,6 @@ export class Editor extends EventEmitter {
     this.setCursorElement(sel.getRangeAt(rangeCount - 1).endContainer)
     // collapses the selection to the end of the last range in the selection.
     sel.collapseToEnd()
-
-    this._dispatchChange()
   }
 
   /**
@@ -293,44 +291,36 @@ export class Editor extends EventEmitter {
    * Verify that the editor's child element is an allowed elements, and check if it's last child is a blank line, if not, insert a new blank line
    * @private
    */
-  // private _verifyChild(): void {
-  //   const currentChild = this.getCursorElement(true)
-  //   const childNodeName = this.options.childNodeName!
+  private _verifyChild(): void {
+    const currentChild = this.getCursorElement(true)
+    const childNodeName = this.options.childNodeName!
 
-  //   let tempNode: Node,
-  //     isCurrentChild = false
-  //   let count = 0
-  //   while (count < this.$editor.childNodes.length) {
-  //     tempNode = this.$editor.childNodes[count++]
-  //     // Element
-  //     if (tempNode.nodeType === Node.ELEMENT_NODE) {
-  //       if (isPairedTags(tempNode as Element)) {
-  //         if (this.allowedNodeNames.includes(tempNode.nodeName)) continue
-  //         isCurrentChild = currentChild === tempNode
+    let tempNode: Node,
+      newNode: HTMLElement | null,
+      isCurrentChild = false
 
-  //         if (!isSpecialPairedTags(tempNode as Element)) {
-  //           // 将不合法标签元素替换为默认的元素
-  //           const newChild = changeNodeName(tempNode as HTMLElement, childNodeName)
-  //           if (isCurrentChild && newChild) {
-  //             this.setCursorElement(newChild)
-  //           }
-  //           continue
-  //         }
-  //       }
-  //       ;(tempNode as Element).replaceWith(createElement(childNodeName, {}, tempNode.cloneNode(true)))
-  //     }
-  //     // Node
-  //     else {
-  //       const newChild = createElement(childNodeName, {}, tempNode.cloneNode(true))
-  //       this.$editor.replaceChild(newChild, tempNode)
-  //     }
-  //   }
+    const childNodes = this.$editor.childNodes
 
-  //   // check if it's last child is a blank line, if not, insert a new blank line
-  //   if (!isOnlyBrInChildren(this.$editor.lastElementChild)) {
-  //     this.$editor.appendChild(createElement(childNodeName, {}, '<br>'))
-  //   }
-  // }
+    for (let i = 0; i < childNodes.length; i++) {
+      tempNode = childNodes[i]
+      isCurrentChild = tempNode === currentChild
+      if (tempNode.nodeType === Node.ELEMENT_NODE && isPairedTags(tempNode as Element)) {
+        if (this.allowedNodeNames.includes(tempNode.nodeName)) continue
+        // 处理不被允许使用的标签
+        newNode = changeNodeName(tempNode as HTMLElement, childNodeName)
+      } else {
+        newNode = createElement(childNodeName, {}, tempNode.cloneNode(true))
+        this.$editor.replaceChild(newNode, tempNode)
+      }
+      if (isCurrentChild && newNode) this.setCursorElement(newNode)
+      newNode = null
+    }
+
+    // check if it's last child is a blank line, if not, insert a new blank line
+    if (!isOnlyBrInChildren(this.$editor.lastElementChild)) {
+      this.$editor.append(createElement(childNodeName, {}, '<br>'))
+    }
+  }
 
   /**
    * @method changeNodeName(nodeName)

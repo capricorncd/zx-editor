@@ -193,7 +193,7 @@ export class StylePanel implements EditorPlugin {
 
   updateActiveClassName(el: HTMLElement): boolean {
     // The className of this · is already `active`
-    if (el.classList.contains('active')) return false
+    if (!el || el.classList.contains('active')) return false
     // Remove `active` className for sibling element
     $('.active', el.parentElement!)!.classList.remove('active')
     // Add `active` className for this el
