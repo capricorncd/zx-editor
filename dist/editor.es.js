@@ -5,9 +5,9 @@
  * Repository: https://github.com/capricorncd/zx-editor
  * Copyright © 2018-present, Capricorncd/ Xing Zhong.
  */
-var j = Object.defineProperty;
-var V = (t, r, e) => r in t ? j(t, r, { enumerable: !0, configurable: !0, writable: !0, value: e }) : t[r] = e;
-var f = (t, r, e) => (V(t, typeof r != "symbol" ? r + "" : r, e), e);
+var W = Object.defineProperty;
+var V = (e, r, t) => r in e ? W(e, r, { enumerable: !0, configurable: !0, writable: !0, value: t }) : e[r] = t;
+var f = (e, r, t) => (V(e, typeof r != "symbol" ? r + "" : r, t), t);
 class F {
   constructor() {
     this._events = {};
@@ -19,8 +19,8 @@ class F {
    * @param fn `Function` callback function.
    * @returns `EventEmitter`
    */
-  on(r, e) {
-    return !r || !e || typeof e != "function" ? this : (this._events[r] || (this._events[r] = []), this._events[r].push(e), this);
+  on(r, t) {
+    return !r || !t || typeof t != "function" ? this : (this._events[r] || (this._events[r] = []), this._events[r].push(t), this);
   }
   /**
    * @method once(eventName, fn)
@@ -29,9 +29,9 @@ class F {
    * @param fn `Function` callback function.
    * @returns `EventEmitter`
    */
-  once(r, e) {
-    const n = (...i) => {
-      e.apply(this, i), this.off(r, n);
+  once(r, t) {
+    const n = (...s) => {
+      t.apply(this, s), this.off(r, n);
     };
     return this.on(r, n);
   }
@@ -42,15 +42,15 @@ class F {
    * @param args `any`
    * @returns `EventEmitter`
    */
-  emit(r, ...e) {
+  emit(r, ...t) {
     const n = this._events[r];
     if (!n)
       return this;
-    for (let i = 0; i < n.length; i++)
+    for (let s = 0; s < n.length; s++)
       try {
-        n[i].apply(this, e);
-      } catch (s) {
-        this.emit("error", s, "emit");
+        n[s].apply(this, t);
+      } catch (i) {
+        this.emit("error", i, "emit");
       }
     return this;
   }
@@ -61,13 +61,13 @@ class F {
    * @param fn? `Function` callback function. When `fn` is not a function, all monitoring functions of `eventName` will be removed.
    * @returns `EventEmitter`
    */
-  off(r, e) {
+  off(r, t) {
     if (!this._events[r])
       return this;
     const n = this._events[r];
-    if (typeof e == "function") {
-      const i = n.findIndex((s) => s === e);
-      i >= 0 && n.splice(i, 1);
+    if (typeof t == "function") {
+      const s = n.findIndex((i) => i === t);
+      s >= 0 && n.splice(s, 1);
     } else
       this._events[r].length = 0;
     return this._removeEmpty(r), this;
@@ -97,165 +97,165 @@ class F {
  * Repository: https://github.com/capricorncd/zx-sml
  * Released on: 2023-05-17 20:41:58 (GMT+0900)
  */
-var K = Object.defineProperty, $ = Object.getOwnPropertySymbols, q = Object.prototype.hasOwnProperty, G = Object.prototype.propertyIsEnumerable, O = (t, r, e) => r in t ? K(t, r, { enumerable: !0, configurable: !0, writable: !0, value: e }) : t[r] = e, b = (t, r) => {
-  for (var e in r || (r = {}))
-    q.call(r, e) && O(t, e, r[e]);
-  if ($)
-    for (var e of $(r))
-      G.call(r, e) && O(t, e, r[e]);
-  return t;
+var K = Object.defineProperty, w = Object.getOwnPropertySymbols, q = Object.prototype.hasOwnProperty, G = Object.prototype.propertyIsEnumerable, O = (e, r, t) => r in e ? K(e, r, { enumerable: !0, configurable: !0, writable: !0, value: t }) : e[r] = t, b = (e, r) => {
+  for (var t in r || (r = {}))
+    q.call(r, t) && O(e, t, r[t]);
+  if (w)
+    for (var t of w(r))
+      G.call(r, t) && O(e, t, r[t]);
+  return e;
 };
-function J(t) {
-  return Array.isArray(t);
+function J(e) {
+  return Array.isArray(e);
 }
-function A(t) {
-  return typeof t == "object" && t !== null && !J(t);
+function P(e) {
+  return typeof e == "object" && e !== null && !J(e);
 }
-function B(t = "", r = "-") {
-  return t.replace(/[A-Z]/g, (e, n) => `${n > 0 ? r : ""}${e.toLowerCase()}`);
+function R(e = "", r = "-") {
+  return e.replace(/[A-Z]/g, (t, n) => `${n > 0 ? r : ""}${t.toLowerCase()}`);
 }
-function D(t = "", r = !1) {
-  const e = t.replace(/[-_\s](\w)/g, (n, i) => i.toUpperCase());
-  return r ? e.replace(/^\w/, (n) => n.toUpperCase()) : e;
+function I(e = "", r = !1) {
+  const t = e.replace(/[-_\s](\w)/g, (n, s) => s.toUpperCase());
+  return r ? t.replace(/^\w/, (n) => n.toUpperCase()) : t;
 }
-function p(t, r = 0) {
-  return Array.prototype.slice.call(t, r);
+function p(e, r = 0) {
+  return Array.prototype.slice.call(e, r);
 }
-function I(t = {}, r = !1) {
-  const e = r ? D : B, n = {};
-  for (const [i, s] of Object.entries(t))
-    n[e(i)] = A(s) ? I(s, r) : s;
+function B(e = {}, r = !1) {
+  const t = r ? I : R, n = {};
+  for (const [s, i] of Object.entries(e))
+    n[t(s)] = P(i) ? B(i, r) : i;
   return n;
 }
-function Q(t, r = document) {
-  return t ? t instanceof HTMLElement ? t : r.querySelector(t) : null;
+function Q(e, r = document) {
+  return e ? e instanceof HTMLElement ? e : r.querySelector(e) : null;
 }
-function h(t, r = {}, e) {
-  const n = document.createElement(t);
-  for (const [i, s] of Object.entries(r))
-    n.setAttribute(B(i), i === "style" && A(s) ? g(s) : String(s));
-  return e && (Array.isArray(e) || (e = [e]), e.forEach((i) => {
-    if (typeof i == "string") {
-      const s = h("div");
-      s.innerHTML = i, n.append(...s.childNodes);
+function h(e, r = {}, t) {
+  const n = document.createElement(e);
+  for (const [s, i] of Object.entries(r))
+    n.setAttribute(R(s), s === "style" && P(i) ? v(i) : String(i));
+  return t && (Array.isArray(t) || (t = [t]), t.forEach((s) => {
+    if (typeof s == "string") {
+      const i = h("div");
+      i.innerHTML = s, n.append(...i.childNodes);
     } else
-      n.append(i);
+      n.append(s);
   })), n;
 }
-function g(...t) {
-  const r = t.reduce((n, i) => b(b({}, n), I(i)), {}), e = [];
-  for (const [n, i] of Object.entries(r))
-    i === "" || typeof i > "u" || i === null || e.push(`${n}:${i}`);
-  return e.join(";");
+function v(...e) {
+  const r = e.reduce((n, s) => b(b({}, n), B(s)), {}), t = [];
+  for (const [n, s] of Object.entries(r))
+    s === "" || typeof s > "u" || s === null || t.push(`${n}:${s}`);
+  return t.join(";");
 }
-const w = (t, r = "style") => t ? (t.getAttribute(r) || "").split(/\s?;\s?/).reduce((n, i) => {
-  const [s, o] = i.split(/\s?:\s?/);
-  return s && (n[D(s)] = o), n;
-}, {}) : {}, W = (t) => document.createTextNode(t), X = "sp-editor__editor", P = "SECTION", Z = "BR", k = [P, "H1", "H2", "H3", "H4", "H5", "BLOCKQUOTE", "UL", "OL"];
-function m(t, r, e) {
-  return t.replace(
+const A = (e, r = "style") => e ? (e.getAttribute(r) || "").split(/\s?;\s?/).reduce((n, s) => {
+  const [i, o] = s.split(/\s?:\s?/);
+  return i && (n[I(i)] = o), n;
+}, {}) : {}, X = (e) => document.createTextNode(e), Y = "sp-editor__editor", _ = "is-empty", D = "SECTION", Z = "BR", U = [D, "H1", "H2", "H3", "H4", "H5", "BLOCKQUOTE", "UL", "OL"];
+function m(e, r, t) {
+  return e.replace(
     new RegExp("(^<" + r + ")|(" + r + ">$)", "gi"),
-    (n) => n.replace(new RegExp(r, "i"), e.toLowerCase())
+    (n) => n.replace(new RegExp(r, "i"), t.toLowerCase())
   );
 }
-function z(t) {
-  return t.replace(/<li[^>]*>(.+)<\/li>/gi, "$1");
+function z(e) {
+  return e.replace(/<li[^>]*>(.+)<\/li>/gi, "$1");
 }
-function E(t) {
-  const r = typeof t == "string" ? t : t.nodeName;
+function g(e) {
+  const r = typeof e == "string" ? e : e.nodeName;
   return /^UL|OL$/i.test(r);
 }
-function S(t) {
-  if (!t)
+function x(e) {
+  if (!e)
     return !1;
-  const r = p(t.childNodes);
-  return r.length > 0 && r.every((e) => e.nodeName === "BR");
+  const r = p(e.childNodes);
+  return r.length > 0 && r.every((t) => t.nodeName === "BR");
 }
-function N(t) {
-  return typeof t != "string" && t.nodeName && (t = t.outerHTML), typeof t == "string" && /^<(\w+)[^>]*>.*<\/\1>$/.test(t);
+function E(e) {
+  return typeof e != "string" && e.nodeName && (e = e.outerHTML), typeof e == "string" && /^<(\w+)[^>]*>.*<\/\1>$/.test(e.replace(/\n/g, ""));
 }
-function U(t) {
-  return ["PICTURE", "VIDEO", "AUDIO", "CANVAS"].includes(t.nodeName);
+function k(e) {
+  return ["PICTURE", "VIDEO", "AUDIO", "CANVAS"].includes(e.nodeName);
 }
-function Y(t) {
-  return ["IMG"].includes(t.nodeName) || U(t);
+function ee(e) {
+  return ["IMG"].includes(e.nodeName) || k(e);
 }
-function R(t) {
-  if (Y(t))
+function j(e) {
+  if (ee(e))
     return !0;
-  for (let r = 0; r < t.children.length; r++)
-    if (R(t.children[r]))
+  for (let r = 0; r < e.children.length; r++)
+    if (j(e.children[r]))
       return !0;
   return !1;
 }
-const ee = (t, r) => {
-  const e = {
-    minHeight: t.minHeight,
+const te = (e, r) => {
+  const t = {
+    minHeight: e.minHeight,
     // placeholder
-    "--placeholder": JSON.stringify(t.placeholder),
-    "--placeholder-color": t.placeholderColor,
-    "--line-height": t.lineHeight,
+    "--placeholder": JSON.stringify(e.placeholder),
+    "--placeholder-color": e.placeholderColor,
+    "--line-height": e.lineHeight,
     // paragraphTailSpacing
-    "--paragraph-spacing": t.paragraphTailSpacing,
-    "--padding-bottom": t.paddingBottom,
+    "--paragraph-spacing": e.paragraphTailSpacing,
+    "--padding-bottom": e.paddingBottom,
     // 用户自定义样式优先
-    ...t.styles
+    ...e.styles
   };
-  t.caretColor && (e.caretColor = t.caretColor), t.textColor && (e.color = t.textColor);
+  e.caretColor && (t.caretColor = e.caretColor), e.textColor && (t.color = e.textColor);
   const n = {
-    class: `${X} is-empty`,
-    style: g(e)
+    class: `${Y} ${_}`,
+    style: v(t)
   };
-  return t.editable && (n.contenteditable = "true"), h("div", n, r);
-}, x = (t, r) => {
-  var l, a, _, C, v, y, L, T, H;
-  if (!t)
+  return e.editable && (n.contenteditable = "true"), h("div", n, r);
+}, M = (e, r) => {
+  var l, a, C, y, L, T, $, H, S;
+  if (!e)
     return null;
-  const e = t.nodeName, n = r.toUpperCase();
-  if (e === n)
+  const t = e.nodeName, n = r.toUpperCase();
+  if (t === n)
     return null;
-  const i = h(r), s = t.parentElement;
+  const s = h(r), i = e.parentElement;
   let o;
-  if (e === "LI" && E(s)) {
-    if (i.innerHTML = m(t.outerHTML, e, n), o = i.firstChild, s.childElementCount > 1)
-      if (s.firstElementChild === t)
-        (l = s.parentElement) == null || l.insertBefore(o, s);
-      else if (s.lastElementChild === t) {
-        const c = (a = s.parentElement) == null ? void 0 : a.nextElementSibling;
-        c ? (_ = c.parentElement) == null || _.insertBefore(o, c) : (C = s.parentElement) == null || C.append(o);
+  if (t === "LI" && g(i)) {
+    if (s.innerHTML = m(e.outerHTML, t, n), o = s.firstChild, i.childElementCount > 1)
+      if (i.firstElementChild === e)
+        (l = i.parentElement) == null || l.insertBefore(o, i);
+      else if (i.lastElementChild === e) {
+        const d = (a = i.parentElement) == null ? void 0 : a.nextElementSibling;
+        d ? (C = d.parentElement) == null || C.insertBefore(o, d) : (y = i.parentElement) == null || y.append(o);
       } else {
-        const c = p(s.children), d = h(s.nodeName);
-        let u = c.shift();
-        for (; u && u !== t; )
-          d.append(u), u = c.shift();
-        (v = s.parentElement) == null || v.insertBefore(d, s), (y = s.parentElement) == null || y.insertBefore(o, s), s.removeChild(t);
+        const d = p(i.children), c = h(i.nodeName);
+        let u = d.shift();
+        for (; u && u !== e; )
+          c.append(u), u = d.shift();
+        (L = i.parentElement) == null || L.insertBefore(c, i), (T = i.parentElement) == null || T.insertBefore(o, i), i.removeChild(e);
       }
     else
-      (L = s.parentElement) == null || L.insertBefore(o, s), (T = s.parentElement) == null || T.removeChild(s);
+      ($ = i.parentElement) == null || $.insertBefore(o, i), (H = i.parentElement) == null || H.removeChild(i);
     return o;
   }
   if (/UL|OL/.test(n)) {
-    const c = t.previousElementSibling, d = t.nextElementSibling;
-    if (c && E(c)) {
-      if (i.innerHTML = m(t.outerHTML, e, "li"), o = i.firstChild, c.append(o), s == null || s.removeChild(t), d && d.nodeName === c.nodeName) {
-        const u = p(d.children);
-        c.append(...u), (H = d.parentElement) == null || H.removeChild(d);
+    const d = e.previousElementSibling, c = e.nextElementSibling;
+    if (d && g(d)) {
+      if (s.innerHTML = m(e.outerHTML, t, "li"), o = s.firstChild, d.append(o), i == null || i.removeChild(e), c && c.nodeName === d.nodeName) {
+        const u = p(c.children);
+        d.append(...u), (S = c.parentElement) == null || S.removeChild(c);
       }
     } else
-      d && E(d) ? (i.innerHTML = m(t.outerHTML, e, "li"), o = i.firstChild, d.insertBefore(o, d.firstElementChild), s == null || s.removeChild(t)) : (o = i, i.innerHTML = m(t.outerHTML, e, "li"), s == null || s.replaceChild(o, t));
+      c && g(c) ? (s.innerHTML = m(e.outerHTML, t, "li"), o = s.firstChild, c.insertBefore(o, c.firstElementChild), i == null || i.removeChild(e)) : (o = s, s.innerHTML = m(e.outerHTML, t, "li"), i == null || i.replaceChild(o, e));
   } else
-    i.innerHTML = z(m(t.outerHTML, e, n)), o = i.firstChild, s == null || s.replaceChild(o, t);
+    s.innerHTML = z(m(e.outerHTML, t, n)), o = s.firstChild, i == null || i.replaceChild(o, e);
   return o;
-}, M = (t) => {
+}, N = (e) => {
   var r;
-  !((r = t.innerText) != null && r.trim()) && !R(t) ? t.classList.add("is-empty") : t.classList.remove("is-empty");
+  !((r = e.innerText) != null && r.trim()) && !j(e) ? e.classList.add(_) : e.classList.remove(_);
 };
-function te(t, r, e = !1) {
+function ne(e, r, t = !1) {
   var n;
-  for (; t && r !== t; ) {
-    if (!e && t.nodeName === "LI" && ((n = t.parentElement) == null ? void 0 : n.parentElement) === r || t.parentElement === r)
-      return t;
-    t = t.parentElement;
+  for (; e && r !== e; ) {
+    if (!t && e.nodeName === "LI" && ((n = e.parentElement) == null ? void 0 : n.parentElement) === r || e.parentElement === r)
+      return e;
+    e = e.parentElement;
   }
   return r.lastElementChild;
 }
@@ -270,8 +270,8 @@ const re = {
   placeholder: "请在此输入内容..",
   placeholderColor: "#999",
   lineHeight: 1.5,
-  childNodeName: P,
-  allowedNodeNames: k,
+  childNodeName: D,
+  allowedNodeNames: U,
   // paragraph tail spacing, default 10px
   paragraphTailSpacing: "10px",
   caretColor: "",
@@ -280,8 +280,8 @@ const re = {
   customPasteHandler: void 0,
   insertTextToNewParagraph: !1
 };
-class ie extends F {
-  constructor(e) {
+class se extends F {
+  constructor(t) {
     super();
     /**
      * @property version
@@ -293,32 +293,33 @@ class ie extends F {
     f(this, "options");
     // 编辑器内容区域HTML元素
     f(this, "$editor");
-    // current node
-    f(this, "_cursorElement", null);
     // 内容元素事件处理函数
     f(this, "_eventHandler");
     // 内容中允许使用的元素标签
     f(this, "allowedNodeNames");
     f(this, "blankLine");
+    f(this, "range");
     f(this, "_pasteHandler");
-    const n = typeof e.container == "string" ? Q(e.container) : e.container;
+    const n = typeof t.container == "string" ? Q(t.container) : t.container;
     if (!n)
-      throw new Error(`Can't found '${e.container}' Node in document!`);
-    this.version = "1.0.0", this.options = { ...re, ...e }, this.allowedNodeNames = (this.options.allowedNodeNames || k).map((s) => s.toUpperCase());
-    const i = this.options.childNodeName.toUpperCase();
-    this.options.childNodeName = i, this.blankLine = `<${i}><br></${i}>`, this.allowedNodeNames.includes(i) || this.allowedNodeNames.push(i), this.$editor = ee(this.options, this.blankLine), n.append(this.$editor), this._eventHandler = (s) => {
-      const o = s.type;
-      if (o === "blur" || o === "click") {
-        const l = window.getSelection(), a = l && l.rangeCount ? l.getRangeAt(l.rangeCount - 1).endContainer : s.currentTarget;
-        this.setCursorElement(a), o === "blur" && this._verifyChild();
-      }
-      this.emit(o === "input" ? "change" : o, s), M(this.$editor);
-    }, this._pasteHandler = (s) => {
+      throw new Error(`Can't found '${t.container}' Node in document!`);
+    this.version = "1.0.0", this.options = { ...re, ...t }, this.allowedNodeNames = (this.options.allowedNodeNames || U).map((i) => i.toUpperCase());
+    const s = this.options.childNodeName.toUpperCase();
+    this.options.childNodeName = s, this.blankLine = `<${s}><br></${s}>`, this.allowedNodeNames.includes(s) || this.allowedNodeNames.push(s), this.$editor = te(this.options, this.blankLine), n.append(this.$editor), this.range = new Range(), this.range.setStart(this.$editor.children[0], 0), this._eventHandler = (i) => {
+      var l;
+      const o = i.type;
+      if (o === "click") {
+        const a = (l = window.getSelection()) == null ? void 0 : l.getRangeAt(0);
+        a && (this.range = a);
+      } else
+        o === "blur" && this._verifyChild();
+      this.emit(o === "input" ? "change" : o, i), N(this.$editor);
+    }, this._pasteHandler = (i) => {
       var l;
       if (typeof this.options.customPasteHandler == "function")
-        return this.options.customPasteHandler(s);
-      s.preventDefault();
-      const o = (l = s.clipboardData) == null ? void 0 : l.getData("text");
+        return this.options.customPasteHandler(i);
+      i.preventDefault();
+      const o = (l = i.clipboardData) == null ? void 0 : l.getData("text");
       this.insert(o);
     }, this._initEvents();
   }
@@ -329,14 +330,18 @@ class ie extends F {
   _initEvents() {
     this.$editor.addEventListener("focus", this._eventHandler), this.$editor.addEventListener("blur", this._eventHandler), this.$editor.addEventListener("input", this._eventHandler), this.$editor.addEventListener("click", this._eventHandler), this.$editor.addEventListener("paste", this._pasteHandler);
   }
+  setRangeWithNode(t) {
+    const n = new Range();
+    return n.setStart(t === this.$editor ? this.$editor.childNodes[this.$editor.childNodes.length - 1] : t, 0), this.range = n, n;
+  }
   /**
    * @method use(plugin, parentElement)
    * extension, 扩展插件
    * @param plugin `EditorPlugin`
    * @param parentElement? `HTMLElement`
    */
-  use(e, n) {
-    typeof e.install == "function" && e.install(this, n);
+  use(t, n) {
+    typeof t.install == "function" && t.install(this, n);
   }
   /**
    * @method setHtml(html)
@@ -344,8 +349,8 @@ class ie extends F {
    * set html to the content element
    * @param html `string`
    */
-  setHtml(e) {
-    this.$editor.innerHTML = this.blankLine, this.insert(e, !0), M(this.$editor);
+  setHtml(t) {
+    this.$editor.innerHTML = this.blankLine, this.insert(t, !0), N(this.$editor);
   }
   /**
    * @method getHtml(retainLastBlankLines)
@@ -354,12 +359,12 @@ class ie extends F {
    * @param retainLastBlankLines? `boolean` Retain last blank lines, If `true` the last `<section><br></section>` not will be removed.
    * @return `string`
    */
-  getHtml(e) {
+  getHtml(t) {
     const n = this.$editor.innerHTML;
-    if (e)
+    if (t)
       return n;
-    const i = this.options.childNodeName;
-    return n.replace(new RegExp(`(<${i}><br\\s?\\/?><\\/${i}>)+$`, "i"), "");
+    const s = this.options.childNodeName;
+    return n.replace(new RegExp(`(<${s}><br\\s?\\/?><\\/${s}>)+$`, "i"), "");
   }
   /**
    * @method insert(input, toNewParagraph)
@@ -368,43 +373,45 @@ class ie extends F {
    * @param input `string | HTMLElement`
    * @param toNewParagraph? `boolean` Insert `text` in a new paragraph, only `textNode` is valid. Defaults to `false`.
    */
-  insert(e, n = !1) {
-    if (!e)
+  insert(t, n = !1) {
+    if (!t)
       return;
-    const { childNodeName: i, insertTextToNewParagraph: s } = this.options;
-    if (e instanceof HTMLElement)
-      this._insertEl(e);
+    const { childNodeName: s, insertTextToNewParagraph: i } = this.options;
+    if (t instanceof HTMLElement)
+      this._insertEl(t);
     else {
-      const o = h("div", {}, e), l = p(o.childNodes);
-      if (!n && !s && l.every((a) => a.nodeType === Node.TEXT_NODE))
-        return this._insertText(e);
+      const o = h("div", {}, t), l = p(o.childNodes);
+      if (!n && !i && l.every((a) => a.nodeType === Node.TEXT_NODE))
+        return this._insertText(t);
       l.forEach((a) => {
-        a.nodeType === Node.ELEMENT_NODE ? a.nodeName === Z ? this._insertEl(h(i, {}, "<br/>")) : this._insertEl(a) : a.textContent && this._insertEl(h(i, {}, a.textContent));
+        a.nodeType === Node.ELEMENT_NODE ? a.nodeName === Z ? this._insertEl(h(s, {}, "<br/>")) : this._insertEl(a) : a.textContent && this._insertEl(h(s, {}, a.textContent));
       });
     }
-    this._verifyChild(), this._dispatchChange();
+    this._verifyChild(), this._dispatchChange(), N(this.$editor);
   }
   /**
    * insert element to content element
    * @param input
    * @private
    */
-  _insertEl(e) {
+  _insertEl(t) {
     const n = this.getCursorElement();
-    S(n) ? N(e.outerHTML) ? this.$editor.insertBefore(e, n) : n === this.$editor.children[this.$editor.children.length - 1] ? this.$editor.insertBefore(h(this.options.childNodeName, {}, e), n) : (n.innerHTML = "", n.append(e)) : (N(e.outerHTML) || (e = h(this.options.childNodeName, {}, e)), n.nextElementSibling ? this.$editor.insertBefore(e, n.nextElementSibling) : this.$editor.append(e)), this.setCursorElement(e);
+    x(n) ? E(t.outerHTML) ? this.$editor.insertBefore(t, n) : n === this.$editor.children[this.$editor.children.length - 1] ? this.$editor.insertBefore(h(this.options.childNodeName, {}, t), n) : (n.innerHTML = "", n.append(t)) : (E(t.outerHTML) || (t = h(this.options.childNodeName, {}, t)), n.nextElementSibling ? this.$editor.insertBefore(t, n.nextElementSibling) : this.$editor.append(t)), this.setRangeWithNode(t);
   }
   /**
    * insert text into editor
    * @param input
    * @returns
    */
-  _insertText(e) {
-    if (!e)
+  _insertText(t) {
+    if (!t)
       return;
-    const n = window.getSelection(), i = n == null ? void 0 : n.rangeCount;
-    if (!i)
-      return this.insert(e, !0);
-    n.deleteFromDocument(), n.getRangeAt(0).insertNode(W(e)), this.setCursorElement(n.getRangeAt(i - 1).endContainer), n.collapseToEnd();
+    const n = window.getSelection();
+    if (!(n == null ? void 0 : n.rangeCount))
+      return this.insert(t, !0);
+    n.deleteFromDocument();
+    const i = X(t);
+    n.getRangeAt(0).insertNode(i), n.setPosition(i, t.length), this.range = n.getRangeAt(0), n.collapseToEnd();
   }
   /**
    * 验证编辑器的子元素是否为允许使用的元素，并检查其最后一段是否为空行，非空行则插入。
@@ -412,19 +419,12 @@ class ie extends F {
    * @private
    */
   _verifyChild() {
-    const e = this.getCursorElement(!0), n = this.options.childNodeName;
-    let i, s, o = !1;
-    const l = this.$editor.childNodes;
-    for (let a = 0; a < l.length; a++) {
-      if (s = null, i = l[a], o = i === e, i.nodeType === Node.ELEMENT_NODE && N(i) && !U(i)) {
-        if (this.allowedNodeNames.includes(i.nodeName))
-          continue;
-        s = x(i, n);
-      } else
-        s = h(n, {}, i.cloneNode(!0)), this.$editor.replaceChild(s, i);
-      o && s && this.setCursorElement(s);
-    }
-    S(this.$editor.lastElementChild) || this.$editor.append(h(n, {}, "<br>"));
+    const t = this.options.childNodeName;
+    let n, s, i = !1;
+    const o = this.$editor.childNodes;
+    for (let l = 0; l < o.length; l++)
+      s = null, n = o[l], i = n === this.range.commonAncestorContainer, n.nodeType === Node.ELEMENT_NODE && E(n) && !k(n) ? this.allowedNodeNames.includes(n.nodeName) || (s = M(n, t)) : (s = h(t, {}, n.cloneNode(!0)), this.$editor.replaceChild(s, n)), i && s && this.setRangeWithNode(s);
+    x(this.$editor.lastElementChild) || this.$editor.append(h(t, {}, "<br>"));
   }
   /**
    * @method changeNodeName(nodeName)
@@ -433,11 +433,11 @@ class ie extends F {
    * @param nodeName? `string` allowed element names, `UL`, `SECTION` etc. If `undefined`, use the default `options.childNodeName`.
    * @return `boolean`
    */
-  changeNodeName(e) {
-    if (e = (e || this.options.childNodeName).toUpperCase(), !this.allowedNodeNames.includes(e))
+  changeNodeName(t) {
+    if (t = (t || this.options.childNodeName).toUpperCase(), !this.allowedNodeNames.includes(t))
       return !1;
-    const n = this.getCursorElement(), i = x(n, e);
-    return i ? (this.setCursorElement(i), this._dispatchChange(), !0) : !1;
+    const n = this.getCursorElement(), s = M(n, t);
+    return s ? (this.setRangeWithNode(s), this._dispatchChange(), !0) : !1;
   }
   /**
    * @method changeStyles(styles, value)
@@ -446,17 +446,17 @@ class ie extends F {
    * @param styles? `CSSProperties | string` When it's `undefined` or null, all styles will be removed.
    * @param value? `any`
    */
-  changeStyles(e, n) {
-    const i = this.getCursorElement(!0);
-    if (i) {
-      const s = w(i);
-      if (e) {
-        const o = typeof e == "string" ? { [e]: n } : e;
-        i.setAttribute("style", g(s, o));
+  changeStyles(t, n) {
+    const s = this.getCursorElement(!0);
+    if (s) {
+      const i = A(s);
+      if (t) {
+        const o = typeof t == "string" ? { [t]: n } : t;
+        s.setAttribute("style", v(i, o));
       } else {
-        if (!Object.keys(s).length)
+        if (!Object.keys(i).length)
           return;
-        i.removeAttribute("style");
+        s.removeAttribute("style");
       }
       this._dispatchChange();
     }
@@ -474,19 +474,7 @@ class ie extends F {
    * @return `CSSProperties`
    */
   getStyles() {
-    return w(this.getCursorElement());
-  }
-  setCursorElement(e) {
-    if (e instanceof Node)
-      for (; e; ) {
-        if (e.nodeType === Node.ELEMENT_NODE) {
-          this._cursorElement = e;
-          break;
-        }
-        e = e.parentElement;
-      }
-    else
-      e && (this._cursorElement = e);
+    return A(this.getCursorElement());
   }
   /**
    * @method getCursorElement(isOnlyEditorChild)
@@ -495,8 +483,8 @@ class ie extends F {
    * @param isOnlyEditorChild? `boolean` Must be a child element of editor `HTMLElement`. For example: when it is `false`, the `li` element is returned in `ul/ol`, and when it is `true`, the `ul/ol` element is returned.
    * @return `HTMLElement`
    */
-  getCursorElement(e = !1) {
-    return te(this._cursorElement, this.$editor, e);
+  getCursorElement(t = !1) {
+    return ne(this.range.commonAncestorContainer, this.$editor, t);
   }
   /**
    * @method destroy()
@@ -508,6 +496,6 @@ class ie extends F {
   }
 }
 export {
-  k as ALLOWED_NODE_NAMES,
-  ie as Editor
+  U as ALLOWED_NODE_NAMES,
+  se as Editor
 };
