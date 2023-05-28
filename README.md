@@ -10,6 +10,9 @@
 
 [SpEditor](./docs/SpEditor.md) is a HTML5 rich text editor in smartphone browsers, and it's extends [Editor](./docs/Editor.md).
 
+> 目前在安卓手机上测试正常，苹果手机无法正确获取光标所在元素。
+> At present, the test on the Android phone is normal, and the Apple phone cannot correctly obtain the element where the cursor is located.
+
 ## Build Setup
 
 ```bash
