@@ -5,6 +5,8 @@
  */
 export const ROOT_CLASS_NAME = 'sp-editor__editor'
 
+export const CLASS_NAME_IS_EMPTY = 'is-empty'
+
 export const NODE_NAME_SECTION = 'SECTION'
 
 export const NODE_NAME_BR = 'BR'

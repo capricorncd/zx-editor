@@ -52,6 +52,12 @@ describe('helpers', () => {
     expect(isPairedTags('<div></div>')).toBeTruthy()
     expect(isPairedTags('<section><img src="" /></section>')).toBeTruthy()
 
+    expect(
+      isPairedTags(
+        '<section>      console.log(isCurrentChild, newNode?.outerHTML)\n      console.log(isCurrentChild, newNode?.outerHTML)\n      console.log(isCurrentChild, newNode?.outerHTML)\n<br></section>',
+      ),
+    ).toBeTruthy()
+
     // BR
     expect(isPairedTags(div.children[0])).toBeFalsy()
     const img = createElement('img', {})

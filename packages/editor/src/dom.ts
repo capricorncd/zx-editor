@@ -5,7 +5,7 @@
  */
 import { CSSProperties } from '@sp-editor/types'
 import { createElement, toStrStyles, slice } from 'zx-sml'
-import { ROOT_CLASS_NAME } from './const'
+import { ROOT_CLASS_NAME, CLASS_NAME_IS_EMPTY } from './const'
 import { hasSpecialTag, isUlElement, replaceHtmlTag, removeLiTags } from './helpers'
 import { EditorOptions } from './options'
 
@@ -31,7 +31,7 @@ export const initContentDom = (options: EditorOptions, blankLine: string): HTMLD
   if (options.textColor) contentStyles.color = options.textColor
 
   const contentAttrs: Record<string, string> = {
-    class: `${ROOT_CLASS_NAME} is-empty`,
+    class: `${ROOT_CLASS_NAME} ${CLASS_NAME_IS_EMPTY}`,
     style: toStrStyles(contentStyles),
   }
   if (options.editable) contentAttrs.contenteditable = 'true'
@@ -149,23 +149,23 @@ export const changeNodeName = (input: HTMLElement | null, tagName: string): HTML
  */
 export const toggleIsEmptyClassName = (el: HTMLElement): void => {
   if (!el.innerText?.trim() && !hasSpecialTag(el)) {
-    el.classList.add('is-empty')
+    el.classList.add(CLASS_NAME_IS_EMPTY)
   } else {
-    el.classList.remove('is-empty')
+    el.classList.remove(CLASS_NAME_IS_EMPTY)
   }
 }
 
 export function getCursorElement(
-  el: HTMLElement | null,
+  el: HTMLElement | Node | null,
   rootElement: HTMLElement,
   isOnlyEditorChild = false,
 ): HTMLElement {
   while (el && rootElement !== el) {
     // li元素判断
     if (!isOnlyEditorChild && el.nodeName === 'LI' && el.parentElement?.parentElement === rootElement) {
-      return el
+      return el as HTMLElement
     }
-    if (el.parentElement === rootElement) return el
+    if (el.parentElement === rootElement) return el as HTMLElement
     el = el.parentElement
   }
   return rootElement.lastElementChild as HTMLElement
