@@ -1,4 +1,5 @@
 $iconSize: 50px;
+$barHeight: var(--bar-height, 50px);
 
 .sp-editor__toolbar {
   position: fixed;
@@ -7,7 +8,7 @@ $iconSize: 50px;
   bottom: 0;
   width: 100%;
   background-color: #fff;
-  height: calc(env(safe-area-inset-bottom) + var(--bar-height));
+  height: calc(env(safe-area-inset-bottom) + $barHeight);
   transform: translateY(-100%);
   opacity: 0;
   dl,
@@ -19,7 +20,7 @@ $iconSize: 50px;
     top: 0;
     left: 0;
     width: 100%;
-    height: var(--bar-height);
+    height: $barHeight;
     overflow-y: hidden;
     overflow-x: auto;
     white-space: nowrap;
@@ -30,8 +31,8 @@ $iconSize: 50px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: var(--bar-height);
-      height: var(--bar-height);
+      width: $barHeight;
+      height: $barHeight;
       cursor: pointer;
       &[data-name='choose-picture'] {
         background: url('./camera.svg') no-repeat center center;

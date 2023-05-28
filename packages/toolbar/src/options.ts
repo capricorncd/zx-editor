@@ -39,7 +39,7 @@ export interface ButtonOptions {
  */
 export const DEF_OPTIONS: ToolbarOptions = {
   toolbarBeenFixed: true,
-  toolbarHeight: '50px',
+  // toolbarHeight: '50px',
   // buttons name, and order
   toolbarButtons: ['choose-picture', 'text-style'],
 }

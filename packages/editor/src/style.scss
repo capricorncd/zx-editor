@@ -8,7 +8,7 @@
   overflow-y: auto;
   line-height: var(--line-height);
   outline: none;
-  padding-bottom: var(--padding-bottom);
+  padding-bottom: calc(var(--padding-bottom, 0px) + env(safe-area-inset-bottom));
   > * {
     position: relative;
     padding: 0;

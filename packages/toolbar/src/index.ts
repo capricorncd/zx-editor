@@ -32,13 +32,13 @@ export class Toolbar implements EditorPlugin {
     this.visible = this.options.toolbarBeenFixed!
 
     // create element
-    const [height, unit] = splitValue(this.options.toolbarHeight!)
+    const [height, unit] = splitValue(this.options.toolbarHeight || '')
     this.$el = createElement(
       'div',
       {
         class: 'sp-editor__toolbar border-top',
         style: {
-          '--bar-height': `${height}${unit}`,
+          '--bar-height': height ? `${height}${unit}` : null,
         },
       },
       '<dl class="inner-wrapper"></dl>',
