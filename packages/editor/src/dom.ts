@@ -22,7 +22,7 @@ export const initContentDom = (options: EditorOptions, blankLine: string): HTMLD
     '--line-height': options.lineHeight,
     // paragraphTailSpacing
     '--paragraph-spacing': options.paragraphTailSpacing,
-    '--padding-bottom': `calc(${options.paddingBottom || '0px'} + env(safe-area-inset-bottom))`,
+    '--padding-bottom': options.paddingBottom,
     // 用户自定义样式优先
     ...options.styles,
   }
@@ -147,7 +147,7 @@ export const changeNodeName = (input: HTMLElement | null, tagName: string): HTML
  * Determine if there is content in the `el`
  * @param el
  */
-export const checkIsEmpty = (el: HTMLElement): void => {
+export const toggleIsEmptyClassName = (el: HTMLElement): void => {
   if (!el.innerText?.trim() && !hasSpecialTag(el)) {
     el.classList.add('is-empty')
   } else {

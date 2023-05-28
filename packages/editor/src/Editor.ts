@@ -8,7 +8,7 @@ import { getStyles, createTextNode } from '@sp-editor/helpers'
 import { CSSProperties } from '@sp-editor/types'
 import { $, createElement, slice, toStrStyles } from 'zx-sml'
 import { NODE_NAME_BR, ALLOWED_NODE_NAMES } from './const'
-import { changeNodeName, initContentDom, checkIsEmpty, getCursorElement } from './dom'
+import { changeNodeName, initContentDom, toggleIsEmptyClassName, getCursorElement } from './dom'
 import { isOnlyBrInChildren, isPairedTags, isSpecialPairedTags } from './helpers'
 import { DEF_OPTIONS, EditorOptions } from './options'
 import './style.scss'
@@ -106,7 +106,7 @@ export class Editor extends EventEmitter {
         }
       }
       this.emit(type === 'input' ? 'change' : type, e)
-      checkIsEmpty(this.$editor)
+      toggleIsEmptyClassName(this.$editor)
     }
 
     // paste handler
@@ -156,7 +156,7 @@ export class Editor extends EventEmitter {
   setHtml(html: string): void {
     this.$editor.innerHTML = this.blankLine
     this.insert(html, true)
-    checkIsEmpty(this.$editor)
+    toggleIsEmptyClassName(this.$editor)
   }
 
   /**
@@ -318,8 +318,6 @@ export class Editor extends EventEmitter {
         this.$editor.replaceChild(newNode, tempNode)
       }
       if (isCurrentChild && newNode) this.setCursorElement(newNode)
-      // @ts-ignore
-      console.log('======', newNode?.outerHTML)
     }
 
     // check if it's last child is a blank line, if not, insert a new blank line

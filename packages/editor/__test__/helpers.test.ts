@@ -47,13 +47,17 @@ describe('helpers', () => {
   })
 
   test('isPairedTags', () => {
-    const el = createElement('img', {
-      minHeight: '200px',
-    })
-
-    expect(isPairedTags(el)).toBeFalsy()
+    const div = createElement('div', {}, '<br>')
+    expect(isPairedTags(div)).toBeTruthy()
     expect(isPairedTags('<div></div>')).toBeTruthy()
     expect(isPairedTags('<section><img src="" /></section>')).toBeTruthy()
+
+    // BR
+    expect(isPairedTags(div.children[0])).toBeFalsy()
+    const img = createElement('img', {})
+    expect(isPairedTags(img)).toBeFalsy()
+    expect(isPairedTags('text content')).toBeFalsy()
+    expect(isPairedTags('<img />')).toBeFalsy()
   })
 
   test('isSpecialPairedTags', () => {
