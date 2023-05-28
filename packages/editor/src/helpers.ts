@@ -53,7 +53,7 @@ export function isPairedTags<T extends Element>(el: T | string): boolean {
   if (typeof el !== 'string' && el.nodeName) {
     el = el.outerHTML
   }
-  return typeof el === 'string' && /^<(\w+)[^>]*>.*<\/\1>$/.test(el)
+  return typeof el === 'string' && /^<(\w+)[^>]*>.*<\/\1>$/.test(el.replace(/\n/g, ''))
 }
 
 /**

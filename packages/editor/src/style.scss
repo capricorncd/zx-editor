@@ -9,6 +9,7 @@
   line-height: var(--line-height);
   outline: none;
   padding-bottom: calc(var(--padding-bottom, 0px) + env(safe-area-inset-bottom));
+
   > * {
     position: relative;
     padding: 0;
@@ -32,7 +33,7 @@
   p {
     color: inherit;
   }
-  &.is-empty:before {
+  &.is-empty:not(:focus-within):before {
     position: absolute;
     z-index: 1;
     top: 0;

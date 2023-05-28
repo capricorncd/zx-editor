@@ -53,13 +53,13 @@ export class Editor extends EventEmitter {
   public readonly options: EditorOptions
   // 编辑器内容区域HTML元素
   public readonly $editor: HTMLDivElement
-  // current node
-  private _cursorElement: HTMLElement | null = null
   // 内容元素事件处理函数
   private readonly _eventHandler: <T extends Event>(e: T) => void
   // 内容中允许使用的元素标签
   private allowedNodeNames: string[]
   private blankLine: string
+
+  private range: Range
 
   private _pasteHandler: (e: ClipboardEvent) => void
 
@@ -92,18 +92,17 @@ export class Editor extends EventEmitter {
     this.$editor = initContentDom(this.options, this.blankLine)
     container.append(this.$editor)
 
+    this.range = new Range()
+    this.range.setStart(this.$editor.children[0], 0)
+
     // content event handler
     this._eventHandler = (e: Event) => {
       const type = e.type
-      if (type === 'blur' || type === 'click') {
-        const sel = window.getSelection()
-        const node =
-          sel && sel.rangeCount ? sel.getRangeAt(sel.rangeCount - 1).endContainer : (e.currentTarget as HTMLElement)
-        this.setCursorElement(node)
-
-        if (type === 'blur') {
-          this._verifyChild()
-        }
+      if (type === 'click') {
+        const range = window.getSelection()?.getRangeAt(0)
+        if (range) this.range = range
+      } else if (type === 'blur') {
+        this._verifyChild()
       }
       this.emit(type === 'input' ? 'change' : type, e)
       toggleIsEmptyClassName(this.$editor)
@@ -133,6 +132,13 @@ export class Editor extends EventEmitter {
     this.$editor.addEventListener('input', this._eventHandler)
     this.$editor.addEventListener('click', this._eventHandler)
     this.$editor.addEventListener('paste', this._pasteHandler)
+  }
+
+  setRangeWithNode(el: Element | Node): Range {
+    const range = new Range()
+    range.setStart(el === this.$editor ? this.$editor.childNodes[this.$editor.childNodes.length - 1] : el, 0)
+    this.range = range
+    return range
   }
 
   /**
@@ -222,6 +228,7 @@ export class Editor extends EventEmitter {
 
     this._verifyChild()
     this._dispatchChange()
+    toggleIsEmptyClassName(this.$editor)
   }
 
   /**
@@ -259,7 +266,7 @@ export class Editor extends EventEmitter {
     }
 
     // 设置光标元素对象
-    this.setCursorElement(input)
+    this.setRangeWithNode(input)
   }
 
   /**
@@ -279,9 +286,10 @@ export class Editor extends EventEmitter {
     // 正常操作：光标在编辑器中，将文本插入至光标处
     // Normal operate: cursor in editor, insert text at cursor
     sel.deleteFromDocument()
-    sel.getRangeAt(0).insertNode(createTextNode(input))
-
-    this.setCursorElement(sel.getRangeAt(rangeCount - 1).endContainer)
+    const textNode = createTextNode(input)
+    sel.getRangeAt(0).insertNode(textNode)
+    sel.setPosition(textNode, input.length)
+    this.range = sel.getRangeAt(0)
     // collapses the selection to the end of the last range in the selection.
     sel.collapseToEnd()
   }
@@ -292,7 +300,6 @@ export class Editor extends EventEmitter {
    * @private
    */
   private _verifyChild(): void {
-    const currentChild = this.getCursorElement(true)
     const childNodeName = this.options.childNodeName!
 
     let tempNode: Node,
@@ -304,20 +311,23 @@ export class Editor extends EventEmitter {
     for (let i = 0; i < childNodes.length; i++) {
       newNode = null
       tempNode = childNodes[i]
-      isCurrentChild = tempNode === currentChild
+      isCurrentChild = tempNode === this.range.commonAncestorContainer
       if (
         tempNode.nodeType === Node.ELEMENT_NODE &&
         isPairedTags(tempNode as Element) &&
         !isSpecialPairedTags(tempNode as HTMLElement)
       ) {
-        if (this.allowedNodeNames.includes(tempNode.nodeName)) continue
-        // 处理不被允许使用的标签
-        newNode = changeNodeName(tempNode as HTMLElement, childNodeName)
+        if (!this.allowedNodeNames.includes(tempNode.nodeName)) {
+          // 处理不被允许使用的标签
+          newNode = changeNodeName(tempNode as HTMLElement, childNodeName)
+        }
       } else {
         newNode = createElement(childNodeName, {}, tempNode.cloneNode(true))
         this.$editor.replaceChild(newNode, tempNode)
       }
-      if (isCurrentChild && newNode) this.setCursorElement(newNode)
+      if (isCurrentChild && newNode) {
+        this.setRangeWithNode(newNode)
+      }
     }
 
     // check if it's last child is a blank line, if not, insert a new blank line
@@ -341,7 +351,7 @@ export class Editor extends EventEmitter {
     const el = changeNodeName(currentSection, nodeName)
 
     if (el) {
-      this.setCursorElement(el)
+      this.setRangeWithNode(el)
       this._dispatchChange()
       return true
     }
@@ -389,20 +399,6 @@ export class Editor extends EventEmitter {
     return getStyles(this.getCursorElement())
   }
 
-  setCursorElement(el?: Node | HTMLElement | null): void {
-    if (el instanceof Node) {
-      while (el) {
-        if (el.nodeType === Node.ELEMENT_NODE) {
-          this._cursorElement = el as HTMLElement
-          break
-        }
-        el = el.parentElement
-      }
-    } else if (el) {
-      this._cursorElement = el
-    }
-  }
-
   /**
    * @method getCursorElement(isOnlyEditorChild)
    * 获取光标所在的元素
@@ -411,7 +407,7 @@ export class Editor extends EventEmitter {
    * @return `HTMLElement`
    */
   getCursorElement(isOnlyEditorChild = false): HTMLElement {
-    return getCursorElement(this._cursorElement, this.$editor, isOnlyEditorChild)
+    return getCursorElement(this.range.commonAncestorContainer, this.$editor, isOnlyEditorChild)
   }
 
   /**
