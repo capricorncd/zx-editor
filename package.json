@@ -59,7 +59,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prettier": "^4.0.0",
     "inquirer": "^8.2.4",
-    "jsdom": "^19.0.0",
+    "jsdom": "^28.1.0",
     "lint-staged": "^13.2.1",
     "prettier": "^2.6.2",
     "sass": "^1.51.0",
